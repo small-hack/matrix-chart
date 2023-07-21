@@ -517,7 +517,7 @@ mail:
     enabled: true
     image:
       repository: "devture/exim-relay"
-      tag: "4.93.1-r0"
+      tag: "4.95-r0"
       pullPolicy: IfNotPresent
     service:
       type: ClusterIP
