@@ -25,5 +25,5 @@ maintainers:
 dependencies:
   - name: postgresql
     version: 12.6.8
-    repository: https://charts.bitnami.com/bitnami
+    repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled

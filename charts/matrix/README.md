@@ -22,7 +22,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | postgresql | 12.6.8 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql | 12.6.8 |
 
 ## Values
 
