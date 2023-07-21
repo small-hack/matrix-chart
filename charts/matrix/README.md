@@ -156,7 +156,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | ingress.hosts.synapse | string | `"matrix.chart-example.local"` |  |
 | ingress.tls | list | `[]` |  |
 | mail.elementUrl | string | `""` |  |
-| mail.enabled | bool | `true` |  |
+| mail.enabled | bool | `false` |  |
 | mail.external.host | string | `""` |  |
 | mail.external.password | string | `""` |  |
 | mail.external.port | int | `25` |  |
@@ -225,7 +225,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | networkPolicies.enabled | bool | `true` |  |
 | postgresql.database | string | `"matrix"` |  |
 | postgresql.enabled | bool | `true` |  |
-| postgresql.existingSecret | string | `"matrix-postgresql"` |  |
+| postgresql.existingSecret | string | `""` |  |
 | postgresql.hostname | string | `""` |  |
 | postgresql.initdbScriptsConfigMap | string | `"{{ .Release.Name }}-postgresql-initdb"` |  |
 | postgresql.password | string | `"matrix"` |  |
@@ -233,9 +233,9 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | postgresql.port | int | `5432` |  |
 | postgresql.secretKeys.database | string | `"database"` |  |
 | postgresql.secretKeys.databaseHostname | string | `"databaseHostname"` |  |
-| postgresql.secretKeys.databasePassword | string | `"databasePass"` |  |
+| postgresql.secretKeys.databasePassword | string | `"databasePassword"` |  |
 | postgresql.secretKeys.databasePort | string | `"databasePort"` |  |
-| postgresql.secretKeys.databaseUsername | string | `"databaseUser"` |  |
+| postgresql.secretKeys.databaseUsername | string | `"databaseUsername"` |  |
 | postgresql.securityContext.enabled | bool | `true` |  |
 | postgresql.securityContext.fsGroup | int | `1000` |  |
 | postgresql.securityContext.runAsUser | int | `1000` |  |

@@ -241,42 +241,46 @@ ingress:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_intercept_errors off;
 
-# PostgreSQL Database Configuration
+# - PostgreSQL Database Configuration
 postgresql:
-  # Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure PostgreSQL is available at the hostname below and credentials are configured below
+  # - Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure PostgreSQL is available at the hostname below and credentials are configured below
   enabled: true
 
-  # database credentials
+  # database credentials to use if you don't use an existingSecret
+  # - username of matrix postgres user
   username: matrix
+  # - password of matrix postgres user
   password: matrix
+  # - name of database to use for matrix
   database: matrix
+  # - which port to use to connect to your database server
+  port: 5432
+  # - hostname of postgres server to use. Can be left blank if using bundled bitnami postgresql sub-chart
+  hostname: ""
 
-  # Name of existing secret to use for PostgreSQL credentials
-  existingSecret: matrix-postgresql
+  # - Name of existing secret to use for PostgreSQL credentials
+  existingSecret: ""
+  # - secretKeys to grab from existingSecret
   # if postgresql.existingSecret is provided, the following are ignored
   # postgresql.password/username/hostname/database/port
   secretKeys:
     databaseHostname: databaseHostname
     databasePort: databasePort
     database: database
-    databaseUsername: databaseUser
-    databasePassword: databasePass
+    databaseUsername: databaseUsername
+    databasePassword: databasePassword
 
-
-  # Set this if postgresql.enabled = false
-  hostname: ""
-  port: 5432
-
-  # Whether to connect to the database over SSL
+  # - Whether to connect to the database over SSL
   ssl: false
-  # See https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS for documentation of these modes
+  # - which ssl mode to use. See [documentation](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS) for more info
   sslMode: prefer
 
-  # Storage to allocate for stable/postgresql
+  # - persistent volume claim configuration for postgresql to persist data
   persistence:
+    # - size of postgresql volume claim
     size: 8Gi
 
-  # If postgresql.enabled, stable/postgresql will run the scripts in templates/postgresql/initdb-configmap.yaml
+  # - If postgresql.enabled, stable/postgresql will run the scripts in templates/postgresql/initdb-configmap.yaml
   # If using an external Postgres server, make sure to configure the database as specified at https://github.com/matrix-org/synapse/blob/master/docs/postgres.md
   initdbScriptsConfigMap: "{{ .Release.Name }}-postgresql-initdb"
 
@@ -474,8 +478,8 @@ coturn:
 
 # - Settings for email notifications
 mail:
-  # - Set to false to disable all email notifications NOTE: If enabled, either enable the Exim relay or configure an external mail server below
-  enabled: true
+  # - disabled all email notifications by default. NOTE: If enabled, either enable the Exim relay or configure an external mail server below
+  enabled: false
   # - Name and email address for outgoing mail
   from: "Matrix <matrix@example.com>"
   # Optional: Element instance URL.
