@@ -1,59 +1,42 @@
 # Matrix Chart
 
-A Helm chart for deploying a Matrix homeserver stack in Kubernetes.
+A Helm chart for deploying a Matrix homeserver stack in Kubernetes. This is a fork of [Arkaniad/matrix-chart](https://github.com/Arkaniad/matrix-chart), which is a fork of [typokign/matrix-chart](https://github.com/typokign/matrix-chart).
 
 ## Features
 
-- Latest version of Synapse
-- (Optional) Latest version of Riot Web
+- Latest version of [Synapse](https://github.com/matrix-org/synapse)
+- (Optional) Latest version of [Element](https://element.io/)
 - (Optional) Choice of lightweight Exim relay or external mail server for email notifications
 - (Optional) Coturn TURN server for VoIP calls
-- (Optional) PostgreSQL cluster via stable/postgresql chart
+- (Optional) PostgreSQL cluster via the Bitnami postgresql chart
 - (Optional) [matrix-org/matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) IRC bridge
 - (Optional) [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge
 - (Optional) [Half-Shot/matrix-appservice-discord](https://github.com/Half-Shot/matrix-appservice-discord) Discord bridge
-- Fully configurable via values.yaml
-- Ingress definition for federated Synapse and Riot
+- Ingress definition for federated Synapse and Element
 
 ## Installation
 
-Some documentation is available in values.yaml, and a complete configuration guide is coming soon.
+Some documentation is available in [values.yaml](./charts/matrix/values.yaml) (see [README](./charts/matrix/README.md) for more docs.
 
 Choose one of the two options below to install the chart.
 
-### Chart Repository (recommended)
+### Standard helm
 
-This chart is published to my Helm chart repository at https://dacruz21.github.io/helm-charts. To install this chart:
+This is released normally, so you should be able to do:
 
-1. Create an empty chart to hold your configuration
-
-    ```shell script
-    helm create mychart
-    cd mychart
-    ```
-
-1. Add this chart to your chart's dependencies by editing `Chart.yaml` and adding the following lines:
-
-    ```yaml
-    dependencies:
-      - name: matrix
-        version: 2.8.0
-        repository: https://dacruz21.github.io/helm-charts
-    ```
-
-1. Run `helm dependency update` to download the chart into the `charts/` directory.
-
-1. Configure the chart by editing `values.yaml`, adding a `matrix:` object, and adding any config overrides under this object.
-
-1. Deploy your customized chart with `helm install mychart .`
+```bash
+helm repo add matrix https://jessebot.github.io/matrix-chart
+helm repo update
+helm install my-release-name matrix
+```
 
 ### Git
 
 You can also clone this repo directly and override the values.yaml provided. To do so, run the following commands:
 
-```shell script
+```bash
 git clone https://github.com/dacruz21/matrix-chart.git
-cd matrix-chart
+cd matrix-chart/charts/matrix
 helm dependency update
 helm install matrix .
 ```

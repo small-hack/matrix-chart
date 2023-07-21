@@ -112,6 +112,18 @@ postgres://{{ .Values.postgresql.username }}:{{ .Values.postgresql.password }}@{
 {{- end }}
 {{- end }}
 
+
+{{/*
+Helper function to get the postgres secret containing the database credentials
+*/}}
+{{- define "matrix.postgresql.secretName" -}}
+{{- if and .Values.postgresql.enabled .Values.postgresql.existingSecret -}}
+{{ .Values.postgresql.existingSecret }}
+{{- else -}}
+{{ template "matrix.fullname" . }}-secret
+{{- end }}
+{{- end }}
+
 {{/*
 Helper function to get postgres instance name
 */}}

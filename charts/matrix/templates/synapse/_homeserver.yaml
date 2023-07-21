@@ -598,18 +598,12 @@ database:
     name: "psycopg2"
     # Arguments to pass to the engine
     args:
-        user: "{{ .Values.postgresql.username }}"
-        password: "{{ .Values.postgresql.password }}"
-        database: "{{ .Values.postgresql.database }}"
-        
-        {{- if .Values.postgresql.enabled }}
-        host: "{{ include "matrix.fullname" . }}-postgresql"
-        port: "5432"
-        {{- else }}
-        host: "{{ .Values.postgresql.hostname }}"
-        port: "{{ .Values.postgresql.port }}"
-        {{- end }}
-        sslmode: {{ .Values.postgresql.sslMode }}
+        user: "REPLACE_ME"
+        password: "REPLACE_ME"
+        database: "REPLACE_ME"
+        host: "REPLACE_ME"
+        port: "REPLACE_ME"
+        sslmode: "REPLACE_ME"
         cp_min: 5
         cp_max: 10
 

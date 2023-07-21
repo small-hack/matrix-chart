@@ -40,9 +40,54 @@ spec:
         {{- if .Values.synapse.securityContext.runAsNonRoot }}
         runAsNonRoot: {{ .Values.synapse.securityContext.runAsNonRoot }}
         {{- end }}
+      initContainers:
+        - name: add-secret-values-to-config
+          image: "linuxserver/yq:latest"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DATABASE_HOSTNAME
+              valuesFrom:
+                secretKeyRef:
+                  name: {{ include "matrix.postgresql.secretName" . }}
+                  key: {{ .Values.postgresql.secretKeys.databaseHostname }}
+            - name: DATABASE_PORT
+              valuesFrom:
+                secretKeyRef:
+                  name: {{ include "matrix.postgresql.secretName" . }}
+                  key: {{ .Values.postgresql.secretKeys.databasePort }}
+            - name: DATABASE
+              valuesFrom:
+                secretKeyRef:
+                  name: {{ include "matrix.postgresql.secretName" . }}
+                  key: {{ .Values.postgresql.secretKeys.database }}
+            - name: DATABASE_USERNAME
+              valuesFrom:
+                secretKeyRef:
+                  name: {{ include "matrix.postgresql.secretName" . }}
+                  key: {{ .Values.postgresql.secretKeys.databaseUsername }}
+            - name: DATABASE_PASSWORD
+              valuesFrom:
+                secretKeyRef:
+                  name: {{ include "matrix.postgresql.secretName" . }}
+                  key: {{ .Values.postgresql.secretKeys.databasePassword }}
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              cp {{ .Values.matrix.serverName }}.log.config /data/ && \
+              cp /initial/homeserver.yaml /data/homeserver.yaml && \
+              yq eval '.database.args.host = env(DATABASE_HOSTNAME)' --inplace /data/homeserver.yaml && \
+              yq eval '.database.args.port = env(DATABASE_PORT)' --inplace /data/homeserver.yaml && \
+              yq eval '.database.args.database = env(DATABASE)' --inplace /data/homeserver.yaml && \
+              yq eval '.database.args.user = env(DATABASE_USERNAME)' --inplace /data/homeserver.yaml && \
+              yq eval '.database.args.password = env(DATABASE_PASSWORD)' --inplace /data/homeserver.yaml
+          volumeMounts:
+            - name: synapse-initial-config
+              mountPath: /initial
+            - name: synapse-config
+              mountPath: /data
       # generate signing key only on fresh install
       {{- if .Release.IsInstall }}
-      initContainers:
         - name: generate-signing-key
           image: "{{ .Values.synapse.image.repository }}:{{ .Values.synapse.image.tag }}"
           imagePullPolicy: {{ .Values.synapse.image.pullPolicy }}
@@ -141,19 +186,34 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
-        - name: synapse-config
+        - name: synapse-initial-config
           configMap:
-            name: {{ include "matrix.fullname" . }}-synapse-config
+            name: {{ include "matrix.fullname" . }}-initial-synapse-config
+        - name: synapse-config
+          persistentVolumeClaim:
+            claimName: {{ include "matrix.fullname" . }}-synapse-config
         - name: signing-key
           persistentVolumeClaim:
+            {{- if not .Values.volumes.signingKey.existingClaim }}
             claimName: {{ include "matrix.fullname" . }}-signing-key
+            {{ else }}
+            claimName: {{ .Values.volumes.signingKey.existingClaim }}
+            {{- end }}
         - name: media-store
           persistentVolumeClaim:
+            {{- if not .Values.volumes.media.existingClaim }}
             claimName: {{ include "matrix.fullname" . }}-media-store
+            {{ else }}
+            claimName: {{ .Values.volumes.media.existingClaim }}
+            {{- end }}
         {{- if or .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.irc.enabled }}
         - name: bridges
           persistentVolumeClaim:
+            {{- if not .Values.bridges.volume.existingClaim }}
             claimName: {{ include "matrix.fullname" . }}-bridges
+            {{ else }}
+            claimName: {{ .Values.bridges.volume.existingClaim }}
+            {{- end }}
         {{- end }}
         # Ephemeral in-progress uploads
         - name: uploads
