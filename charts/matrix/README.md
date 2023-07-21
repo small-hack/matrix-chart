@@ -10,9 +10,9 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| David Cruz | <david@typokign.com> | <https://github.com/dacruz21/> |
-| Rhea Danzey | <rhea@isomemetric.com> | <https://github.com/Arkaniad/> |
-| Jesse Hitch | <jessebot@linux.com> | <https://github.com/jessebot/> |
+| dacruz21 | <david@typokign.com> | <https://github.com/dacruz21/> |
+| Arkaniad | <rhea@isomemetric.com> | <https://github.com/Arkaniad/> |
+| jessebot | <jessebot@linux.com> | <https://github.com/jessebot/> |
 
 ## Source Code
 
