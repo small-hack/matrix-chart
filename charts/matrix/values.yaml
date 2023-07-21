@@ -3,28 +3,28 @@ matrix:
   # Manual overrides for homeserver.yaml, the main configuration file for Synapse
   # It is highly recommended that you take a look at the defaults in templates/synapse/_homeserver.yaml, to get a sense
   # of the requirements and default configuration options to use other services in this chart.
-  # - If homeserverOverride is set, the entirety of homeserver.yaml will be replaced with the contents.
+  # -- If homeserverOverride is set, the entirety of homeserver.yaml will be replaced with the contents.
   homeserverOverride: {}
-  # - If homeserverExtra is set, the contents will be appended to the end of the default configuration.
+  # -- If homeserverExtra is set, the contents will be appended to the end of the default configuration.
   homeserverExtra: {}
 
-  # - Domain name of the server: This is not necessarily the host name where the service is reachable. In fact, you may want to omit any subdomains from this value as the server name set here will be the name of your homeserver in the fediverse, and will be the domain name at the end of every user's username
+  # -- Domain name of the server: This is not necessarily the host name where the service is reachable. In fact, you may want to omit any subdomains from this value as the server name set here will be the name of your homeserver in the fediverse, and will be the domain name at the end of every user's username
   serverName: "example.com"
 
-  # - Enable anonymous telemetry to matrix.org
+  # -- Enable anonymous telemetry to matrix.org
   telemetry: false
 
-  # - Hostname where Synapse can be reached.
+  # -- Hostname where Synapse can be reached.
   # This is *optional* if an Ingress is configured below. If hostname is unspecified, the Synapse hostname of the Ingress will be used
   # hostname: "matrix.example.com"
 
-  # - Set to false to disable presence (online/offline indicators)
+  # -- Set to false to disable presence (online/offline indicators)
   presence: true
 
-  # - Set to true to block non-admins from inviting users to any rooms
+  # -- Set to true to block non-admins from inviting users to any rooms
   blockNonAdminInvites: false
 
-  # - Set to false to disable message searching
+  # -- Set to false to disable message searching
   search: true
 
   # Which types of rooms to enable end-to-end encryption on by default
@@ -33,29 +33,29 @@ matrix:
   # all: all rooms
   encryptByDefault: invite
 
-  # - Email address of the administrator
+  # -- Email address of the administrator
   adminEmail: "admin@example.com"
 
-  # - Settings related to image and multimedia uploads
+  # -- Settings related to image and multimedia uploads
   uploads:
-    # - Max upload size in bytes
+    # -- Max upload size in bytes
     maxSize: 10M
 
-    # - Max image size in pixels
+    # -- Max image size in pixels
     maxPixels: 32M
 
-  # - Settings related to federation
+  # -- Settings related to federation
   federation:
-    # - Set to false to disable federation and run an isolated homeserver
+    # -- Set to false to disable federation and run an isolated homeserver
     enabled: true
 
-    # - Set to false to disallow members of other homeservers from fetching *public* rooms
+    # -- Set to false to disallow members of other homeservers from fetching *public* rooms
     allowPublicRooms: true
 
-    # - Whitelist of domains to federate with (comment for all domains except blacklisted)
+    # -- Whitelist of domains to federate with (comment for all domains except blacklisted)
     whitelist: []
 
-    # - IP addresses to blacklist federation requests to
+    # -- IP addresses to blacklist federation requests to
     blacklist:
       - '127.0.0.0/8'
       - '10.0.0.0/8'
@@ -67,9 +67,9 @@ matrix:
       - 'fe80::/64'
       - 'fc00::/7'
 
-  # - User registration settings
+  # -- User registration settings
   registration:
-    # - Allow new users to register an account
+    # -- Allow new users to register an account
     enabled: false
 
     # If set, allows registration of standard or admin accounts by anyone who
@@ -77,7 +77,7 @@ matrix:
     #
     # sharedSecret: <PRIVATE STRING>
 
-    # - Allow users to join rooms as a guest
+    # -- Allow users to join rooms as a guest
     allowGuests: false
 
     # Required "3PIDs" - third-party identifiers such as email or msisdn (SMS)
@@ -87,7 +87,7 @@ matrix:
 
     # Rooms to automatically join all new users to
     autoJoinRooms: []
-    # - "#welcome:example.com"
+    # -- "#welcome:example.com"
 
     # Whether to allow token based registration
     requiresToken: false
@@ -241,26 +241,26 @@ ingress:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_intercept_errors off;
 
-# - PostgreSQL Database Configuration
+# -- PostgreSQL Database Configuration
 postgresql:
-  # - Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure PostgreSQL is available at the hostname below and credentials are configured below
+  # -- Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure PostgreSQL is available at the hostname below and credentials are configured below
   enabled: true
 
   # database credentials to use if you don't use an existingSecret
-  # - username of matrix postgres user
+  # -- username of matrix postgres user
   username: matrix
-  # - password of matrix postgres user
+  # -- password of matrix postgres user
   password: matrix
-  # - name of database to use for matrix
+  # -- name of database to use for matrix
   database: matrix
-  # - which port to use to connect to your database server
+  # -- which port to use to connect to your database server
   port: 5432
-  # - hostname of postgres server to use. Can be left blank if using bundled bitnami postgresql sub-chart
+  # -- hostname of postgres server to use. Can be left blank if using bundled bitnami postgresql sub-chart
   hostname: ""
 
-  # - Name of existing secret to use for PostgreSQL credentials
+  # -- Name of existing secret to use for PostgreSQL credentials
   existingSecret: ""
-  # - secretKeys to grab from existingSecret
+  # -- secretKeys to grab from existingSecret
   # if postgresql.existingSecret is provided, the following are ignored
   # postgresql.password/username/hostname/database/port
   secretKeys:
@@ -270,17 +270,17 @@ postgresql:
     databaseUsername: databaseUsername
     databasePassword: databasePassword
 
-  # - Whether to connect to the database over SSL
+  # -- Whether to connect to the database over SSL
   ssl: false
-  # - which ssl mode to use. See [documentation](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS) for more info
+  # -- which ssl mode to use. See [documentation](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS) for more info
   sslMode: prefer
 
-  # - persistent volume claim configuration for postgresql to persist data
+  # -- persistent volume claim configuration for postgresql to persist data
   persistence:
-    # - size of postgresql volume claim
+    # -- size of postgresql volume claim
     size: 8Gi
 
-  # - If postgresql.enabled, stable/postgresql will run the scripts in templates/postgresql/initdb-configmap.yaml
+  # -- If postgresql.enabled, stable/postgresql will run the scripts in templates/postgresql/initdb-configmap.yaml
   # If using an external Postgres server, make sure to configure the database as specified at https://github.com/matrix-org/synapse/blob/master/docs/postgres.md
   initdbScriptsConfigMap: "{{ .Release.Name }}-postgresql-initdb"
 
@@ -476,11 +476,11 @@ coturn:
   labels:
     component: coturn
 
-# - Settings for email notifications
+# -- Settings for email notifications
 mail:
-  # - disabled all email notifications by default. NOTE: If enabled, either enable the Exim relay or configure an external mail server below
+  # -- disabled all email notifications by default. NOTE: If enabled, either enable the Exim relay or configure an external mail server below
   enabled: false
-  # - Name and email address for outgoing mail
+  # -- Name and email address for outgoing mail
   from: "Matrix <matrix@example.com>"
   # Optional: Element instance URL.
   # If the ingress is enabled, this is unnecessary.
