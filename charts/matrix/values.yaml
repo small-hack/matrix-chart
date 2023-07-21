@@ -44,7 +44,7 @@ matrix:
     # -- Max image size in pixels
     maxPixels: 32M
 
-  # -- Settings related to federation
+  # Settings related to federation
   federation:
     # -- Set to false to disable federation and run an isolated homeserver
     enabled: true
@@ -241,7 +241,7 @@ ingress:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_intercept_errors off;
 
-# -- PostgreSQL Database Configuration
+# PostgreSQL Database Configuration
 postgresql:
   # -- Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure PostgreSQL is available at the hostname below and credentials are configured below
   enabled: true
@@ -476,7 +476,7 @@ coturn:
   labels:
     component: coturn
 
-# -- Settings for email notifications
+# Settings for email notifications
 mail:
   # -- disabled all email notifications by default. NOTE: If enabled, either enable the Exim relay or configure an external mail server below
   enabled: false
@@ -637,13 +637,15 @@ bridges:
       port: 29318
 
   discord:
-    # Set to true to enable the Discord bridge
+    # -- Set to true to enable the Discord bridge
     enabled: false
 
     # Discord bot authentication
     # See https://github.com/Half-Shot/matrix-appservice-discord#setting-up-discord
     auth:
+      # -- Discord bot clientID for authentication
       clientId: ""
+      # -- Discord bot token for authentication
       botToken: ""
 
     # The name of bridged rooms

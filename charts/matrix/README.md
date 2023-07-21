@@ -29,13 +29,13 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | bridges.affinity | bool | `false` |  |
-| bridges.discord.auth.botToken | string | `""` |  |
-| bridges.discord.auth.clientId | string | `""` |  |
+| bridges.discord.auth.botToken | string | `""` | Discord bot token for authentication |
+| bridges.discord.auth.clientId | string | `""` | Discord bot clientID for authentication |
 | bridges.discord.channelName | string | `"[Discord] :guild :name"` |  |
 | bridges.discord.data.capacity | string | `"512Mi"` |  |
 | bridges.discord.data.storageClass | string | `""` |  |
 | bridges.discord.defaultVisibility | string | `"public"` |  |
-| bridges.discord.enabled | bool | `false` |  |
+| bridges.discord.enabled | bool | `false` | Set to true to enable the Discord bridge |
 | bridges.discord.image.pullPolicy | string | `"Always"` |  |
 | bridges.discord.image.repository | string | `"halfshot/matrix-appservice-discord"` |  |
 | bridges.discord.image.tag | string | `"latest"` |  |
@@ -155,15 +155,31 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | ingress.hosts.federation | string | `"matrix-fed.chart-example.local"` |  |
 | ingress.hosts.synapse | string | `"matrix.chart-example.local"` |  |
 | ingress.tls | list | `[]` |  |
-| mail | object | `{"elementUrl":"","enabled":false,"external":{"host":"","password":"","port":25,"requireTransportSecurity":true,"username":""},"from":"Matrix <matrix@example.com>","relay":{"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"devture/exim-relay","tag":"4.93.1-r0"},"labels":{"component":"mail"},"probes":{"liveness":{},"readiness":{},"startup":{}},"replicaCount":1,"resources":{},"service":{"port":25,"type":"ClusterIP"}}}` | Settings for email notifications |
+| mail.elementUrl | string | `""` |  |
 | mail.enabled | bool | `false` | disabled all email notifications by default. NOTE: If enabled, either enable the Exim relay or configure an external mail server below |
+| mail.external.host | string | `""` |  |
+| mail.external.password | string | `""` |  |
+| mail.external.port | int | `25` |  |
+| mail.external.requireTransportSecurity | bool | `true` |  |
+| mail.external.username | string | `""` |  |
 | mail.from | string | `"Matrix <matrix@example.com>"` | Name and email address for outgoing mail |
+| mail.relay.enabled | bool | `true` |  |
+| mail.relay.image.pullPolicy | string | `"IfNotPresent"` |  |
+| mail.relay.image.repository | string | `"devture/exim-relay"` |  |
+| mail.relay.image.tag | string | `"4.93.1-r0"` |  |
+| mail.relay.labels.component | string | `"mail"` |  |
+| mail.relay.probes.liveness | object | `{}` |  |
+| mail.relay.probes.readiness | object | `{}` |  |
+| mail.relay.probes.startup | object | `{}` |  |
+| mail.relay.replicaCount | int | `1` |  |
+| mail.relay.resources | object | `{}` |  |
+| mail.relay.service.port | int | `25` |  |
+| mail.relay.service.type | string | `"ClusterIP"` |  |
 | matrix.adminEmail | string | `"admin@example.com"` | Email address of the administrator |
 | matrix.blockNonAdminInvites | bool | `false` | Set to true to block non-admins from inviting users to any rooms |
 | matrix.disabled | bool | `false` |  |
 | matrix.disabledMessage | string | `""` |  |
 | matrix.encryptByDefault | string | `"invite"` |  |
-| matrix.federation | object | `{"allowPublicRooms":true,"blacklist":["127.0.0.0/8","10.0.0.0/8","172.16.0.0/12","192.168.0.0/16","100.64.0.0/10","169.254.0.0/16","::1/128","fe80::/64","fc00::/7"],"enabled":true,"whitelist":[]}` | Settings related to federation |
 | matrix.federation.allowPublicRooms | bool | `true` | Set to false to disallow members of other homeservers from fetching *public* rooms |
 | matrix.federation.blacklist | list | `["127.0.0.0/8","10.0.0.0/8","172.16.0.0/12","192.168.0.0/16","100.64.0.0/10","169.254.0.0/16","::1/128","fe80::/64","fc00::/7"]` | IP addresses to blacklist federation requests to |
 | matrix.federation.enabled | bool | `true` | Set to false to disable federation and run an isolated homeserver |
@@ -199,7 +215,6 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | matrix.urlPreviews.rules.url | object | `{}` |  |
 | nameOverride | string | `""` |  |
 | networkPolicies.enabled | bool | `true` |  |
-| postgresql | object | `{"database":"matrix","enabled":true,"existingSecret":"","hostname":"","initdbScriptsConfigMap":"{{ .Release.Name }}-postgresql-initdb","password":"matrix","persistence":{"size":"8Gi"},"port":5432,"secretKeys":{"database":"database","databaseHostname":"databaseHostname","databasePassword":"databasePassword","databasePort":"databasePort","databaseUsername":"databaseUsername"},"securityContext":{"enabled":true,"fsGroup":1000,"runAsUser":1000},"ssl":false,"sslMode":"prefer","username":"matrix"}` | PostgreSQL Database Configuration |
 | postgresql.database | string | `"matrix"` | name of database to use for matrix |
 | postgresql.enabled | bool | `true` | Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure PostgreSQL is available at the hostname below and credentials are configured below |
 | postgresql.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
@@ -210,6 +225,9 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | postgresql.persistence.size | string | `"8Gi"` | size of postgresql volume claim |
 | postgresql.port | int | `5432` | which port to use to connect to your database server |
 | postgresql.secretKeys | object | `{"database":"database","databaseHostname":"databaseHostname","databasePassword":"databasePassword","databasePort":"databasePort","databaseUsername":"databaseUsername"}` | secretKeys to grab from existingSecret if postgresql.existingSecret is provided, the following are ignored postgresql.password/username/hostname/database/port |
+| postgresql.securityContext.enabled | bool | `true` |  |
+| postgresql.securityContext.fsGroup | int | `1000` |  |
+| postgresql.securityContext.runAsUser | int | `1000` |  |
 | postgresql.ssl | bool | `false` | Whether to connect to the database over SSL |
 | postgresql.sslMode | string | `"prefer"` | which ssl mode to use. See [documentation](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS) for more info |
 | postgresql.username | string | `"matrix"` | username of matrix postgres user |
