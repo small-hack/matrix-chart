@@ -8,17 +8,18 @@ sources:
 
 type: application
 
-version: 3.0.1
+version: 3.1.0
 appVersion: 1.88.0
 
 maintainers:
-  - name: "David Cruz"
+  # this person hasn't updated their upstream repo in years
+  - name: "dacruz21"
     email: "david@typokign.com"
     url: "https://github.com/dacruz21/"
-  - name: "Rhea Danzey"
+  - name: "Arkaniad"
     email: "rhea@isomemetric.com"
     url: "https://github.com/Arkaniad/"
-  - name: "Jesse Hitch"
+  - name: "jessebot"
     email: "jessebot@linux.com"
     url: "https://github.com/jessebot/"
 

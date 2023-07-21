@@ -120,7 +120,7 @@ Helper function to get the postgres secret containing the database credentials
 {{- if and .Values.postgresql.enabled .Values.postgresql.existingSecret -}}
 {{ .Values.postgresql.existingSecret }}
 {{- else -}}
-{{ template "matrix.fullname" . }}-secret
+{{ template "matrix.fullname" . }}-db-secret
 {{- end }}
 {{- end }}
 
