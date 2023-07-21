@@ -318,15 +318,19 @@ synapse:
     readiness:
       # -- readiness probe seconds before timing out
       timeoutSeconds: 5
+      # -- readiness probe seconds trying again
       periodSeconds: 10
     startup:
       # -- startup probe seconds before timing out
       timeoutSeconds: 5
+      # -- startup probe seconds trying again
       periodSeconds: 5
+      # -- startup probe times to try and fail before giving up
       failureThreshold: 6
-    # -- liveness probe seconds before timing out
     liveness:
+      # -- liveness probe seconds before timing out
       timeoutSeconds: 5
+      # -- liveness probe seconds trying again
       periodSeconds: 10
 
   # Does not work by default in all cloud providers, disable by default

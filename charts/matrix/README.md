@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 3.0.0](https://img.shields.io/badge/Version-3.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.68.0](https://img.shields.io/badge/AppVersion-1.68.0-informational?style=flat-square)
+![Version: 3.0.0](https://img.shields.io/badge/Version-3.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.88.0](https://img.shields.io/badge/AppVersion-1.88.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -242,11 +242,12 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | synapse.metrics.annotations | bool | `true` |  |
 | synapse.metrics.enabled | bool | `true` | Whether Synapse should capture metrics on an additional endpoint |
 | synapse.metrics.port | int | `9092` | Port to listen on for metrics scraping |
-| synapse.probes.liveness | object | `{"periodSeconds":10,"timeoutSeconds":5}` | liveness probe seconds before timing out |
-| synapse.probes.readiness.periodSeconds | int | `10` |  |
+| synapse.probes.liveness.periodSeconds | int | `10` | liveness probe seconds trying again |
+| synapse.probes.liveness.timeoutSeconds | int | `5` | liveness probe seconds before timing out |
+| synapse.probes.readiness.periodSeconds | int | `10` | readiness probe seconds trying again |
 | synapse.probes.readiness.timeoutSeconds | int | `5` | readiness probe seconds before timing out |
-| synapse.probes.startup.failureThreshold | int | `6` |  |
-| synapse.probes.startup.periodSeconds | int | `5` |  |
+| synapse.probes.startup.failureThreshold | int | `6` | startup probe times to try and fail before giving up |
+| synapse.probes.startup.periodSeconds | int | `5` | startup probe seconds trying again |
 | synapse.probes.startup.timeoutSeconds | int | `5` | startup probe seconds before timing out |
 | synapse.replicaCount | int | `1` |  |
 | synapse.resources | object | `{}` |  |
