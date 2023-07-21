@@ -2,13 +2,13 @@ apiVersion: v2
 name: matrix
 description: A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 icon: "https://dacruz21.github.io/helm-charts/icons/matrix.svg"
-home: "https://github.com/Arkaniad/matrix-chart"
+home: "https://github.com/jessebot/matrix-chart"
 sources:
-  - "https://github.com/Arkaniad/matrix-chart"
+  - "https://github.com/jessebot/matrix-chart"
 
 type: application
 
-version: 2.9.3
+version: 3.0.0
 appVersion: 1.68.0
 
 maintainers:
@@ -18,9 +18,12 @@ maintainers:
   - name: "Rhea Danzey"
     email: "rhea@isomemetric.com"
     url: "https://github.com/Arkaniad/"
+  - name: "Jesse Hitch"
+    email: "jessebot@linux.com"
+    url: "https://github.com/jessebot/"
 
 dependencies:
   - name: postgresql
-    version: 11.6.16
+    version: 12.6.8
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled

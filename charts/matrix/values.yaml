@@ -1,34 +1,30 @@
 # Runtime configuration for Synapse and settings related to the Matrix protocol
 matrix:
   # Manual overrides for homeserver.yaml, the main configuration file for Synapse
-  # If homeserverOverride is set, the entirety of homeserver.yaml will be replaced with the contents.
-  # If homeserverExtra is set, the contents will be appended to the end of the default configuration.
   # It is highly recommended that you take a look at the defaults in templates/synapse/_homeserver.yaml, to get a sense
   # of the requirements and default configuration options to use other services in this chart.
-  # homeserverOverride: {}
-  # homeserverExtra: {}
+  # - If homeserverOverride is set, the entirety of homeserver.yaml will be replaced with the contents.
+  homeserverOverride: {}
+  # - If homeserverExtra is set, the contents will be appended to the end of the default configuration.
+  homeserverExtra: {}
 
-  # Domain name of the server
-  # This is not necessarily the host name where the service is reachable. In fact, you may want to omit any subdomains
-  # from this value as the server name set here will be the name of your homeserver in the fediverse, and will be the
-  # domain name at the end of every user's username
+  # - Domain name of the server: This is not necessarily the host name where the service is reachable. In fact, you may want to omit any subdomains from this value as the server name set here will be the name of your homeserver in the fediverse, and will be the domain name at the end of every user's username
   serverName: "example.com"
 
-  # Enable anonymous telemetry to matrix.org
+  # - Enable anonymous telemetry to matrix.org
   telemetry: false
 
-  # Hostname where Synapse can be reached.
-  # This is *optional* if an Ingress is configured below. If hostname is unspecified, the Synapse hostname of the
-  # Ingress will be used
+  # - Hostname where Synapse can be reached.
+  # This is *optional* if an Ingress is configured below. If hostname is unspecified, the Synapse hostname of the Ingress will be used
   # hostname: "matrix.example.com"
 
-  # Set to false to disable presence (online/offline indicators)
+  # - Set to false to disable presence (online/offline indicators)
   presence: true
 
-  # Set to true to block non-admins from inviting users to any rooms
+  # - Set to true to block non-admins from inviting users to any rooms
   blockNonAdminInvites: false
 
-  # Set to false to disable message searching
+  # - Set to false to disable message searching
   search: true
 
   # Which types of rooms to enable end-to-end encryption on by default
@@ -37,29 +33,29 @@ matrix:
   # all: all rooms
   encryptByDefault: invite
 
-  # Email address of the administrator
+  # - Email address of the administrator
   adminEmail: "admin@example.com"
 
-  # Settings related to image and multimedia uploads
+  # - Settings related to image and multimedia uploads
   uploads:
-    # Max upload size in bytes
+    # - Max upload size in bytes
     maxSize: 10M
 
-    # Max image size in pixels
+    # - Max image size in pixels
     maxPixels: 32M
 
-  # Settings related to federation
+  # - Settings related to federation
   federation:
-    # Set to false to disable federation and run an isolated homeserver
+    # - Set to false to disable federation and run an isolated homeserver
     enabled: true
 
-    # Set to false to disallow members of other homeservers from fetching *public* rooms
+    # - Set to false to disallow members of other homeservers from fetching *public* rooms
     allowPublicRooms: true
 
-    # Whitelist of domains to federate with (comment for all domains except blacklisted)
-    # whitelist: []
+    # - Whitelist of domains to federate with (comment for all domains except blacklisted)
+    whitelist: []
 
-    # IP addresses to blacklist federation requests to
+    # - IP addresses to blacklist federation requests to
     blacklist:
       - '127.0.0.0/8'
       - '10.0.0.0/8'
@@ -71,9 +67,9 @@ matrix:
       - 'fe80::/64'
       - 'fc00::/7'
 
-  # User registration settings
+  # - User registration settings
   registration:
-    # Allow new users to register an account
+    # - Allow new users to register an account
     enabled: false
 
     # If set, allows registration of standard or admin accounts by anyone who
@@ -81,7 +77,7 @@ matrix:
     #
     # sharedSecret: <PRIVATE STRING>
 
-    # Allow users to join rooms as a guest
+    # - Allow users to join rooms as a guest
     allowGuests: false
 
     # Required "3PIDs" - third-party identifiers such as email or msisdn (SMS)
@@ -250,9 +246,22 @@ postgresql:
   # Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure PostgreSQL is available at the hostname below and credentials are configured below
   enabled: true
 
+  # database credentials
   username: matrix
   password: matrix
   database: matrix
+
+  # Name of existing secret to use for PostgreSQL credentials
+  existingSecret: matrix-postgresql
+  # if postgresql.existingSecret is provided, the following are ignored
+  # postgresql.password/username/hostname/database/port
+  secretKeys:
+    databaseHostname: databaseHostname
+    databasePort: databasePort
+    database: database
+    databaseUsername: databaseUser
+    databasePassword: databasePass
+
 
   # Set this if postgresql.enabled = false
   hostname: ""
@@ -280,7 +289,8 @@ postgresql:
 synapse:
   image:
     repository: "matrixdotorg/synapse"
-    tag: v1.22.1
+    # change this to use a different 
+    # tag: 
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
@@ -462,12 +472,11 @@ coturn:
   labels:
     component: coturn
 
-# Settings for email notifications
+# - Settings for email notifications
 mail:
-  # Set to false to disable all email notifications
-  # NOTE: If enabled, either enable the Exim relay or configure an external mail server below
+  # - Set to false to disable all email notifications NOTE: If enabled, either enable the Exim relay or configure an external mail server below
   enabled: true
-  # Name and email address for outgoing mail
+  # - Name and email address for outgoing mail
   from: "Matrix <matrix@example.com>"
   # Optional: Element instance URL.
   # If the ingress is enabled, this is unnecessary.
