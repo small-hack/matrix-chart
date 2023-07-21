@@ -2,9 +2,10 @@ name: Lint
 
 on:
   pull_request:
-    paths:
-    - '/**'
-    - '.github/workflows/ci-helm-workflow.yml'
+    paths-ignore:
+    - 'README.md'
+    - '**/README.md'
+    - '.github/**'
 
 permissions:
   contents: read
@@ -15,16 +16,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: "0"
 
-      - name: Validate schema
-        id: kubeval
+      - name: Install Helm
+        uses: azure/setup-helm@v3.5
+
+      - name: Add dependency chart repos
         run: |
-          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
           helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm plugin install https://github.com/instrumenta/helm-kubeval
-          helm dependency build
-          helm lint
-          helm kubeval .``
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.4.0
+
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
+          if [[ -n "$changed" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run chart-testing (lint)
+        id: lint
+        if: steps.list-changed.outputs.changed == 'true'
+        run: ct lint --target-branch ${{ github.event.repository.default_branch }}
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.8.0
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Run chart-testing (install)
+        id: install
+        if: steps.list-changed.outputs.changed == 'true'
+        run: ct install --target-branch ${{ github.event.repository.default_branch }}
