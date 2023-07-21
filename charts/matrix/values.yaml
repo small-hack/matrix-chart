@@ -67,7 +67,7 @@ matrix:
       - 'fe80::/64'
       - 'fc00::/7'
 
-  # -- User registration settings
+  # User registration settings
   registration:
     # -- Allow new users to register an account
     enabled: false
@@ -85,28 +85,28 @@ matrix:
     #   - email
     #   - msisdn
 
-    # Rooms to automatically join all new users to
+    # -- Rooms to automatically join all new users to
     autoJoinRooms: []
-    # -- "#welcome:example.com"
+    # - "#welcome:example.com"
 
-    # Whether to allow token based registration
+    # -- Whether to allow token based registration
     requiresToken: false
 
   # Settings for the URL preview crawler
   urlPreviews:
-    # Enable URL previews.
+    # -- Enable URL previews.
     # WARNING: Make sure to review the default rules below to ensure that users cannot crawl
     # sensitive internal endpoints in your cluster.
     enabled: false
 
     # Blacklists and whitelists for the URL preview crawler
     rules:
-      # Maximum size of a crawlable page. Keep this low to prevent a DOS vector
+      # -- Maximum size of a crawlable page. Keep this low to prevent a DOS vector
       maxSize: 10M
 
       # Whitelist and blacklist for crawlable IP addresses
       ip:
-        # whitelist:
+        whitelist: []
         blacklist:
           - '127.0.0.0/8'
           - '10.0.0.0/8'
@@ -118,7 +118,7 @@ matrix:
           - 'fe80::/64'
           - 'fc00::/7'
 
-      # Whitelist and blacklist based on URL pattern matching
+      # -- Whitelist and blacklist based on URL pattern matching
       url: {}
         # whitelist:
         # blacklist:
@@ -139,7 +139,7 @@ matrix:
         #  # blacklist any URL with a literal IPv4 address
         #  - netloc: '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
 
-  # How long to keep redacted events in unredacted form in the database
+  # -- How long to keep redacted events in unredacted form in the database
   retentionPeriod: 7d
 
   security:
@@ -260,14 +260,19 @@ postgresql:
 
   # -- Name of existing secret to use for PostgreSQL credentials
   existingSecret: ""
-  # -- secretKeys to grab from existingSecret
+  # secretKeys to grab from existingSecret
   # if postgresql.existingSecret is provided, the following are ignored
   # postgresql.password/username/hostname/database/port
   secretKeys:
+    # -- key in existingSecret with hostname of the database
     databaseHostname: databaseHostname
+    # -- key in existingSecret with port of the database
     databasePort: databasePort
+    # -- key in existingSecret with name of the database
     database: database
+    # -- key in existingSecret with username for matrix to connect to database
     databaseUsername: databaseUsername
+    # -- key in existingSecret with password for matrix to connect to database
     databasePassword: databasePassword
 
   # -- Whether to connect to the database over SSL

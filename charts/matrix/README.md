@@ -190,10 +190,11 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | matrix.logging.sqlLogLevel | string | `"WARNING"` |  |
 | matrix.logging.synapseLogLevel | string | `"WARNING"` |  |
 | matrix.presence | bool | `true` | Set to false to disable presence (online/offline indicators) |
-| matrix.registration | object | `{"allowGuests":false,"autoJoinRooms":[],"enabled":false,"requiresToken":false}` | User registration settings |
 | matrix.registration.allowGuests | bool | `false` | Allow users to join rooms as a guest |
+| matrix.registration.autoJoinRooms | list | `[]` | Rooms to automatically join all new users to |
 | matrix.registration.enabled | bool | `false` | Allow new users to register an account |
-| matrix.retentionPeriod | string | `"7d"` |  |
+| matrix.registration.requiresToken | bool | `false` | Whether to allow token based registration |
+| matrix.retentionPeriod | string | `"7d"` | How long to keep redacted events in unredacted form in the database |
 | matrix.search | bool | `true` | Set to false to disable message searching |
 | matrix.security.surpressKeyServerWarning | bool | `true` |  |
 | matrix.serverName | string | `"example.com"` | Domain name of the server: This is not necessarily the host name where the service is reachable. In fact, you may want to omit any subdomains from this value as the server name set here will be the name of your homeserver in the fediverse, and will be the domain name at the end of every user's username |
@@ -201,7 +202,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | matrix.uploads | object | `{"maxPixels":"32M","maxSize":"10M"}` | Settings related to image and multimedia uploads |
 | matrix.uploads.maxPixels | string | `"32M"` | Max image size in pixels |
 | matrix.uploads.maxSize | string | `"10M"` | Max upload size in bytes |
-| matrix.urlPreviews.enabled | bool | `false` |  |
+| matrix.urlPreviews.enabled | bool | `false` | Enable URL previews. WARNING: Make sure to review the default rules below to ensure that users cannot crawl sensitive internal endpoints in your cluster. |
 | matrix.urlPreviews.rules.ip.blacklist[0] | string | `"127.0.0.0/8"` |  |
 | matrix.urlPreviews.rules.ip.blacklist[1] | string | `"10.0.0.0/8"` |  |
 | matrix.urlPreviews.rules.ip.blacklist[2] | string | `"172.16.0.0/12"` |  |
@@ -211,8 +212,9 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | matrix.urlPreviews.rules.ip.blacklist[6] | string | `"::1/128"` |  |
 | matrix.urlPreviews.rules.ip.blacklist[7] | string | `"fe80::/64"` |  |
 | matrix.urlPreviews.rules.ip.blacklist[8] | string | `"fc00::/7"` |  |
-| matrix.urlPreviews.rules.maxSize | string | `"10M"` |  |
-| matrix.urlPreviews.rules.url | object | `{}` |  |
+| matrix.urlPreviews.rules.ip.whitelist | list | `[]` |  |
+| matrix.urlPreviews.rules.maxSize | string | `"10M"` | Maximum size of a crawlable page. Keep this low to prevent a DOS vector |
+| matrix.urlPreviews.rules.url | object | `{}` | Whitelist and blacklist based on URL pattern matching |
 | nameOverride | string | `""` |  |
 | networkPolicies.enabled | bool | `true` |  |
 | postgresql.database | string | `"matrix"` | name of database to use for matrix |
@@ -224,7 +226,11 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | postgresql.persistence | object | `{"size":"8Gi"}` | persistent volume claim configuration for postgresql to persist data |
 | postgresql.persistence.size | string | `"8Gi"` | size of postgresql volume claim |
 | postgresql.port | int | `5432` | which port to use to connect to your database server |
-| postgresql.secretKeys | object | `{"database":"database","databaseHostname":"databaseHostname","databasePassword":"databasePassword","databasePort":"databasePort","databaseUsername":"databaseUsername"}` | secretKeys to grab from existingSecret if postgresql.existingSecret is provided, the following are ignored postgresql.password/username/hostname/database/port |
+| postgresql.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
+| postgresql.secretKeys.databaseHostname | string | `"databaseHostname"` | key in existingSecret with hostname of the database |
+| postgresql.secretKeys.databasePassword | string | `"databasePassword"` | key in existingSecret with password for matrix to connect to database |
+| postgresql.secretKeys.databasePort | string | `"databasePort"` | key in existingSecret with port of the database |
+| postgresql.secretKeys.databaseUsername | string | `"databaseUsername"` | key in existingSecret with username for matrix to connect to database |
 | postgresql.securityContext.enabled | bool | `true` |  |
 | postgresql.securityContext.fsGroup | int | `1000` |  |
 | postgresql.securityContext.runAsUser | int | `1000` |  |
