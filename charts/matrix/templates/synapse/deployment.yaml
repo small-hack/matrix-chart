@@ -40,7 +40,6 @@ spec:
         {{- if .Values.synapse.securityContext.runAsNonRoot }}
         runAsNonRoot: {{ .Values.synapse.securityContext.runAsNonRoot }}
         {{- end }}
-      # generate signing key only on fresh install
       initContainers:
         - name: add-secret-values-to-config
           image: "linuxserver/yq:latest"
@@ -71,14 +70,23 @@ spec:
                 secretKeyRef:
                   name: {{ include "matrix.postgresql.secretName" . }}
                   key: {{ .Values.postgresql.secretKeys.databasePassword }}
-          command: ["yq"]
-          args:
-            - "--help"
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              cp {{ .Values.matrix.serverName }}.log.config /data/ && \
+              cp /initial/homeserver.yaml /data/homeserver.yaml && \
+              yq eval '.database.args.host = env(DATABASE_HOSTNAME)' --inplace /data/homeserver.yaml && \
+              yq eval '.database.args.port = env(DATABASE_PORT)' --inplace /data/homeserver.yaml && \
+              yq eval '.database.args.database = env(DATABASE)' --inplace /data/homeserver.yaml && \
+              yq eval '.database.args.user = env(DATABASE_USERNAME)' --inplace /data/homeserver.yaml && \
+              yq eval '.database.args.password = env(DATABASE_PASSWORD)' --inplace /data/homeserver.yaml
           volumeMounts:
             - name: synapse-initial-config
               mountPath: /initial
             - name: synapse-config
               mountPath: /data
+      # generate signing key only on fresh install
       {{- if .Release.IsInstall }}
         - name: generate-signing-key
           image: "{{ .Values.synapse.image.repository }}:{{ .Values.synapse.image.tag }}"
@@ -180,7 +188,10 @@ spec:
       volumes:
         - name: synapse-initial-config
           configMap:
-            name: {{ include "matrix.fullname" . }}-synapse-config
+            name: {{ include "matrix.fullname" . }}-initial-synapse-config
+        - name: synapse-config
+          persistentVolumeClaim:
+            claimName: {{ include "matrix.fullname" . }}-synapse-config
         - name: signing-key
           persistentVolumeClaim:
             claimName: {{ include "matrix.fullname" . }}-signing-key
