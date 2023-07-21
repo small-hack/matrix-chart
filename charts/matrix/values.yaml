@@ -215,16 +215,19 @@ matrix:
 volumes:
   # Uploaded attachments/multimedia
   media:
-    # Capacity of the media persistent volume claim
+    # -- Capacity of the media persistent volume claim - ignored if using exsitingClaim
     capacity: 10Gi
-    # Storage class (optional)
+    # -- Storage class of the media PVC (optional) - ignored if using exsitingClaim
     storageClass: ""
+    # -- name of an existing persistent volume to use for uploaded attachments and multimedia
+    existingClaim: ""
   signingKey:
-    # Capacity of the signing key PVC
-    # Note: 1Mi is more than enough, but some cloud providers set a minimum PVC size of 1Mi or 1Gi, adjust as necessary
+    # -- Capacity of the signing key PVC. Note: 1Mi is more than enough, but some cloud providers set a minimum PVC size of 1Mi or 1Gi, adjust as necessary
     capacity: 1Mi
-    # Storage class (optional)
+    # -- Storage class (optional)
     storageClass: ""
+    # -- name of an existing persistent volume to use for signing key
+    existingClaim: ""
 
 ingress:
   enabled: true
@@ -726,15 +729,17 @@ bridges:
   # the ReadWriteMany access mode (see below)
   affinity: false
   volume:
-    # Capacity of the shared volume for storing bridge/appservice registration files
+    # -- Capacity of the shared volume for storing bridge/appservice registration files
     # Note: 1Mi should be enough but some cloud providers may set a minimum PVC size of 1Gi, adjust as necessary
     capacity: 1Mi
-    # Storage class (optional)
+    # -- Storage class (optional)
     storageClass: ""
-    # Access mode of the shared volume. ReadWriteMany is recommended to allow bridges to be scheduled on separate nodes.
+    # -- Access mode of the shared volume. ReadWriteMany is recommended to allow bridges to be scheduled on separate nodes.
     # Some cloud providers may not allow the ReadWriteMany access mode. In that case, change this to ReadWriteOnce -AND-
     # set bridges.affinity (above) to true
     accessMode: ReadWriteMany
+    # -- existing PVC claim to use for bridges
+    existingClaim: ""
 
 imagePullSecrets: []
 nameOverride: ""

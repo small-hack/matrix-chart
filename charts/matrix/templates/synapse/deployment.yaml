@@ -194,14 +194,26 @@ spec:
             claimName: {{ include "matrix.fullname" . }}-synapse-config
         - name: signing-key
           persistentVolumeClaim:
+            {{- if not .Values.volumes.signingKey.existingClaim }}
             claimName: {{ include "matrix.fullname" . }}-signing-key
+            {{ else }}
+            claimName: {{ .Values.volumes.signingKey.existingClaim }}
+            {{- end }}
         - name: media-store
           persistentVolumeClaim:
+            {{- if not .Values.volumes.media.existingClaim }}
             claimName: {{ include "matrix.fullname" . }}-media-store
+            {{ else }}
+            claimName: {{ .Values.volumes.media.existingClaim }}
+            {{- end }}
         {{- if or .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.irc.enabled }}
         - name: bridges
           persistentVolumeClaim:
+            {{- if not .Values.bridges.volume.existingClaim }}
             claimName: {{ include "matrix.fullname" . }}-bridges
+            {{ else }}
+            claimName: {{ .Values.bridges.volume.existingClaim }}
+            {{- end }}
         {{- end }}
         # Ephemeral in-progress uploads
         - name: uploads
