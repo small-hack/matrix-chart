@@ -27,6 +27,10 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Add dependency chart repos
+        run: |
+          helm dep update charts/matrix
+
       - name: Run chart-releaser
         id: helm-release
         uses: helm/chart-releaser-action@v1.5.0

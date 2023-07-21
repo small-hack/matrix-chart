@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 3.0.0](https://img.shields.io/badge/Version-3.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.88.0](https://img.shields.io/badge/AppVersion-1.88.0-informational?style=flat-square)
+![Version: 3.0.1](https://img.shields.io/badge/Version-3.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.88.0](https://img.shields.io/badge/AppVersion-1.88.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -22,7 +22,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | postgresql | 12.6.8 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql | 12.6.8 |
 
 ## Values
 
