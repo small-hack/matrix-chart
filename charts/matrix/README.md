@@ -108,22 +108,18 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | coturn.service.type | string | `"ClusterIP"` |  |
 | coturn.sharedSecret | string | `""` |  |
 | coturn.uris | list | `[]` |  |
-| element.branding.authFooterLinks | list | `[]` |  |
-| element.branding.authHeaderLogoUrl | string | `""` |  |
-| element.branding.brand | string | `"Element"` |  |
-| element.branding.welcomeBackgroundUrl | string | `""` |  |
-| element.enabled | bool | `true` |  |
+| element.branding.authFooterLinks | list | `[]` | Array of links to show at the bottom of the login screen |
+| element.branding.authHeaderLogoUrl | string | `""` | Logo shown at top of login screen |
+| element.branding.brand | string | `"Element"` | brand shown in email notifications |
+| element.branding.welcomeBackgroundUrl | string | `""` | Background of login splash screen |
+| element.enabled | bool | `true` | Set to false to disable a deployment of Element. Users will still be able to connect via any other instances of Element (such as https://app.element.io), Element Desktop, or any other Matrix clients |
 | element.image.pullPolicy | string | `"IfNotPresent"` |  |
 | element.image.repository | string | `"vectorim/element-web"` |  |
 | element.image.tag | string | `"v1.7.12"` |  |
-| element.integrations.api | string | `"https://scalar.vector.im/api"` |  |
-| element.integrations.enabled | bool | `true` |  |
-| element.integrations.ui | string | `"https://scalar.vector.im/"` |  |
-| element.integrations.widgets[0] | string | `"https://scalar.vector.im/_matrix/integrations/v1"` |  |
-| element.integrations.widgets[1] | string | `"https://scalar.vector.im/api"` |  |
-| element.integrations.widgets[2] | string | `"https://scalar-staging.vector.im/_matrix/integrations/v1"` |  |
-| element.integrations.widgets[3] | string | `"https://scalar-staging.vector.im/api"` |  |
-| element.integrations.widgets[4] | string | `"https://scalar-staging.element.im/scalar/api"` |  |
+| element.integrations.api | string | `"https://scalar.vector.im/api"` | API for the integration server |
+| element.integrations.enabled | bool | `true` | Set to false to disable the Integrations menu (including widgets, bots, and other plugins to Element) |
+| element.integrations.ui | string | `"https://scalar.vector.im/"` | UI to load when a user selects the Integrations button at the top-right of a room |
+| element.integrations.widgets | list | `["https://scalar.vector.im/_matrix/integrations/v1","https://scalar.vector.im/api","https://scalar-staging.vector.im/_matrix/integrations/v1","https://scalar-staging.vector.im/api","https://scalar-staging.element.im/scalar/api"]` | Array of API paths providing widgets |
 | element.labels.component | string | `"element"` |  |
 | element.labs[0] | string | `"feature_new_spinner"` |  |
 | element.labs[10] | string | `"feature_custom_themes"` |  |
@@ -136,16 +132,16 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | element.labs[7] | string | `"feature_dm_verification"` |  |
 | element.labs[8] | string | `"feature_bridge_state"` |  |
 | element.labs[9] | string | `"feature_presence_in_room_list"` |  |
-| element.permalinkPrefix | string | `"https://matrix.to"` |  |
+| element.permalinkPrefix | string | `"https://matrix.to"` | Prefix before permalinks generated when users share links to rooms, users, or messages. If running an unfederated Synapse, set the below to the URL of your Element instance. |
 | element.probes.liveness | object | `{}` |  |
 | element.probes.readiness | object | `{}` |  |
 | element.probes.startup | object | `{}` |  |
 | element.replicaCount | int | `1` |  |
 | element.resources | object | `{}` |  |
-| element.roomDirectoryServers[0] | string | `"matrix.org"` |  |
+| element.roomDirectoryServers | list | `["matrix.org"]` | Servers to show in the Explore menu (the current server is always shown) |
 | element.service.port | int | `80` |  |
 | element.service.type | string | `"ClusterIP"` |  |
-| element.welcomeUserId | string | `""` |  |
+| element.welcomeUserId | string | `""` | Set to the user ID (@username:domain.tld) of a bot to invite all new users to a DM with the bot upon registration |
 | fullnameOverride | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` |  |
@@ -239,30 +235,30 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | postgresql.username | string | `"matrix"` | username of matrix postgres user |
 | synapse.extraVolumeMounts | list | `[]` |  |
 | synapse.extraVolumes | list | `[]` |  |
-| synapse.image.pullPolicy | string | `"IfNotPresent"` |  |
-| synapse.image.repository | string | `"matrixdotorg/synapse"` |  |
-| synapse.labels.component | string | `"synapse"` |  |
+| synapse.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy for synapse image, set to Always if using synapse.image.tag: latest |
+| synapse.image.repository | string | `"matrixdotorg/synapse"` | image registry and repository to use for synapse |
+| synapse.image.tag | string | `"{{ .Chart.AppVersion }}"` | tag of synapse docker image to use. change this to latest to grab the cutting-edge release of synapse |
+| synapse.labels | object | `{"component":"synapse"}` | Labels to be appended to all Synapse resources |
 | synapse.metrics.annotations | bool | `true` |  |
-| synapse.metrics.enabled | bool | `true` |  |
-| synapse.metrics.port | int | `9092` |  |
-| synapse.probes.liveness.periodSeconds | int | `10` |  |
-| synapse.probes.liveness.timeoutSeconds | int | `5` |  |
+| synapse.metrics.enabled | bool | `true` | Whether Synapse should capture metrics on an additional endpoint |
+| synapse.metrics.port | int | `9092` | Port to listen on for metrics scraping |
+| synapse.probes.liveness | object | `{"periodSeconds":10,"timeoutSeconds":5}` | liveness probe seconds before timing out |
 | synapse.probes.readiness.periodSeconds | int | `10` |  |
-| synapse.probes.readiness.timeoutSeconds | int | `5` |  |
+| synapse.probes.readiness.timeoutSeconds | int | `5` | readiness probe seconds before timing out |
 | synapse.probes.startup.failureThreshold | int | `6` |  |
 | synapse.probes.startup.periodSeconds | int | `5` |  |
-| synapse.probes.startup.timeoutSeconds | int | `5` |  |
+| synapse.probes.startup.timeoutSeconds | int | `5` | startup probe seconds before timing out |
 | synapse.replicaCount | int | `1` |  |
 | synapse.resources | object | `{}` |  |
-| synapse.securityContext.env | bool | `false` |  |
+| synapse.securityContext.env | bool | `false` | Enable if your k8s environment allows containers to chuser/setuid https://github.com/matrix-org/synapse/blob/96cf81e312407f0caba1b45ba9899906b1dcc098/docker/start.py#L196 |
 | synapse.securityContext.fsGroup | int | `1000` |  |
-| synapse.securityContext.runAsGroup | int | `1000` |  |
+| synapse.securityContext.runAsGroup | int | `1000` | group to run the synapse container as |
 | synapse.securityContext.runAsNonRoot | bool | `true` |  |
-| synapse.securityContext.runAsUser | int | `1000` |  |
+| synapse.securityContext.runAsUser | int | `1000` | user to run the synapse container as |
 | synapse.service.federation.port | int | `80` |  |
 | synapse.service.federation.type | string | `"ClusterIP"` |  |
-| synapse.service.port | int | `80` |  |
-| synapse.service.type | string | `"ClusterIP"` |  |
+| synapse.service.port | int | `80` | service port for synapse |
+| synapse.service.type | string | `"ClusterIP"` | service type for synpase |
 | volumes.media.capacity | string | `"10Gi"` |  |
 | volumes.media.storageClass | string | `""` |  |
 | volumes.signingKey.capacity | string | `"1Mi"` |  |

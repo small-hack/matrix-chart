@@ -297,12 +297,16 @@ postgresql:
 # Synapse Kubernetes resource settings
 synapse:
   image:
+    # -- image registry and repository to use for synapse
     repository: "matrixdotorg/synapse"
-    # change this to use a different 
-    # tag: 
+    # -- tag of synapse docker image to use. change this to latest to grab the cutting-edge release of synapse
+    tag: "{{ .Chart.AppVersion }}"
+    # -- pullPolicy for synapse image, set to Always if using synapse.image.tag: latest
     pullPolicy: IfNotPresent
   service:
+    # -- service type for synpase
     type: ClusterIP
+    # -- service port for synapse
     port: 80
     federation:
       type: ClusterIP
@@ -312,37 +316,42 @@ synapse:
   # Configure timings for readiness, startup, and liveness probes here
   probes:
     readiness:
+      # -- readiness probe seconds before timing out
       timeoutSeconds: 5
       periodSeconds: 10
     startup:
+      # -- startup probe seconds before timing out
       timeoutSeconds: 5
       periodSeconds: 5
       failureThreshold: 6
+    # -- liveness probe seconds before timing out
     liveness:
       timeoutSeconds: 5
       periodSeconds: 10
 
   # Does not work by default in all cloud providers, disable by default
   securityContext:
+    # -- user to run the synapse container as
     runAsUser: 1000
+    # -- group to run the synapse container as
     runAsGroup: 1000
     fsGroup: 1000
     runAsNonRoot: true
 
-    # Enable if your k8s environment allows containers to chuser/setuid
+    # -- Enable if your k8s environment allows containers to chuser/setuid
     # https://github.com/matrix-org/synapse/blob/96cf81e312407f0caba1b45ba9899906b1dcc098/docker/start.py#L196
     env: false
 
-  # Labels to be appended to all Synapse resources
+  # -- Labels to be appended to all Synapse resources
   labels:
     component: synapse
   
   # Prometheus metrics for Synapse
   # https://github.com/matrix-org/synapse/blob/master/docs/metrics-howto.md
   metrics:
-    # Whether Synapse should capture metrics on an additional endpoint
+    # -- Whether Synapse should capture metrics on an additional endpoint
     enabled: true
-    # Port to listen on for metrics scraping
+    # -- Port to listen on for metrics scraping
     port: 9092
     annotations: true
 
@@ -353,31 +362,31 @@ synapse:
 
 # Element Web (formerly Riot Web) client configuration
 element:
-  # Set to false to disable a deployment of Element. Users will still be able to connect via any other instances of Element (such as https://app.element.io), Element Desktop, or any other Matrix clients
+  # -- Set to false to disable a deployment of Element. Users will still be able to connect via any other instances of Element (such as https://app.element.io), Element Desktop, or any other Matrix clients
   enabled: true
 
   # Organization/enterprise branding
   branding:
-    # Shown in email notifications
+    # -- brand shown in email notifications
     brand: "Element"
-    # Background of login splash screen
+    # -- Background of login splash screen
     welcomeBackgroundUrl: ""
-    # Logo shown at top of login screen
+    # -- Logo shown at top of login screen
     authHeaderLogoUrl: ""
-    # Array of links to show at the bottom of the login screen
+    # -- Array of links to show at the bottom of the login screen
     authFooterLinks: []
 #      - text:
 #        url:
 
   # Element integrations configuration
   integrations:
-    # Set to false to disable the Integrations menu (including widgets, bots, and other plugins to Element)
+    # -- Set to false to disable the Integrations menu (including widgets, bots, and other plugins to Element)
     enabled: true
-    # UI to load when a user selects the Integrations button at the top-right of a room
+    # -- UI to load when a user selects the Integrations button at the top-right of a room
     ui: "https://scalar.vector.im/"
-    # API for the integration server
+    # -- API for the integration server
     api: "https://scalar.vector.im/api"
-    # Array of API paths providing widgets
+    # -- Array of API paths providing widgets
     widgets:
       - "https://scalar.vector.im/_matrix/integrations/v1"
       - "https://scalar.vector.im/api"
@@ -399,14 +408,14 @@ element:
     - feature_presence_in_room_list
     - feature_custom_themes
 
-  # Servers to show in the Explore menu (the current server is always shown)
+  # -- Servers to show in the Explore menu (the current server is always shown)
   roomDirectoryServers:
     - matrix.org
 
-  # Set to the user ID (@username:domain.tld) of a bot to invite all new users to a DM with the bot upon registration
+  # -- Set to the user ID (@username:domain.tld) of a bot to invite all new users to a DM with the bot upon registration
   welcomeUserId: ""
 
-  # Prefix before permalinks generated when users share links to rooms, users, or messages. If running an unfederated Synapse, set the below to the URL of your Element instance.
+  # -- Prefix before permalinks generated when users share links to rooms, users, or messages. If running an unfederated Synapse, set the below to the URL of your Element instance.
   permalinkPrefix: "https://matrix.to"
 
   # Element Kubernetes resource settings
