@@ -67,7 +67,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | bridges.irc.service.type | string | `"ClusterIP"` |  |
 | bridges.volume.accessMode | string | `"ReadWriteMany"` | Access mode of the shared volume. ReadWriteMany is recommended to allow bridges to be scheduled on separate nodes. Some cloud providers may not allow the ReadWriteMany access mode. In that case, change this to ReadWriteOnce -AND- set bridges.affinity (above) to true |
 | bridges.volume.capacity | string | `"1Mi"` | Capacity of the shared volume for storing bridge/appservice registration files Note: 1Mi should be enough but some cloud providers may set a minimum PVC size of 1Gi, adjust as necessary |
-| bridges.volume.existingClaim | string | `""` | existing PVC claim to use for bridges |
+| bridges.volume.existingClaim | string | `""` | name of an existing persistent volume claim to use for bridges |
 | bridges.volume.storageClass | string | `""` | Storage class (optional) |
 | bridges.whatsapp.bot.avatar | string | `"mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"` |  |
 | bridges.whatsapp.bot.displayName | string | `"WhatsApp bridge bot"` |  |
@@ -262,10 +262,10 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | synapse.service.port | int | `80` | service port for synapse |
 | synapse.service.type | string | `"ClusterIP"` | service type for synpase |
 | volumes.media.capacity | string | `"10Gi"` | Capacity of the media persistent volume claim - ignored if using exsitingClaim |
-| volumes.media.existingClaim | string | `""` | name of an existing persistent volume to use for uploaded attachments and multimedia |
+| volumes.media.existingClaim | string | `""` | name of an existing persistent volume claim to use for uploaded attachments and multimedia |
 | volumes.media.storageClass | string | `""` | Storage class of the media PVC (optional) - ignored if using exsitingClaim |
 | volumes.signingKey.capacity | string | `"1Mi"` | Capacity of the signing key PVC. Note: 1Mi is more than enough, but some cloud providers set a minimum PVC size of 1Mi or 1Gi, adjust as necessary |
-| volumes.signingKey.existingClaim | string | `""` | name of an existing persistent volume to use for signing key |
+| volumes.signingKey.existingClaim | string | `""` | name of an existing persistent volume claim to use for signing key |
 | volumes.signingKey.storageClass | string | `""` | Storage class (optional) |
 
 ----------------------------------------------

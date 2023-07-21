@@ -219,14 +219,14 @@ volumes:
     capacity: 10Gi
     # -- Storage class of the media PVC (optional) - ignored if using exsitingClaim
     storageClass: ""
-    # -- name of an existing persistent volume to use for uploaded attachments and multimedia
+    # -- name of an existing persistent volume claim to use for uploaded attachments and multimedia
     existingClaim: ""
   signingKey:
     # -- Capacity of the signing key PVC. Note: 1Mi is more than enough, but some cloud providers set a minimum PVC size of 1Mi or 1Gi, adjust as necessary
     capacity: 1Mi
     # -- Storage class (optional)
     storageClass: ""
-    # -- name of an existing persistent volume to use for signing key
+    # -- name of an existing persistent volume claim to use for signing key
     existingClaim: ""
 
 ingress:
@@ -738,7 +738,7 @@ bridges:
     # Some cloud providers may not allow the ReadWriteMany access mode. In that case, change this to ReadWriteOnce -AND-
     # set bridges.affinity (above) to true
     accessMode: ReadWriteMany
-    # -- existing PVC claim to use for bridges
+    # -- name of an existing persistent volume claim to use for bridges
     existingClaim: ""
 
 imagePullSecrets: []
