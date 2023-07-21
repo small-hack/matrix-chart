@@ -1,18 +1,18 @@
 # Matrix Chart
 
-A Helm chart for deploying a Matrix homeserver stack in Kubernetes.
+A Helm chart for deploying a Matrix homeserver stack in Kubernetes. This is a fork of [Arkaniad/matrix-chart](https://github.com/Arkaniad/matrix-chart), which is a fork of [typokign/matrix-chart](https://github.com/typokign/matrix-chart).
 
 ## Features
 
-- Latest version of Synapse
-- (Optional) Latest version of Riot Web
+- Latest version of [Synapse](https://github.com/matrix-org/synapse)
+- (Optional) Latest version of [Element](https://element.io/)
 - (Optional) Choice of lightweight Exim relay or external mail server for email notifications
 - (Optional) Coturn TURN server for VoIP calls
 - (Optional) PostgreSQL cluster via the Bitnami postgresql chart
 - (Optional) [matrix-org/matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) IRC bridge
 - (Optional) [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge
 - (Optional) [Half-Shot/matrix-appservice-discord](https://github.com/Half-Shot/matrix-appservice-discord) Discord bridge
-- Ingress definition for federated Synapse and Riot
+- Ingress definition for federated Synapse and Element
 
 ## Installation
 

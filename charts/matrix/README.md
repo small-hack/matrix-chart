@@ -50,19 +50,19 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | bridges.discord.typingNotifications | bool | `true` |  |
 | bridges.discord.users.nickname | string | `":nick"` |  |
 | bridges.discord.users.username | string | `":username#:tag"` |  |
-| bridges.irc.data.capacity | string | `"1Mi"` |  |
-| bridges.irc.database | string | `"matrix_irc"` |  |
+| bridges.irc.data.capacity | string | `"1Mi"` | Size of the data PVC to allocate |
+| bridges.irc.database | string | `"matrix_irc"` | Name of Postgres database to store IRC bridge data in, this database will be created if the included Postgres chart is enabled, otherwise you must create it manually |
 | bridges.irc.databaseSslVerify | bool | `true` |  |
-| bridges.irc.enabled | bool | `false` |  |
+| bridges.irc.enabled | bool | `false` | Set to true to enable the IRC bridge |
 | bridges.irc.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bridges.irc.image.repository | string | `"matrixdotorg/matrix-appservice-irc"` |  |
-| bridges.irc.image.tag | string | `"release-0.22.0-rc1"` |  |
-| bridges.irc.presence | bool | `false` |  |
+| bridges.irc.image.tag | string | `"release-1.0.0"` |  |
+| bridges.irc.presence | bool | `false` | Whether to enable presence (online/offline indicators). If presence is disabled for the homeserver (above), it should be disabled here too |
 | bridges.irc.replicaCount | int | `1` |  |
 | bridges.irc.resources | object | `{}` |  |
-| bridges.irc.servers."chat.freenode.net".name | string | `"Freenode"` |  |
-| bridges.irc.servers."chat.freenode.net".port | int | `6697` |  |
-| bridges.irc.servers."chat.freenode.net".ssl | bool | `true` |  |
+| bridges.irc.servers."chat.freenode.net".name | string | `"Freenode"` | A human-readable short name. |
+| bridges.irc.servers."chat.freenode.net".port | int | `6697` | The port to connect to. Optional. |
+| bridges.irc.servers."chat.freenode.net".ssl | bool | `true` | Whether to use SSL or not. Default: false. |
 | bridges.irc.service.port | int | `9006` |  |
 | bridges.irc.service.type | string | `"ClusterIP"` |  |
 | bridges.volume.accessMode | string | `"ReadWriteMany"` | Access mode of the shared volume. ReadWriteMany is recommended to allow bridges to be scheduled on separate nodes. Some cloud providers may not allow the ReadWriteMany access mode. In that case, change this to ReadWriteOnce -AND- set bridges.affinity (above) to true |
@@ -95,33 +95,32 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | bridges.whatsapp.service.type | string | `"ClusterIP"` |  |
 | bridges.whatsapp.users.displayName | string | `"{{if .Notify}}{{.Notify}}{{else}}{{.Jid}}{{end}} (WA)"` |  |
 | bridges.whatsapp.users.username | string | `"whatsapp_{{.}}"` |  |
-| coturn.allowGuests | bool | `true` |  |
-| coturn.enabled | bool | `true` |  |
+| coturn.allowGuests | bool | `true` | Whether to allow guests to use the TURN server |
+| coturn.enabled | bool | `true` | Set to false to disable the included deployment of Coturn |
 | coturn.image.pullPolicy | string | `"IfNotPresent"` |  |
-| coturn.image.repository | string | `"instrumentisto/coturn"` |  |
-| coturn.image.tag | string | `"4.5.1.3"` |  |
+| coturn.image.repository | string | `"coturn/coturn"` |  |
+| coturn.image.tag | string | `"4.6.2"` |  |
 | coturn.kind | string | `"DaemonSet"` |  |
-| coturn.labels.component | string | `"coturn"` |  |
-| coturn.ports.from | int | `49152` |  |
-| coturn.ports.to | int | `49172` |  |
+| coturn.labels | object | `{"component":"coturn"}` | Coturn specific labels |
+| coturn.ports | object | `{"from":3478,"to":3478}` | UDP port range for TURN connections |
 | coturn.replicaCount | int | `1` |  |
 | coturn.resources | object | `{}` |  |
 | coturn.service.type | string | `"ClusterIP"` |  |
-| coturn.sharedSecret | string | `""` |  |
+| coturn.sharedSecret | string | `""` | Shared secret for communication between Synapse and Coturn. Optional, will be auto-generated if not overridden here. |
 | coturn.uris | list | `[]` |  |
 | element.branding.authFooterLinks | list | `[]` | Array of links to show at the bottom of the login screen |
 | element.branding.authHeaderLogoUrl | string | `""` | Logo shown at top of login screen |
 | element.branding.brand | string | `"Element"` | brand shown in email notifications |
 | element.branding.welcomeBackgroundUrl | string | `""` | Background of login splash screen |
 | element.enabled | bool | `true` | Set to false to disable a deployment of Element. Users will still be able to connect via any other instances of Element (such as https://app.element.io), Element Desktop, or any other Matrix clients |
-| element.image.pullPolicy | string | `"IfNotPresent"` |  |
-| element.image.repository | string | `"vectorim/element-web"` |  |
-| element.image.tag | string | `"v1.7.12"` |  |
+| element.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy to use for element docker image, set to Always if using latest tag |
+| element.image.repository | string | `"vectorim/element-web"` | registry and repository to use for element docker image |
+| element.image.tag | string | `"v1.11.36"` | tag to use for element docker image |
 | element.integrations.api | string | `"https://scalar.vector.im/api"` | API for the integration server |
 | element.integrations.enabled | bool | `true` | Set to false to disable the Integrations menu (including widgets, bots, and other plugins to Element) |
 | element.integrations.ui | string | `"https://scalar.vector.im/"` | UI to load when a user selects the Integrations button at the top-right of a room |
 | element.integrations.widgets | list | `["https://scalar.vector.im/_matrix/integrations/v1","https://scalar.vector.im/api","https://scalar-staging.vector.im/_matrix/integrations/v1","https://scalar-staging.vector.im/api","https://scalar-staging.element.im/scalar/api"]` | Array of API paths providing widgets |
-| element.labels.component | string | `"element"` |  |
+| element.labels | object | `{"component":"element"}` | Element specific labels |
 | element.labs[0] | string | `"feature_new_spinner"` |  |
 | element.labs[10] | string | `"feature_custom_themes"` |  |
 | element.labs[1] | string | `"feature_pinning"` |  |
@@ -152,15 +151,15 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | ingress.hosts.federation | string | `"matrix-fed.chart-example.local"` |  |
 | ingress.hosts.synapse | string | `"matrix.chart-example.local"` |  |
 | ingress.tls | list | `[]` |  |
-| mail.elementUrl | string | `""` |  |
+| mail.elementUrl | string | `""` | Optional: Element instance URL. If the ingress is enabled, this is unnecessary. If the ingress is disabled and this is left unspecified, emails will contain a link to https://app.element.io |
 | mail.enabled | bool | `false` | disabled all email notifications by default. NOTE: If enabled, either enable the Exim relay or configure an external mail server below |
-| mail.external.host | string | `""` |  |
-| mail.external.password | string | `""` |  |
-| mail.external.port | int | `25` |  |
+| mail.external.host | string | `""` | External mail server hostname |
+| mail.external.password | string | `""` | External mail server password |
+| mail.external.port | int | `25` | External mail server port |
 | mail.external.requireTransportSecurity | bool | `true` |  |
-| mail.external.username | string | `""` |  |
+| mail.external.username | string | `""` | External mail server username |
 | mail.from | string | `"Matrix <matrix@example.com>"` | Name and email address for outgoing mail |
-| mail.relay.enabled | bool | `true` |  |
+| mail.relay.enabled | bool | `true` | whether to enable exim relay or not |
 | mail.relay.image.pullPolicy | string | `"IfNotPresent"` |  |
 | mail.relay.image.repository | string | `"devture/exim-relay"` |  |
 | mail.relay.image.tag | string | `"4.93.1-r0"` |  |
