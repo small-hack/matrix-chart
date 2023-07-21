@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 3.1.0](https://img.shields.io/badge/Version-3.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.88.0](https://img.shields.io/badge/AppVersion-1.88.0-informational?style=flat-square)
+![Version: 3.1.1](https://img.shields.io/badge/Version-3.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.88.0](https://img.shields.io/badge/AppVersion-1.88.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -162,7 +162,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | mail.relay.enabled | bool | `true` | whether to enable exim relay or not |
 | mail.relay.image.pullPolicy | string | `"IfNotPresent"` |  |
 | mail.relay.image.repository | string | `"devture/exim-relay"` |  |
-| mail.relay.image.tag | string | `"4.93.1-r0"` |  |
+| mail.relay.image.tag | string | `"4.95-r0"` |  |
 | mail.relay.labels.component | string | `"mail"` |  |
 | mail.relay.probes.liveness | object | `{}` |  |
 | mail.relay.probes.readiness | object | `{}` |  |
