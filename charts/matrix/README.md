@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 3.0.1](https://img.shields.io/badge/Version-3.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.88.0](https://img.shields.io/badge/AppVersion-1.88.0-informational?style=flat-square)
+![Version: 3.1.0](https://img.shields.io/badge/Version-3.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.88.0](https://img.shields.io/badge/AppVersion-1.88.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -28,7 +28,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| bridges.affinity | bool | `false` |  |
+| bridges.affinity | bool | `false` | Recommended to leave this disabled to allow bridges to be scheduled on separate nodes. Set this to true to reduce latency between the homeserver and bridges, or if your cloud provider does not allow the ReadWriteMany access mode (see below) |
 | bridges.discord.auth.botToken | string | `""` | Discord bot token for authentication |
 | bridges.discord.auth.clientId | string | `""` | Discord bot clientID for authentication |
 | bridges.discord.channelName | string | `"[Discord] :guild :name"` |  |
@@ -212,7 +212,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | matrix.urlPreviews.rules.maxSize | string | `"10M"` | Maximum size of a crawlable page. Keep this low to prevent a DOS vector |
 | matrix.urlPreviews.rules.url | object | `{}` | Whitelist and blacklist based on URL pattern matching |
 | nameOverride | string | `""` |  |
-| networkPolicies.enabled | bool | `true` |  |
+| networkPolicies.enabled | bool | `true` | whether to enable kubernetes network policies or not |
 | postgresql.database | string | `"matrix"` | name of database to use for matrix |
 | postgresql.enabled | bool | `true` | Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure PostgreSQL is available at the hostname below and credentials are configured below |
 | postgresql.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
@@ -223,10 +223,10 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | postgresql.persistence.size | string | `"8Gi"` | size of postgresql volume claim |
 | postgresql.port | int | `5432` | which port to use to connect to your database server |
 | postgresql.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
-| postgresql.secretKeys.databaseHostname | string | `"databaseHostname"` | key in existingSecret with hostname of the database |
-| postgresql.secretKeys.databasePassword | string | `"databasePassword"` | key in existingSecret with password for matrix to connect to database |
-| postgresql.secretKeys.databasePort | string | `"databasePort"` | key in existingSecret with port of the database |
-| postgresql.secretKeys.databaseUsername | string | `"databaseUsername"` | key in existingSecret with username for matrix to connect to database |
+| postgresql.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
+| postgresql.secretKeys.databasePassword | string | `"password"` | key in existingSecret with password for matrix to connect to database |
+| postgresql.secretKeys.databasePort | string | `"port"` | key in existingSecret with port of the database |
+| postgresql.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix to connect to database |
 | postgresql.securityContext.enabled | bool | `true` |  |
 | postgresql.securityContext.fsGroup | int | `1000` |  |
 | postgresql.securityContext.runAsUser | int | `1000` |  |

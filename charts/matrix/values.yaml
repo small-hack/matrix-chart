@@ -268,15 +268,15 @@ postgresql:
   # postgresql.password/username/hostname/database/port
   secretKeys:
     # -- key in existingSecret with hostname of the database
-    databaseHostname: databaseHostname
+    databaseHostname: hostname
     # -- key in existingSecret with port of the database
-    databasePort: databasePort
+    databasePort: port
     # -- key in existingSecret with name of the database
     database: database
     # -- key in existingSecret with username for matrix to connect to database
-    databaseUsername: databaseUsername
+    databaseUsername: username
     # -- key in existingSecret with password for matrix to connect to database
-    databasePassword: databasePassword
+    databasePassword: password
 
   # -- Whether to connect to the database over SSL
   ssl: false
@@ -732,9 +732,8 @@ bridges:
     service:
       type: ClusterIP
       port: 9005
-  # Recommended to leave this disabled to allow bridges to be scheduled on separate nodes.
-  # Set this to true to reduce latency between the homeserver and bridges, or if your cloud provider does not allow
-  # the ReadWriteMany access mode (see below)
+  # -- Recommended to leave this disabled to allow bridges to be scheduled on separate nodes.
+  # Set this to true to reduce latency between the homeserver and bridges, or if your cloud provider does not allow the ReadWriteMany access mode (see below)
   affinity: false
   volume:
     # -- Capacity of the shared volume for storing bridge/appservice registration files
@@ -754,4 +753,5 @@ nameOverride: ""
 fullnameOverride: ""
 
 networkPolicies:
+  # -- whether to enable kubernetes network policies or not
   enabled: true
