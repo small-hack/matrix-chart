@@ -191,7 +191,11 @@ spec:
             name: {{ include "matrix.fullname" . }}-initial-synapse-config
         - name: synapse-config
           persistentVolumeClaim:
+            {{- if not .Values.volumes.synapseConfig.existingClaim }}
             claimName: {{ include "matrix.fullname" . }}-synapse-config
+            {{ else }}
+            claimName: {{ .Values.volumes.synapseConfig.existingClaim }}
+            {{- end }}
         - name: signing-key
           persistentVolumeClaim:
             {{- if not .Values.volumes.signingKey.existingClaim }}
