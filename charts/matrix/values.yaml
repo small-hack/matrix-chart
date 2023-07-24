@@ -276,8 +276,6 @@ postgresql:
   secretKeys:
     # -- key in existingSecret with hostname of the database
     databaseHostname: hostname
-    # -- key in existingSecret with port of the database
-    databasePort: port
     # -- key in existingSecret with name of the database
     database: database
     # -- key in existingSecret with username for matrix to connect to database

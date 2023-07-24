@@ -223,7 +223,6 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | postgresql.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
 | postgresql.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
 | postgresql.secretKeys.databasePassword | string | `"password"` | key in existingSecret with password for matrix to connect to database |
-| postgresql.secretKeys.databasePort | string | `"port"` | key in existingSecret with port of the database |
 | postgresql.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix to connect to database |
 | postgresql.securityContext.enabled | bool | `true` |  |
 | postgresql.securityContext.fsGroup | int | `1000` |  |

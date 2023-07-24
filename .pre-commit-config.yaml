@@ -9,7 +9,6 @@ repos:
     rev: v0.1.22 # Get the latest from: https://github.com/gruntwork-io/pre-commit/releases
     hooks:
       - id: helmlint
-      - id: markdown-link-check
   # detect any secrets that may be committed before they're committed
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.17.0
