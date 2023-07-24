@@ -9,7 +9,7 @@ sources:
 type: application
 
 version: 3.3.0
-appVersion: 1.88.0
+appVersion: v1.88.0
 
 maintainers:
   - name: "Arkaniad"
