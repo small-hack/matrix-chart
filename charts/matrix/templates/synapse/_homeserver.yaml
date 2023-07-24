@@ -603,7 +603,7 @@ database:
         database: "REPLACE_ME"
         host: "REPLACE_ME"
         port: "REPLACE_ME"
-        sslmode: "REPLACE_ME"
+        sslmode: {{ .Values.postgresql.sslmode }}
         cp_min: 5
         cp_max: 10
 
