@@ -877,12 +877,15 @@ turn_uris:
   - "turn:{{ include "matrix.hostname" . }}?transport=udp"
 
 {{- end }}
-# The shared secret used to compute passwords for the TURN server
 
-turn_shared_secret: {{ include "matrix.coturn.sharedSecret" . }}
+# The shared secret used to compute passwords for the TURN server
+{{- if and (not .Values.coturn.existingSecret) (empty .Values.coturn.sharedSecret) -}}
+turn_shared_secret: "{{ randAlphaNum 24 }}"
+{{- else }}
+turn_shared_secret: "REPLACE_ME"
+{{- end }}
 
 # How long generated TURN credentials last
-
 turn_user_lifetime: 1h
 
 # Whether guests should be allowed to use the TURN server.

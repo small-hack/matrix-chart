@@ -62,15 +62,6 @@ Element specific labels
 {{- end -}}
 
 {{/*
-Coturn specific labels
-*/}}
-{{- define "matrix.coturn.labels" -}}
-{{- range $key, $val := .Values.coturn.labels -}}
-{{ $key }}: {{ $val }}
-{{- end }}
-{{- end -}}
-
-{{/*
 Mail relay specific labels
 */}}
 {{- define "matrix.mail.labels" -}}
@@ -133,3 +124,13 @@ Helper function to get postgres instance name
 {{- end }}
 {{- end }}
 
+{{/*
+Helper function to get the coturn secret containing the sharedSecret 
+*/}}
+{{- define "matrix.coturn.secretName" -}}
+{{- if and .Values.coturn.enabled .Values.coturn.existingSecret -}}
+{{ .Values.coturn.existingSecret }}
+{{- else -}}
+{{ template "matrix.fullname" . }}-coturn-secret
+{{- end }}
+{{- end }}

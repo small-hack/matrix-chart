@@ -70,6 +70,11 @@ spec:
                 secretKeyRef:
                   name: {{ include "matrix.postgresql.secretName" . }}
                   key: {{ .Values.postgresql.secretKeys.databasePassword }}
+            - name: COTURN_SHARED_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix.coturn.secretName" . }}
+                  key: {{ .Values.coturn.secretKey }}
           command:
             - /bin/sh
             - -ec
@@ -80,7 +85,8 @@ spec:
               yq eval '.database.args.port = env(DATABASE_PORT)' --inplace /data/homeserver.yaml && \
               yq eval '.database.args.database = env(DATABASE)' --inplace /data/homeserver.yaml && \
               yq eval '.database.args.user = env(DATABASE_USERNAME)' --inplace /data/homeserver.yaml && \
-              yq eval '.database.args.password = env(DATABASE_PASSWORD)' --inplace /data/homeserver.yaml
+              yq eval '.database.args.password = env(DATABASE_PASSWORD)' --inplace /data/homeserver.yaml && \
+              yq eval '.turn_shared_secret = env(COTURN_SHARED_SECRET)' --inplace /data/homeserver.yaml
           volumeMounts:
             - name: synapse-initial-config
               mountPath: /initial
