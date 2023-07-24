@@ -79,7 +79,7 @@ spec:
             - /bin/sh
             - -ec
             - |
-              cp {{ .Values.matrix.serverName }}.log.config /data/ && \
+              cp /initial/{{ .Values.matrix.serverName }}.log.config /data/ && \
               cp /initial/homeserver.yaml /data/homeserver.yaml && \
               yq eval '.database.args.host = env(DATABASE_HOSTNAME)' --inplace /data/homeserver.yaml && \
               yq eval '.database.args.port = env(DATABASE_PORT)' --inplace /data/homeserver.yaml && \
