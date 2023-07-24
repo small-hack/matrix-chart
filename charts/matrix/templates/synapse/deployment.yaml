@@ -43,7 +43,7 @@ spec:
       initContainers:
         - name: add-secret-values-to-config
           image: "mikefarah/yq:latest"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
             - name: DATABASE_HOSTNAME
               valueFrom:
@@ -95,7 +95,7 @@ spec:
       # generate signing key only on fresh install
       {{- if .Release.IsInstall }}
         - name: generate-signing-key
-          image: "{{ .Values.synapse.image.repository }}:{{ .Values.synapse.image.tag }}"
+          image: "{{ .Values.synapse.image.repository }}:{{ .Values.synapse.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.synapse.image.pullPolicy }}
           env:
             - name: SYNAPSE_SERVER_NAME

@@ -310,7 +310,7 @@ synapse:
     # -- image registry and repository to use for synapse
     repository: "matrixdotorg/synapse"
     # -- tag of synapse docker image to use. change this to latest to grab the cutting-edge release of synapse
-    tag: "{{ .Chart.AppVersion }}"
+    tag: ""
     # -- pullPolicy for synapse image, set to Always if using synapse.image.tag: latest
     pullPolicy: IfNotPresent
   service:

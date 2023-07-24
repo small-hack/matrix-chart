@@ -235,7 +235,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | synapse.extraVolumes | list | `[]` |  |
 | synapse.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy for synapse image, set to Always if using synapse.image.tag: latest |
 | synapse.image.repository | string | `"matrixdotorg/synapse"` | image registry and repository to use for synapse |
-| synapse.image.tag | string | `"{{ .Chart.AppVersion }}"` | tag of synapse docker image to use. change this to latest to grab the cutting-edge release of synapse |
+| synapse.image.tag | string | `""` | tag of synapse docker image to use. change this to latest to grab the cutting-edge release of synapse |
 | synapse.labels | object | `{"component":"synapse"}` | Labels to be appended to all Synapse resources |
 | synapse.metrics.annotations | bool | `true` |  |
 | synapse.metrics.enabled | bool | `true` | Whether Synapse should capture metrics on an additional endpoint |
