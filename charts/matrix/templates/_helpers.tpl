@@ -42,6 +42,7 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/name: "matrix"
 {{- end -}}
+
 # TODO: Include labels from values
 {{/*
 Synapse specific labels
@@ -50,6 +51,17 @@ Synapse specific labels
 {{- range $key, $val := .Values.synapse.labels -}}
 {{ $key }}: {{ $val }}
 {{- end }}
+{{- end -}}
+
+{{/*
+Create image name that is used in the deployment
+*/}}
+{{- define "matrix.image" -}}
+{{- if .Values.image.tag -}}
+{{- printf "%s:%s" .Values.synapse.image.repository .Values.synapse.image.tag -}}
+{{- else -}}
+{{- printf "%s:%s" .Values.synapse.image.repository .Chart.AppVersion -}}
+{{- end -}}
 {{- end -}}
 
 {{/*

@@ -95,7 +95,7 @@ spec:
       # generate signing key only on fresh install
       {{- if .Release.IsInstall }}
         - name: generate-signing-key
-          image: "{{ .Values.synapse.image.repository }}:{{ .Values.synapse.image.tag | default .Chart.AppVersion }}"
+          image: {{ include "matrix.image" . }}
           imagePullPolicy: {{ .Values.synapse.image.pullPolicy }}
           env:
             - name: SYNAPSE_SERVER_NAME
@@ -119,7 +119,7 @@ spec:
       {{- end }} {{/* end if .Release.IsInstall */}}
       containers:
         - name: "synapse"
-          image: "{{ .Values.synapse.image.repository }}:{{ .Values.synapse.image.tag }}"
+          image: {{ include "matrix.image" . }}
           imagePullPolicy: {{ .Values.synapse.image.pullPolicy }}
           env:
             {{- if .Values.synapse.securityContext.env }}
