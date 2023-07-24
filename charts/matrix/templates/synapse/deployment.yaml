@@ -46,27 +46,27 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: DATABASE_HOSTNAME
-              valuesFrom:
+              valueFrom:
                 secretKeyRef:
                   name: {{ include "matrix.postgresql.secretName" . }}
                   key: {{ .Values.postgresql.secretKeys.databaseHostname }}
             - name: DATABASE_PORT
-              valuesFrom:
+              valueFrom:
                 secretKeyRef:
                   name: {{ include "matrix.postgresql.secretName" . }}
                   key: {{ .Values.postgresql.secretKeys.databasePort }}
             - name: DATABASE
-              valuesFrom:
+              valueFrom:
                 secretKeyRef:
                   name: {{ include "matrix.postgresql.secretName" . }}
                   key: {{ .Values.postgresql.secretKeys.database }}
             - name: DATABASE_USERNAME
-              valuesFrom:
+              valueFrom:
                 secretKeyRef:
                   name: {{ include "matrix.postgresql.secretName" . }}
                   key: {{ .Values.postgresql.secretKeys.databaseUsername }}
             - name: DATABASE_PASSWORD
-              valuesFrom:
+              valueFrom:
                 secretKeyRef:
                   name: {{ include "matrix.postgresql.secretName" . }}
                   key: {{ .Values.postgresql.secretKeys.databasePassword }}
