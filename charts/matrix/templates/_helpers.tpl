@@ -57,7 +57,7 @@ Synapse specific labels
 Create image name that is used in the deployment
 */}}
 {{- define "matrix.image" -}}
-{{- if .Values.image.tag -}}
+{{- if .Values.synapse.image.tag -}}
 {{- printf "%s:%s" .Values.synapse.image.repository .Values.synapse.image.tag -}}
 {{- else -}}
 {{- printf "%s:%s" .Values.synapse.image.repository .Chart.AppVersion -}}
