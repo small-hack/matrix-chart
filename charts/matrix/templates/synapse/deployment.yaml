@@ -42,7 +42,7 @@ spec:
         {{- end }}
       initContainers:
         - name: add-secret-values-to-config
-          image: "linuxserver/yq:latest"
+          image: "mikefarah/yq:latest"
           imagePullPolicy: IfNotPresent
           env:
             - name: DATABASE_HOSTNAME
@@ -81,12 +81,12 @@ spec:
             - |
               cp /initial/{{ .Values.matrix.serverName }}.log.config /data/ && \
               cp /initial/homeserver.yaml /data/homeserver.yaml && \
-              yq eval '.database.args.host = env(DATABASE_HOSTNAME)' --inplace /data/homeserver.yaml && \
-              yq eval '.database.args.port = env(DATABASE_PORT)' --inplace /data/homeserver.yaml && \
-              yq eval '.database.args.database = env(DATABASE)' --inplace /data/homeserver.yaml && \
-              yq eval '.database.args.user = env(DATABASE_USERNAME)' --inplace /data/homeserver.yaml && \
-              yq eval '.database.args.password = env(DATABASE_PASSWORD)' --inplace /data/homeserver.yaml && \
-              yq eval '.turn_shared_secret = env(COTURN_SHARED_SECRET)' --inplace /data/homeserver.yaml
+              yq eval -i '.database.args.host = env(DATABASE_HOSTNAME)' /data/homeserver.yaml && \
+              yq eval -i '.database.args.port = env(DATABASE_PORT)' /data/homeserver.yaml && \
+              yq eval -i '.database.args.database = env(DATABASE)' /data/homeserver.yaml && \
+              yq eval -i '.database.args.user = env(DATABASE_USERNAME)' /data/homeserver.yaml && \
+              yq eval -i '.database.args.password = env(DATABASE_PASSWORD)' /data/homeserver.yaml && \
+              yq eval -i '.turn_shared_secret = env(COTURN_SHARED_SECRET)' /data/homeserver.yaml
           volumeMounts:
             - name: synapse-initial-config
               mountPath: /initial
