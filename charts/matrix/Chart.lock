@@ -3,7 +3,7 @@ dependencies:
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 12.6.8
 - name: coturn
-  repository: https://iits-consulting.github.io/coturn-chart
-  version: 2.0.1
-digest: sha256:da0aa31247d8697a310ae4fec725ebf65101cbce1513e7bd502ef0838c3ffa9a
-generated: "2023-07-24T13:11:32.460268+02:00"
+  repository: https://jessebot.github.io/coturn-chart
+  version: 3.0.2
+digest: sha256:a606b90d1f8f4eb76cb41afe80cf1a18fe4ddbd4b3ae9cbd6d8549992e8f6b2c
+generated: "2023-07-24T14:27:17.13505+02:00"
