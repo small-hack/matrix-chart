@@ -21,7 +21,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://iits-consulting.github.io/coturn-chart | coturn | v2.0.1 |
+| https://jessebot.github.io/coturn-chart | coturn | v3.0.2 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql | 12.6.8 |
 
 ## Values
@@ -97,14 +97,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | bridges.whatsapp.users.username | string | `"whatsapp_{{.}}"` |  |
 | coturn.allowGuests | bool | `true` | Whether to allow guests to use the TURN server |
 | coturn.enabled | bool | `true` | Set to false to disable the included deployment of Coturn |
-| coturn.image.pullPolicy | string | `"IfNotPresent"` |  |
-| coturn.image.repository | string | `"coturn/coturn"` |  |
-| coturn.image.tag | string | `"4.6.2"` |  |
-| coturn.kind | string | `"DaemonSet"` |  |
-| coturn.labels | object | `{"component":"coturn"}` | Coturn specific labels |
 | coturn.ports | object | `{"from":3478,"to":3478}` | UDP port range for TURN connections |
-| coturn.replicaCount | int | `1` |  |
-| coturn.resources | object | `{}` |  |
 | coturn.service.type | string | `"ClusterIP"` |  |
 | coturn.sharedSecret | string | `""` | Shared secret for communication between Synapse and Coturn. Optional, will be auto-generated if not overridden here. |
 | coturn.uris | list | `[]` |  |

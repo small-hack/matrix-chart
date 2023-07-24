@@ -465,15 +465,6 @@ coturn:
   uris: []
 #    - "turn:turn.example.com?transport=udp"
 
-  # How to deploy Coturn
-  # Options:
-  #   DaemonSet:  A DaemonSet will be used to schedule one Coturn pod per node. Each Coturn pod will open the ports it needs directly on the host it is scheduled on.
-  #               This maximizes compatibility and will allow you to set up Coturn without any additional cluster configuration.
-  #   Deployment: A Deployment will be used to schedule Coturn pods. The number of Coturn pods will be configurable (via the replicaCount setting below).
-  #               You will need to use a NodePort service or an external load balancer to route traffic to the Coturn pods.
-  #               This is more flexible and can use fewer pods in a multi-node setup, but will require additional networking configuration.
-  kind: DaemonSet
-
   # -- Whether to allow guests to use the TURN server
   allowGuests: true
 
@@ -496,16 +487,6 @@ coturn:
     #              the ports defined above for the service to be created.
     type: ClusterIP
 
-  image:
-    repository: "coturn/coturn"
-    tag: "4.6.2"
-    pullPolicy: IfNotPresent
-  replicaCount: 1
-  resources: {}
-
-  # -- Coturn specific labels
-  labels:
-    component: coturn
 
 # Settings for email notifications
 mail:
