@@ -96,6 +96,9 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | bridges.whatsapp.users.displayName | string | `"{{if .Notify}}{{.Notify}}{{else}}{{.Jid}}{{end}} (WA)"` |  |
 | bridges.whatsapp.users.username | string | `"whatsapp_{{.}}"` |  |
 | coturn.allowGuests | bool | `true` | Whether to allow guests to use the TURN server |
+| coturn.certificate.enabled | bool | `false` | set to true to generate a TLS certificate for encrypted comms |
+| coturn.certificate.host | string | `"turn.example.com"` | hostname for TLS cert |
+| coturn.certificate.issuerName | string | `"letsencrypt-staging"` | cert-manager cert Issuer or ClusterIssuer to use |
 | coturn.enabled | bool | `true` | Set to false to disable the included deployment of Coturn |
 | coturn.existingSecret | string | `""` | Optional: name of an existingSecret with key for sharedSecret |
 | coturn.ports | object | `{"from":3478,"to":3478}` | UDP port range for TURN connections |
