@@ -1,0 +1,18 @@
+{{- if not .Values.volumes.synapseConfig.existingClaim }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "matrix.fullname" . }}-synapse-config
+  labels:
+{{ include "matrix.labels" . | indent 4}}
+{{ include "matrix.synapse.labels" . | indent 4}}
+spec:
+  {{- if .Values.volumes.synapseConfig.storageClass }}
+  storageClassName: {{ .Values.volumes.synapseConfig.storageClass }}
+  {{- end }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.volumes.synapseConfig.capacity }}
+{{- end }}
