@@ -1,5 +1,4 @@
 {{- if .Values.coturn.enabled }}
-{{- $portRange := untilStep (int .Values.coturn.ports.from) (int (add1 .Values.coturn.ports.to)) 1 -}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -17,15 +16,6 @@ spec:
       {{- end }}
       protocol: UDP
       name: turn-3478
-    {{- range $portRange }}
-    - port: {{ . }}
-      targetPort: {{ . }}
-      {{- if eq $.Values.coturn.service.type "NodePort" }}
-      nodePort: {{ . }}
-      {{- end }}
-      protocol: UDP
-      name: turn-{{ . }}
-    {{- end }}
   selector:
     app.kubernetes.io/name: {{ include "matrix.name" . }}-coturn
     app.kubernetes.io/instance: {{ .Release.Name }}
