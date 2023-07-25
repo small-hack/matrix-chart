@@ -10,25 +10,21 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-{{- if .Values.element.ingress.tls }}
+{{- if .Values.element.ingress.tls.enabled }}
   tls:
-    {{- range .Values.element.ingress.tls }}
     - hosts:
-      {{- range .hosts }}
-      - {{ . | quote }}
-      {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
+      - {{ .Values.element.ingress.host }}
+      secretName: element-tls
 {{- end }}
   rules:
     - host: {{ .Values.element.ingress.host }}
       http:
         paths:
           - path: "/"
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: "{{ include "matrix.fullname" . }}-element"
                 port: 
                   number: {{ .Values.element.service.port }}
-            pathType: ImplementationSpecific
 {{- end }}
