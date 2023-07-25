@@ -10,25 +10,21 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-{{- if .Values.matrix.federation.ingress.tls }}
+{{- if .Values.matrix.federation.ingress.tls.enabled }}
   tls:
-    {{- range .Values.matrix.federation.ingress.tls }}
     - hosts:
-      {{- range .hosts }}
-      - {{ . | quote }}
-      {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
+      - {{ .Values.matrix.federation.ingress.host }}
+      secretName: matrix-federation-tls
 {{- end }}
   rules:
     - host: {{ .Values.matrix.federation.ingress.host }}
       http:
         paths:
           - path: "/"
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: "{{ include "matrix.fullname" . }}-synapse-federation"
                 port: 
                   number: {{ .Values.synapse.service.federation.port }}
-            pathType: ImplementationSpecific
 {{- end }}

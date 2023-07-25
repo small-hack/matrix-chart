@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 4.0.2](https://img.shields.io/badge/Version-4.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
+![Version: 4.0.3](https://img.shields.io/badge/Version-4.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -117,9 +117,8 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | element.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | element.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` |  |
 | element.ingress.enabled | bool | `true` | enable ingress for element |
-| element.ingress.hosts | string | `"element.chart-example.local"` | the hostname to use for element |
-| element.ingress.tls[0].hosts | list | `["element.chart-example.local"]` | the hostname to use for element if using TLS certs |
-| element.ingress.tls[0].secretName | string | `"element-tls"` |  |
+| element.ingress.host | string | `"element.chart-example.local"` | the hostname to use for element |
+| element.ingress.tls.enabled | bool | `true` |  |
 | element.integrations.api | string | `"https://scalar.vector.im/api"` | API for the integration server |
 | element.integrations.enabled | bool | `true` | enables the Integrations menu, including:    widgets, bots, and other plugins to Element |
 | element.integrations.ui | string | `"https://scalar.vector.im/"` | UI to load when a user selects the Integrations button at the top-right    of a room |
@@ -170,8 +169,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | matrix.federation.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
 | matrix.federation.ingress.enabled | bool | `true` |  |
 | matrix.federation.ingress.host | string | `"matrix-fed.chart-example.local"` |  |
-| matrix.federation.ingress.tls[0].hosts[0] | string | `"matrix-fed.chart-example.local"` |  |
-| matrix.federation.ingress.tls[0].secretName | string | `"federation-tls"` |  |
+| matrix.federation.ingress.tls.enabled | bool | `true` |  |
 | matrix.federation.whitelist | list | `[]` | Allow list of domains to federate with (comment for all domains    except blacklisted) |
 | matrix.homeserverExtra | object | `{}` | Contents will be appended to the end of the default configuration |
 | matrix.homeserverOverride | object | `{}` | Replace homeserver.yaml will be replaced with these contents |
@@ -235,8 +233,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | synapse.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | This annotation is required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
 | synapse.ingress.enabled | bool | `true` |  |
 | synapse.ingress.host | string | `"matrix.chart-example.local"` |  |
-| synapse.ingress.tls[0].hosts[0] | string | `"matrix.chart-example.local"` |  |
-| synapse.ingress.tls[0].secretName | string | `"matrix-tls"` |  |
+| synapse.ingress.tls.enabled | bool | `true` |  |
 | synapse.labels | object | `{"component":"synapse"}` | Labels to be appended to all Synapse resources |
 | synapse.metrics.annotations | bool | `true` |  |
 | synapse.metrics.enabled | bool | `true` | Whether Synapse should capture metrics on an additional endpoint |
