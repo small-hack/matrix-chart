@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 4.0.2](https://img.shields.io/badge/Version-4.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
+![Version: 4.0.3](https://img.shields.io/badge/Version-4.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -235,8 +235,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | synapse.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | This annotation is required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
 | synapse.ingress.enabled | bool | `true` |  |
 | synapse.ingress.host | string | `"matrix.chart-example.local"` |  |
-| synapse.ingress.tls[0].hosts[0] | string | `"matrix.chart-example.local"` |  |
-| synapse.ingress.tls[0].secretName | string | `"matrix-tls"` |  |
+| synapse.ingress.tls.enabled | bool | `true` |  |
 | synapse.labels | object | `{"component":"synapse"}` | Labels to be appended to all Synapse resources |
 | synapse.metrics.annotations | bool | `true` |  |
 | synapse.metrics.enabled | bool | `true` | Whether Synapse should capture metrics on an additional endpoint |

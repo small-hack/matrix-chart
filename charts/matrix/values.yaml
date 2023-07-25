@@ -347,9 +347,7 @@ synapse:
     enabled: true
     host: matrix.chart-example.local
     tls:
-      - secretName: matrix-tls
-        hosts:
-          - matrix.chart-example.local
+      enabled: true
     annotations:
       # -- This annotation is required for the Nginx ingress provider. You can
       # remove it if you use a different ingress provider
