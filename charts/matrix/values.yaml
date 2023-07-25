@@ -277,8 +277,6 @@ postgresql:
         username: matrix
         # -- password of matrix postgres user - ignored using exsitingSecret
         password: changeme
-        # -- name of database to use for matrix
-        database: matrix
         # -- which port to use to connect to your database server
         port: 5432
         # -- hostname of db server. Can be left blank if using postgres subchart
