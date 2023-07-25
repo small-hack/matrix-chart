@@ -29,6 +29,7 @@ jobs:
 
       - name: Add dependency chart repos
         run: |
+          helm repo add coturn https://jessebot.github.io/coturn-chart/
           helm dep update charts/matrix
 
       - name: Run chart-releaser
