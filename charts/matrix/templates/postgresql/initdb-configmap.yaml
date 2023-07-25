@@ -9,9 +9,9 @@ data:
   matrix.sql: |
     DROP DATABASE {{ .Values.postgresql.global.postgresql.auth.database }};
     CREATE DATABASE {{ .Values.postgresql.global.postgresql.auth.database }}
-       ENCODING UTF8
+       ENCODING 'UTF8'
        LOCALE 'C'
-       template template0
+       TEMPLATE template0
        OWNER {{ .Values.postgresql.global.postgresql.auth.username }};
     GRANT ALL PRIVILEGES ON DATABASE {{ .Values.postgresql.global.postgresql.auth.database }} TO {{ .Values.postgresql.global.postgresql.auth.username }};
     GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {{ .Values.postgresql.global.postgresql.auth.username }};
@@ -21,7 +21,7 @@ data:
     CREATE DATABASE {{ .Values.bridges.irc.database }}
        ENCODING 'UTF8'
        LOCALE 'C'
-       template template0
+       TEMPLATE template0
        OWNER {{ .Values.postgresql.global.postgresql.auth.username }};
   {{- end }}
 {{- end }}
