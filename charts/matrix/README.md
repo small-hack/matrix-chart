@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 4.0.3](https://img.shields.io/badge/Version-4.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
+![Version: 4.0.4](https://img.shields.io/badge/Version-4.0.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -205,7 +205,6 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | nameOverride | string | `""` |  |
 | networkPolicies.enabled | bool | `true` | whether to enable kubernetes network policies or not |
 | postgresql.enabled | bool | `true` | Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure PostgreSQL is available at the hostname below and credentials are configured under postgresql.global.postgresql.auth |
-| postgresql.global.postgresql.auth.database | string | `"matrix"` | name of database to use for matrix |
 | postgresql.global.postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
 | postgresql.global.postgresql.auth.hostname | string | `""` | hostname of db server. Can be left blank if using postgres subchart |
 | postgresql.global.postgresql.auth.password | string | `"changeme"` | password of matrix postgres user - ignored using exsitingSecret |
