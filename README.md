@@ -33,6 +33,9 @@ These features still need to be tested, but are technically baked into the chart
 - [matrix-org/matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) IRC bridge
 - [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge
 
+## Notes
+The database we create for you is called synapse and it's created according to the [docs](https://github.com/matrix-org/synapse/blob/develop/docs/postgres.md) in the synapse repo.
+
 
 ## Status
 This chart is now maintained mostly by me, @jessebot, but I'd love contributors as well! My goal is to provide regular updates using dependabot (maybe renovatebot soon) and provide some level of basic security from a k8s perspective. The aim as of right now has been removing any plaintext secrets and allowing for existing PVCs. I'm also trying to standardize the chart more by following predictable values.yaml patterns.
