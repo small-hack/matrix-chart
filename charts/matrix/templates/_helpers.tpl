@@ -42,6 +42,7 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/name: "matrix"
 {{- end -}}
+
 # TODO: Include labels from values
 {{/*
 Synapse specific labels
@@ -53,19 +54,21 @@ Synapse specific labels
 {{- end -}}
 
 {{/*
+Create image name that is used in the deployment
+*/}}
+{{- define "matrix.image" -}}
+{{- if .Values.synapse.image.tag -}}
+{{- printf "%s:%s" .Values.synapse.image.repository .Values.synapse.image.tag -}}
+{{- else -}}
+{{- printf "%s:%s" .Values.synapse.image.repository .Chart.AppVersion -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Element specific labels
 */}}
 {{- define "matrix.element.labels" -}}
 {{- range $key, $val := .Values.element.labels }}
-{{ $key }}: {{ $val }}
-{{- end }}
-{{- end -}}
-
-{{/*
-Coturn specific labels
-*/}}
-{{- define "matrix.coturn.labels" -}}
-{{- range $key, $val := .Values.coturn.labels -}}
 {{ $key }}: {{ $val }}
 {{- end }}
 {{- end -}}
@@ -86,7 +89,7 @@ Synapse hostname, derived from either the Values.matrix.hostname override or the
 {{- if .Values.matrix.hostname }}
 {{- .Values.matrix.hostname -}}
 {{- else }}
-{{- .Values.ingress.hosts.synapse -}}
+{{- .Values.synapse.ingress.host -}}
 {{- end }}
 {{- end }}
 
@@ -97,7 +100,7 @@ Synapse hostname prepended with https:// to form a complete URL
 {{- if .Values.matrix.hostname }}
 {{- printf "https://%s" .Values.matrix.hostname -}}
 {{- else }}
-{{- printf "https://%s" .Values.ingress.hosts.synapse -}}
+{{- printf "https://%s" .Values.synapse.ingress.host -}}
 {{- end }}
 {{- end }}
 
@@ -106,9 +109,9 @@ Helper function to get a postgres connection string for the database, with all o
 */}}
 {{- define "matrix.postgresUri" -}}
 {{- if .Values.postgresql.enabled -}}
-postgres://{{ .Values.postgresql.username }}:{{ .Values.postgresql.password }}@{{ include "matrix.fullname" . }}-postgresql/%s{{ if .Values.postgresql.ssl }}?ssl=true&sslmode={{ .Values.postgresql.sslMode}}{{ end }}
+postgres://{{ .Values.postgresql.global.postgresql.auth.username }}:{{ .Values.postgresql.global.postgresql.auth.password }}@{{ include "matrix.fullname" . }}-postgresql/%s{{ if .Values.postgresql.ssl }}?ssl=true&sslmode={{ .Values.postgresql.sslMode}}{{ end }}
 {{- else -}}
-postgres://{{ .Values.postgresql.username }}:{{ .Values.postgresql.password }}@{{ .Values.postgresql.hostname }}:{{ .Values.postgresql.port }}/%s{{ if .Values.postgresql.ssl }}?ssl=true&sslmode={{ .Values.postgresql.sslMode }}{{ end }}
+postgres://{{ .Values.postgresql.global.postgresql.auth.username }}:{{ .Values.postgresql.global.postgresql.auth.password }}@{{ .Values.postgresql.global.postgresql.auth.hostname }}:{{ .Values.postgresql.port }}/%s{{ if .Values.postgresql.ssl }}?ssl=true&sslmode={{ .Values.postgresql.sslMode }}{{ end }}
 {{- end }}
 {{- end }}
 
@@ -117,8 +120,8 @@ postgres://{{ .Values.postgresql.username }}:{{ .Values.postgresql.password }}@{
 Helper function to get the postgres secret containing the database credentials
 */}}
 {{- define "matrix.postgresql.secretName" -}}
-{{- if and .Values.postgresql.enabled .Values.postgresql.existingSecret -}}
-{{ .Values.postgresql.existingSecret }}
+{{- if and .Values.postgresql.enabled .Values.postgresql.global.postgresql.auth.existingSecret -}}
+{{ .Values.postgresql.global.postgresql.auth.existingSecret }}
 {{- else -}}
 {{ template "matrix.fullname" . }}-db-secret
 {{- end }}
@@ -133,3 +136,13 @@ Helper function to get postgres instance name
 {{- end }}
 {{- end }}
 
+{{/*
+Helper function to get the coturn secret containing the sharedSecret 
+*/}}
+{{- define "matrix.coturn.secretName" -}}
+{{- if and .Values.coturn.enabled .Values.coturn.existingSecret -}}
+{{ .Values.coturn.existingSecret }}
+{{- else -}}
+{{ template "matrix.fullname" . }}-coturn-secret
+{{- end }}
+{{- end }}

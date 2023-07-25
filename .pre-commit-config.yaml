@@ -1,15 +1,16 @@
 repos:
+  # update the chart README.md with the comments from values.yaml
   - repo: https://github.com/norwoodj/helm-docs
     rev: v1.2.0
     hooks:
       - id: helm-docs
-        # args:
-        #   # Make the tool search for charts only under the `example-charts` directory
-        #   - --chart-search-root=mastodon
-
-        #   # The `./` makes it relative to the chart-search-root set above
-        #   - --template-files=./_templates.gotmpl
-
-        #   # Repeating the flag adds this to the list, now [./_templates.gotmpl, README.md.gotmpl]
-        #   # A base filename makes it relative to each chart directory found
-        #   - --template-files=README.md.gotmpl
+  # helm lint and markdown link verifier
+  - repo: https://github.com/gruntwork-io/pre-commit
+    rev: v0.1.22 # Get the latest from: https://github.com/gruntwork-io/pre-commit/releases
+    hooks:
+      - id: helmlint
+  # detect any secrets that may be committed before they're committed
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.17.0
+    hooks:
+      - id: gitleaks

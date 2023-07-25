@@ -1,11 +1,9 @@
-name: Lint
+name: Lint and Test Chart
 
 on:
   pull_request:
-    paths-ignore:
-    - 'README.md'
-    - '**/README.md'
-    - '.github/**'
+    paths:
+      - 'charts/matrix/**'
 
 permissions:
   contents: read
@@ -26,6 +24,7 @@ jobs:
       - name: Add dependency chart repos
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo add coturn https://jessebot.github.io/coturn-chart
 
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.4.0

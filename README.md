@@ -10,7 +10,7 @@ A Helm chart for deploying a Matrix homeserver stack in Kubernetes. This is a fo
 ### Opptional Features
 - Latest version of [Element](https://element.io/)
 - Choice of lightweight Exim relay or external mail server for email notifications
-- [Coturn TURN server](https://hub.docker.com/r/coturn/coturn) for VoIP calls
+- [Coturn TURN server sub-chart](https://github.com/jessebot/coturn-chart) for VoIP calls
 - [Bitnami PostgreSQL sub-chart](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) to deploy a cluster - needs some work to standardize though, so we also support external postgresql servers
 - [matrix-org/matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) IRC bridge
 - [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge

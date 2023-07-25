@@ -602,8 +602,8 @@ database:
         password: "REPLACE_ME"
         database: "REPLACE_ME"
         host: "REPLACE_ME"
-        port: "REPLACE_ME"
-        sslmode: "REPLACE_ME"
+        port: {{ .Values.postgresql.port }}
+        sslmode: {{ .Values.postgresql.sslmode }}
         cp_min: 5
         cp_max: 10
 
@@ -877,12 +877,15 @@ turn_uris:
   - "turn:{{ include "matrix.hostname" . }}?transport=udp"
 
 {{- end }}
-# The shared secret used to compute passwords for the TURN server
 
-turn_shared_secret: {{ include "matrix.coturn.sharedSecret" . }}
+# The shared secret used to compute passwords for the TURN server
+{{- if and (not .Values.coturn.existingSecret) (empty .Values.coturn.sharedSecret) -}}
+turn_shared_secret: "{{ randAlphaNum 24 }}"
+{{- else }}
+turn_shared_secret: "REPLACE_ME"
+{{- end }}
 
 # How long generated TURN credentials last
-
 turn_user_lifetime: 1h
 
 # Whether guests should be allowed to use the TURN server.
@@ -1858,8 +1861,8 @@ email:
   # supported for backwards-compatibility but is now deprecated.)
   {{- if .Values.mail.elementUrl }}
   client_base_url: {{ .Values.mail.elementUrl }}
-  {{- else if .Values.ingress.enabled }}
-  client_base_url: {{ .Values.ingress.hosts.element }}
+  {{- else if .Values.element.ingress.enabled }}
+  client_base_url: {{ .Values.element.ingress.host }}
   {{- end }}
 
   # Configure the time that a validation email will expire after sending.
