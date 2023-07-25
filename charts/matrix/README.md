@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 3.3.0](https://img.shields.io/badge/Version-3.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
+![Version: 4.0.0](https://img.shields.io/badge/Version-4.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -22,7 +22,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | Repository | Name | Version |
 |------------|------|---------|
 | https://jessebot.github.io/coturn-chart | coturn | v3.0.3 |
-| oci://registry-1.docker.io/bitnamicharts | postgresql | 12.6.8 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql | 12.6.9 |
 
 ## Values
 
@@ -211,25 +211,26 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | matrix.urlPreviews.rules.url | object | `{}` | Whitelist and blacklist based on URL pattern matching |
 | nameOverride | string | `""` |  |
 | networkPolicies.enabled | bool | `true` | whether to enable kubernetes network policies or not |
-| postgresql.database | string | `"matrix"` | name of database to use for matrix |
 | postgresql.enabled | bool | `true` | Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure PostgreSQL is available at the hostname below and credentials are configured below |
-| postgresql.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
-| postgresql.hostname | string | `""` | hostname of postgres server to use. Can be left blank if using bundled bitnami postgresql sub-chart |
-| postgresql.initdbScriptsConfigMap | string | `"{{ .Release.Name }}-postgresql-initdb"` | If postgresql.enabled, stable/postgresql will run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database as specified at https://github.com/matrix-org/synapse/blob/master/docs/postgres.md |
-| postgresql.password | string | `"matrix"` | password of matrix postgres user |
-| postgresql.persistence | object | `{"size":"8Gi"}` | persistent volume claim configuration for postgresql to persist data |
-| postgresql.persistence.size | string | `"8Gi"` | size of postgresql volume claim |
-| postgresql.port | int | `5432` | which port to use to connect to your database server |
-| postgresql.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
-| postgresql.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
-| postgresql.secretKeys.databasePassword | string | `"password"` | key in existingSecret with password for matrix to connect to database |
-| postgresql.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix to connect to database |
-| postgresql.securityContext.enabled | bool | `true` |  |
-| postgresql.securityContext.fsGroup | int | `1000` |  |
-| postgresql.securityContext.runAsUser | int | `1000` |  |
-| postgresql.ssl | bool | `false` | Whether to connect to the database over SSL |
-| postgresql.sslMode | string | `"prefer"` | which ssl mode to use. See [documentation](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS) for more info |
-| postgresql.username | string | `"matrix"` | username of matrix postgres user |
+| postgresql.global.postgresql.auth.database | string | `"matrix"` | name of database to use for matrix |
+| postgresql.global.postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
+| postgresql.global.postgresql.auth.hostname | string | `""` | hostname of db server. Can be left blank if using bundled bitnami postgresql sub-chart |
+| postgresql.global.postgresql.auth.password | string | `"changeme"` | password of matrix postgres user - ignored if exsitingSecret is passed in |
+| postgresql.global.postgresql.auth.port | int | `5432` | which port to use to connect to your database server |
+| postgresql.global.postgresql.auth.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existingSecret with the admin postgresql password |
+| postgresql.global.postgresql.auth.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
+| postgresql.global.postgresql.auth.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
+| postgresql.global.postgresql.auth.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix to connect to db |
+| postgresql.global.postgresql.auth.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix to connect to db |
+| postgresql.global.postgresql.auth.username | string | `"matrix"` | username of matrix postgres user |
+| postgresql.primary.initdbScriptsConfigMap | string | `"{{ .Release.Name }}-postgresql-initdb"` | If postgresql.enabled, stable/postgresql will run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database  as specified at https://github.com/matrix-org/synapse/blob/master/docs/postgres.md |
+| postgresql.primary.persistence | object | `{"enabled":true,"size":"8Gi"}` | persistent volume claim configuration for postgresql to persist data |
+| postgresql.primary.persistence.enabled | bool | `true` | Enable PostgreSQL Primary data persistence using PVC |
+| postgresql.primary.persistence.size | string | `"8Gi"` | size of postgresql volume claim |
+| postgresql.primary.podSecurityContext.enabled | bool | `true` |  |
+| postgresql.primary.podSecurityContext.fsGroup | int | `1000` |  |
+| postgresql.primary.podSecurityContext.runAsUser | int | `1000` |  |
+| postgresql.volumePermissions.enabled | bool | `true` | Enable init container that changes the owner and group of the persistent volume |
 | synapse.extraVolumeMounts | list | `[]` |  |
 | synapse.extraVolumes | list | `[]` |  |
 | synapse.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy for synapse image, set to Always if using synapse.image.tag: latest |

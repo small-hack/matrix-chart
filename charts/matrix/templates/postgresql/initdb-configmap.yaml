@@ -7,16 +7,9 @@ metadata:
   {{ include "matrix.labels" . | nindent 4}}
 data:
   matrix.sql: |
-    CREATE USER {{ .Values.postgresql.username }}
-      LOGIN
-      ENCRYPTED PASSWORD '{{ .Values.postgresql.password }}';
-
-    CREATE DATABASE {{ .Values.postgresql.database }}
-      ENCODING 'UTF8'
-      LC_COLLATE='C'
-      LC_CTYPE='C'
-      template=template0
-      OWNER {{ .Values.postgresql.username }};
+    ALTER DATABASE {{ .Values.postgresql.global.postgresql.auth.database }} OWNER TO {{ .Values.postgresql.global.postgresql.auth.username }};
+    GRANT ALL PRIVILEGES ON DATABASE {{ .Values.postgresql.global.postgresql.auth.database }} TO {{ .Values.postgresql.global.postgresql.auth.username }};
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {{ .Values.postgresql.global.postgresql.auth.username }};
   {{- if .Values.bridges.irc.enabled }}
   {{/* Scripts are run in alphabetical order */}}
   zzz_irc.sql: |
@@ -25,6 +18,6 @@ data:
        LC_COLLATE='C'
        LC_CTYPE='C'
        template=template0
-       OWNER {{ .Values.postgresql.username }};
+       OWNER {{ .Values.postgresql.global.postgresql.auth.username }};
   {{- end }}
 {{- end }}

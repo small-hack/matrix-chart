@@ -49,22 +49,22 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "matrix.postgresql.secretName" . }}
-                  key: {{ .Values.postgresql.secretKeys.databaseHostname }}
+                  key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.databaseHostname }}
             - name: DATABASE
               valueFrom:
                 secretKeyRef:
                   name: {{ include "matrix.postgresql.secretName" . }}
-                  key: {{ .Values.postgresql.secretKeys.database }}
+                  key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.database }}
             - name: DATABASE_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: {{ include "matrix.postgresql.secretName" . }}
-                  key: {{ .Values.postgresql.secretKeys.databaseUsername }}
+                  key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.databaseUsername }}
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "matrix.postgresql.secretName" . }}
-                  key: {{ .Values.postgresql.secretKeys.databasePassword }}
+                  key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.userPasswordKey}}
             - name: COTURN_SHARED_SECRET
               valueFrom:
                 secretKeyRef:

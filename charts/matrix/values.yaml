@@ -251,56 +251,65 @@ ingress:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_intercept_errors off;
 
-# PostgreSQL Database Configuration
+# PostgreSQL Database configuration 
+# for more options: https://github.com/bitnami/charts/tree/main/bitnami/postgresql
 postgresql:
   # -- Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure PostgreSQL is available at the hostname below and credentials are configured below
-  enabled: true
-
-  # database credentials to use if you don't use an existingSecret
-  # -- username of matrix postgres user
-  username: matrix
-  # -- password of matrix postgres user
-  password: matrix
-  # -- name of database to use for matrix
-  database: matrix
-  # -- which port to use to connect to your database server
-  port: 5432
-  # -- hostname of postgres server to use. Can be left blank if using bundled bitnami postgresql sub-chart
-  hostname: ""
-
-  # -- Name of existing secret to use for PostgreSQL credentials
-  existingSecret: ""
-  # secretKeys to grab from existingSecret
-  # if postgresql.existingSecret is provided, the following are ignored
-  # postgresql.password/username/hostname/database/port
-  secretKeys:
-    # -- key in existingSecret with hostname of the database
-    databaseHostname: hostname
-    # -- key in existingSecret with name of the database
-    database: database
-    # -- key in existingSecret with username for matrix to connect to database
-    databaseUsername: username
-    # -- key in existingSecret with password for matrix to connect to database
-    databasePassword: password
-
-  # -- Whether to connect to the database over SSL
-  ssl: false
-  # -- which ssl mode to use. See [documentation](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS) for more info
-  sslMode: prefer
-
-  # -- persistent volume claim configuration for postgresql to persist data
-  persistence:
-    # -- size of postgresql volume claim
-    size: 8Gi
-
-  # -- If postgresql.enabled, stable/postgresql will run the scripts in templates/postgresql/initdb-configmap.yaml
-  # If using an external Postgres server, make sure to configure the database as specified at https://github.com/matrix-org/synapse/blob/master/docs/postgres.md
-  initdbScriptsConfigMap: "{{ .Release.Name }}-postgresql-initdb"
-
-  securityContext:
+  enabled: true 
+  volumePermissions:
+    # -- Enable init container that changes the owner and group of the persistent volume
     enabled: true
-    runAsUser: 1000
-    fsGroup: 1000
+  global:
+    postgresql:
+      # global.postgresql.auth overrides postgresql.auth
+      auth:
+        # database credentials to use if you don't use an existingSecret
+        # -- username of matrix postgres user
+        username: matrix
+        # -- password of matrix postgres user - ignored if exsitingSecret is passed in
+        password: changeme
+        # -- name of database to use for matrix
+        database: matrix
+        # -- which port to use to connect to your database server
+        port: 5432
+        # -- hostname of db server. Can be left blank if using bundled bitnami postgresql sub-chart
+        hostname: ""
+
+        # -- Name of existing secret to use for PostgreSQL credentials
+        existingSecret: ""
+        # secretKeys to grab from existingSecret
+        # if postgresql.existingSecret is provided, the following are ignored
+        # postgresql.password/username/hostname/database/port
+        secretKeys:
+          # -- key in existingSecret with hostname of the database
+          databaseHostname: hostname
+          # -- key in existingSecret with name of the database
+          database: database
+          # -- key in existingSecret with username for matrix to connect to db
+          databaseUsername: username
+          # -- key in existingSecret with password for matrix to connect to db
+          userPasswordKey: password
+          # -- key in existingSecret with the admin postgresql password
+          adminPasswordKey: postgresPassword
+
+  # primary database node config
+  primary:
+    # -- persistent volume claim configuration for postgresql to persist data
+    persistence:
+      # -- Enable PostgreSQL Primary data persistence using PVC
+      enabled: true
+      # -- size of postgresql volume claim
+      size: 8Gi
+
+    # -- If postgresql.enabled, stable/postgresql will run the scripts in templates/postgresql/initdb-configmap.yaml
+    # If using an external Postgres server, make sure to configure the database 
+    # as specified at https://github.com/matrix-org/synapse/blob/master/docs/postgres.md
+    initdbScriptsConfigMap: "{{ .Release.Name }}-postgresql-initdb"
+
+    podSecurityContext:
+      enabled: true
+      runAsUser: 1000
+      fsGroup: 1000
 
 # Synapse Kubernetes resource settings
 synapse:
