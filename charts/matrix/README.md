@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 4.0.1](https://img.shields.io/badge/Version-4.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
+![Version: 4.0.2](https://img.shields.io/badge/Version-4.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -218,9 +218,9 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | postgresql.global.postgresql.auth.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix to connect to db |
 | postgresql.global.postgresql.auth.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix to connect to db |
 | postgresql.global.postgresql.auth.username | string | `"matrix"` | username of matrix postgres user |
-| postgresql.primary.initdbScriptsConfigMap | string | `"{{ .Release.Name }}-postgresql-initdb"` | If postgresql.enabled, stable/postgresql will run the scripts in: templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/matrix-org/synapse/blob/master/docs/postgres.md |
-| postgresql.primary.persistence | object | `{"enabled":true,"size":"8Gi"}` | persistent volume claim configuration for postgresql to persist data |
-| postgresql.primary.persistence.enabled | bool | `true` | Enable PostgreSQL Primary data persistence using PVC |
+| postgresql.primary.initdb | object | `{"scriptsConfigMap":"{{ .Release.Name }}-postgresql-initdb"}` | run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/matrix-org/synapse/blob/master/docs/postgres.md |
+| postgresql.primary.persistence | object | `{"enabled":false,"size":"8Gi"}` | persistent volume claim configuration for postgresql to persist data |
+| postgresql.primary.persistence.enabled | bool | `false` | Enable PostgreSQL Primary data persistence using PVC |
 | postgresql.primary.persistence.size | string | `"8Gi"` | size of postgresql volume claim |
 | postgresql.primary.podSecurityContext.enabled | bool | `true` |  |
 | postgresql.primary.podSecurityContext.fsGroup | int | `1000` |  |
