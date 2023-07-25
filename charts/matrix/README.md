@@ -51,7 +51,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | bridges.discord.users.nickname | string | `":nick"` |  |
 | bridges.discord.users.username | string | `":username#:tag"` |  |
 | bridges.irc.data.capacity | string | `"1Mi"` | Size of the data PVC to allocate |
-| bridges.irc.database | string | `"matrix_irc"` | Name of Postgres database to store IRC bridge data in, this database will be created if the included Postgres chart is enabled, otherwise you must create it manually |
+| bridges.irc.database | string | `"matrix_irc"` | Postgres database to store IRC bridge data in, this db will be created if postgresql.enabled: true, otherwise you must create it manually |
 | bridges.irc.databaseSslVerify | bool | `true` |  |
 | bridges.irc.enabled | bool | `false` | Set to true to enable the IRC bridge |
 | bridges.irc.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -65,36 +65,36 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | bridges.irc.servers."chat.freenode.net".ssl | bool | `true` | Whether to use SSL or not. Default: false. |
 | bridges.irc.service.port | int | `9006` |  |
 | bridges.irc.service.type | string | `"ClusterIP"` |  |
-| bridges.volume.accessMode | string | `"ReadWriteMany"` | Access mode of the shared volume. ReadWriteMany is recommended to allow bridges to be scheduled on separate nodes. Some cloud providers may not allow the ReadWriteMany access mode. In that case, change this to ReadWriteOnce -AND- set bridges.affinity (above) to true |
-| bridges.volume.capacity | string | `"1Mi"` | Capacity of the shared volume for storing bridge/appservice registration files Note: 1Mi should be enough but some cloud providers may set a minimum PVC size of 1Gi, adjust as necessary |
+| bridges.volume.accessMode | string | `"ReadWriteMany"` | Access mode of the shared volume. ReadWriteMany is recommended to allow bridges to be scheduled on separate nodes. Some cloud providers may not allow the ReadWriteMany access mode. In that case, change this to ReadWriteOnce AND set bridges.affinity (above) to true |
+| bridges.volume.capacity | string | `"1Mi"` | Capacity of the shared volume for storing bridge/appservice registration files. Note: 1Mi should be enough but some cloud providers may set a minimum PVC size of 1Gi, adjust as necessary |
 | bridges.volume.existingClaim | string | `""` | name of an existing persistent volume claim to use for bridges |
 | bridges.volume.storageClass | string | `""` | Storage class (optional) |
-| bridges.whatsapp.bot.avatar | string | `"mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"` |  |
-| bridges.whatsapp.bot.displayName | string | `"WhatsApp bridge bot"` |  |
-| bridges.whatsapp.bot.username | string | `"whatsappbot"` |  |
-| bridges.whatsapp.callNotices | bool | `true` |  |
-| bridges.whatsapp.communityName | string | `"whatsapp_{{.Localpart}}={{.Server}}"` |  |
-| bridges.whatsapp.connection.maxAttempts | int | `3` |  |
-| bridges.whatsapp.connection.qrRegenCount | int | `2` |  |
-| bridges.whatsapp.connection.reportRetry | bool | `true` |  |
-| bridges.whatsapp.connection.retryDelay | int | `-1` |  |
-| bridges.whatsapp.connection.timeout | int | `20` |  |
-| bridges.whatsapp.data.capacity | string | `"512Mi"` |  |
-| bridges.whatsapp.data.storageClass | string | `""` |  |
-| bridges.whatsapp.enabled | bool | `false` |  |
+| bridges.whatsapp.bot.avatar | string | `"mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"` | avatar of the WhatsApp bridge bot |
+| bridges.whatsapp.bot.displayName | string | `"WhatsApp bridge bot"` | display name of the WhatsApp bridge bot |
+| bridges.whatsapp.bot.username | string | `"whatsappbot"` | Username of the WhatsApp bridge bot |
+| bridges.whatsapp.callNotices | bool | `true` | Send notifications for incoming calls |
+| bridges.whatsapp.communityName | string | `"whatsapp_{{.Localpart}}={{.Server}}"` | Display name for communities. A community will be automatically generated for each user using the bridge, and can be used to group WhatsApp chats together. Evaluated as a template, with variables: {{.Localpart}} - MXID localpart {{.Server}}    - MXID server part of the user. |
+| bridges.whatsapp.connection.maxAttempts | int | `3` | Maximum number of connection attempts before failing |
+| bridges.whatsapp.connection.qrRegenCount | int | `2` | Number of QR codes to store, which multiplies the connection timeout |
+| bridges.whatsapp.connection.reportRetry | bool | `true` | Whether or not to notify the user when attempting to reconnect. Set to false to only report when maxAttempts has been reached |
+| bridges.whatsapp.connection.retryDelay | int | `-1` | Retry delay. Negative numbers are exponential backoff: -connection_retry_delay + 1 + 2^attempts |
+| bridges.whatsapp.connection.timeout | int | `20` | WhatsApp server connection timeout (seconds) |
+| bridges.whatsapp.data.capacity | string | `"512Mi"` | Size of the PVC to allocate for the SQLite database |
+| bridges.whatsapp.data.storageClass | string | `""` | Storage class (optional) |
+| bridges.whatsapp.enabled | bool | `false` | Set to true to enable the WhatsApp bridge |
 | bridges.whatsapp.image.pullPolicy | string | `"Always"` |  |
 | bridges.whatsapp.image.repository | string | `"dock.mau.dev/tulir/mautrix-whatsapp"` |  |
 | bridges.whatsapp.image.tag | string | `"latest"` |  |
-| bridges.whatsapp.permissions.* | string | `"relaybot"` |  |
-| bridges.whatsapp.relaybot.enabled | bool | `false` |  |
+| bridges.whatsapp.permissions | object | `{"*":"relaybot"}` | Permissions for using the bridge. Permitted values: relaybot - Talk through the relaybot (if enabled), no access otherwise     user - Access to use the bridge to chat with a WhatsApp account.    admin - User level and some additional administration tools Permitted keys:        * - All Matrix users   domain - All users on that homeserver     mxid - Specific user |
+| bridges.whatsapp.relaybot.enabled | bool | `false` | Set to true to enable the relaybot and management room |
 | bridges.whatsapp.relaybot.invites | list | `[]` |  |
-| bridges.whatsapp.relaybot.management | string | `"!foo:example.com"` |  |
+| bridges.whatsapp.relaybot.management | string | `"!foo:example.com"` | Management room for the relay bot where status notifs are posted |
 | bridges.whatsapp.replicaCount | int | `1` |  |
 | bridges.whatsapp.resources | object | `{}` |  |
 | bridges.whatsapp.service.port | int | `29318` |  |
 | bridges.whatsapp.service.type | string | `"ClusterIP"` |  |
-| bridges.whatsapp.users.displayName | string | `"{{if .Notify}}{{.Notify}}{{else}}{{.Jid}}{{end}} (WA)"` |  |
-| bridges.whatsapp.users.username | string | `"whatsapp_{{.}}"` |  |
+| bridges.whatsapp.users.displayName | string | `"{{if .Notify}}{{.Notify}}{{else}}{{.Jid}}{{end}} (WA)"` | Display name for WhatsApp users Evaluated as a template, with variables: {{.Notify}} - nickname set by the WhatsApp user {{.Jid}}    - phone number (international format) following vars are available, but cause issue on multi-user instances: {{.Name}}   - display name from contact list {{.Short}}  - short display name from contact list |
+| bridges.whatsapp.users.username | string | `"whatsapp_{{.}}"` | Username for WhatsApp users. Evaluated as a template where {{.}} is replaced with the phone number of the WhatsApp user |
 | coturn.allowGuests | bool | `true` | Whether to allow guests to use the TURN server |
 | coturn.certificate.enabled | bool | `false` | set to true to generate a TLS certificate for encrypted comms |
 | coturn.certificate.host | string | `"turn.example.com"` | hostname for TLS cert |
@@ -104,32 +104,28 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | coturn.ports | object | `{"from":3478,"to":3478}` | UDP port range for TURN connections |
 | coturn.secretKey | string | `"coturnSharedSecret"` | key in existing secret with sharedSecret value. Required if coturn.enabled=true and existingSecret not "" |
 | coturn.service.type | string | `"ClusterIP"` |  |
-| coturn.sharedSecret | string | `""` | shared secert for comms between Synapse/Coturn. autogenerated if not provided |
-| coturn.uris | list | `[]` |  |
+| coturn.sharedSecret | string | `""` | shared secert for comms b/w Synapse/Coturn. autogenerated if not provided |
+| coturn.uris | list | `[]` | URIs of the Coturn servers. If deploying Coturn with this chart, include the public IPs of each node in your cluster (or a DNS round-robin hostname) You can also include an external Coturn instance if you'd prefer |
 | element.branding.authFooterLinks | list | `[]` | Array of links to show at the bottom of the login screen |
 | element.branding.authHeaderLogoUrl | string | `""` | Logo shown at top of login screen |
 | element.branding.brand | string | `"Element"` | brand shown in email notifications |
 | element.branding.welcomeBackgroundUrl | string | `""` | Background of login splash screen |
-| element.enabled | bool | `true` | Set to false to disable a deployment of Element. Users will still be able to connect via any other instances of Element (such as https://app.element.io), Element Desktop, or any other Matrix clients |
-| element.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy to use for element docker image, set to Always if using latest tag |
+| element.enabled | bool | `true` | Set to false to disable a deployment of Element. Users will still be able to connect via any other instances of Element e.g. https://app.element.io, Element Desktop, or any other Matrix clients |
+| element.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy to use for element image, set to Always if using latest tag |
 | element.image.repository | string | `"vectorim/element-web"` | registry and repository to use for element docker image |
 | element.image.tag | string | `"v1.11.36"` | tag to use for element docker image |
+| element.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
+| element.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` |  |
+| element.ingress.enabled | bool | `true` | enable ingress for element |
+| element.ingress.hosts | string | `"element.chart-example.local"` | the hostname to use for element |
+| element.ingress.tls[0].hosts | list | `["element.chart-example.local"]` | the hostname to use for element if using TLS certs |
+| element.ingress.tls[0].secretName | string | `"element-tls"` |  |
 | element.integrations.api | string | `"https://scalar.vector.im/api"` | API for the integration server |
-| element.integrations.enabled | bool | `true` | Set to false to disable the Integrations menu (including widgets, bots, and other plugins to Element) |
-| element.integrations.ui | string | `"https://scalar.vector.im/"` | UI to load when a user selects the Integrations button at the top-right of a room |
+| element.integrations.enabled | bool | `true` | enables the Integrations menu, including:    widgets, bots, and other plugins to Element |
+| element.integrations.ui | string | `"https://scalar.vector.im/"` | UI to load when a user selects the Integrations button at the top-right    of a room |
 | element.integrations.widgets | list | `["https://scalar.vector.im/_matrix/integrations/v1","https://scalar.vector.im/api","https://scalar-staging.vector.im/_matrix/integrations/v1","https://scalar-staging.vector.im/api","https://scalar-staging.element.im/scalar/api"]` | Array of API paths providing widgets |
 | element.labels | object | `{"component":"element"}` | Element specific labels |
-| element.labs[0] | string | `"feature_new_spinner"` |  |
-| element.labs[10] | string | `"feature_custom_themes"` |  |
-| element.labs[1] | string | `"feature_pinning"` |  |
-| element.labs[2] | string | `"feature_custom_status"` |  |
-| element.labs[3] | string | `"feature_custom_tags"` |  |
-| element.labs[4] | string | `"feature_state_counters"` |  |
-| element.labs[5] | string | `"feature_many_integration_managers"` |  |
-| element.labs[6] | string | `"feature_mjolnir"` |  |
-| element.labs[7] | string | `"feature_dm_verification"` |  |
-| element.labs[8] | string | `"feature_bridge_state"` |  |
-| element.labs[9] | string | `"feature_presence_in_room_list"` |  |
+| element.labs | list | `["feature_new_spinner","feature_pinning","feature_custom_status","feature_custom_tags","feature_state_counters","feature_many_integration_managers","feature_mjolnir","feature_dm_verification","feature_bridge_state","feature_presence_in_room_list","feature_custom_themes"]` | Experimental features in Element, see: https://github.com/vector-im/element-web/blob/develop/docs/labs.md |
 | element.permalinkPrefix | string | `"https://matrix.to"` | Prefix before permalinks generated when users share links to rooms, users, or messages. If running an unfederated Synapse, set the below to the URL of your Element instance. |
 | element.probes.liveness | object | `{}` |  |
 | element.probes.readiness | object | `{}` |  |
@@ -142,14 +138,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | element.welcomeUserId | string | `""` | Set to the user ID (@username:domain.tld) of a bot to invite all new users to a DM with the bot upon registration |
 | fullnameOverride | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
-| ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` |  |
-| ingress.enabled | bool | `true` |  |
-| ingress.federation | bool | `true` |  |
-| ingress.hosts.element | string | `"element.chart-example.local"` |  |
-| ingress.hosts.federation | string | `"matrix-fed.chart-example.local"` |  |
-| ingress.hosts.synapse | string | `"matrix.chart-example.local"` |  |
-| ingress.tls | list | `[]` |  |
-| mail.elementUrl | string | `""` | Optional: Element instance URL. If the ingress is enabled, this is unnecessary. If the ingress is disabled and this is left unspecified, emails will contain a link to https://app.element.io |
+| mail.elementUrl | string | `""` | Optional: Element instance URL. If ingress is enabled, this is unnecessary, else if this is empty, emails will contain a link to https://app.element.io |
 | mail.enabled | bool | `false` | disabled all email notifications by default. NOTE: If enabled, either enable the Exim relay or configure an external mail server below |
 | mail.external.host | string | `""` | External mail server hostname |
 | mail.external.password | string | `""` | External mail server password |
@@ -171,18 +160,24 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | mail.relay.service.type | string | `"ClusterIP"` |  |
 | matrix.adminEmail | string | `"admin@example.com"` | Email address of the administrator |
 | matrix.blockNonAdminInvites | bool | `false` | Set to true to block non-admins from inviting users to any rooms |
-| matrix.disabled | bool | `false` |  |
-| matrix.disabledMessage | string | `""` |  |
+| matrix.disabled | bool | `false` | Set to true to globally block access to the homeserver |
+| matrix.disabledMessage | string | `""` | Human readable reason for why the homeserver is blocked |
 | matrix.encryptByDefault | string | `"invite"` |  |
-| matrix.federation.allowPublicRooms | bool | `true` | Set to false to disallow members of other homeservers from fetching *public* rooms |
+| matrix.federation.allowPublicRooms | bool | `true` | Allow members of other homeservers to fetch *public* rooms |
 | matrix.federation.blacklist | list | `["127.0.0.0/8","10.0.0.0/8","172.16.0.0/12","192.168.0.0/16","100.64.0.0/10","169.254.0.0/16","::1/128","fe80::/64","fc00::/7"]` | IP addresses to blacklist federation requests to |
 | matrix.federation.enabled | bool | `true` | Set to false to disable federation and run an isolated homeserver |
-| matrix.federation.whitelist | list | `[]` | Whitelist of domains to federate with (comment for all domains except blacklisted) |
-| matrix.homeserverExtra | object | `{}` | If homeserverExtra is set, the contents will be appended to the end of the default configuration. |
-| matrix.homeserverOverride | object | `{}` | If homeserverOverride is set, the entirety of homeserver.yaml will be replaced with the contents. |
-| matrix.logging.rootLogLevel | string | `"WARNING"` |  |
-| matrix.logging.sqlLogLevel | string | `"WARNING"` |  |
-| matrix.logging.synapseLogLevel | string | `"WARNING"` |  |
+| matrix.federation.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
+| matrix.federation.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
+| matrix.federation.ingress.enabled | bool | `true` |  |
+| matrix.federation.ingress.host | string | `"matrix-fed.chart-example.local"` |  |
+| matrix.federation.ingress.tls[0].hosts[0] | string | `"matrix-fed.chart-example.local"` |  |
+| matrix.federation.ingress.tls[0].secretName | string | `"federation-tls"` |  |
+| matrix.federation.whitelist | list | `[]` | Allow list of domains to federate with (comment for all domains    except blacklisted) |
+| matrix.homeserverExtra | object | `{}` | Contents will be appended to the end of the default configuration |
+| matrix.homeserverOverride | object | `{}` | Replace homeserver.yaml will be replaced with these contents |
+| matrix.logging.rootLogLevel | string | `"WARNING"` | Root log level is the default log level for log outputs that don't have more specific settings. |
+| matrix.logging.sqlLogLevel | string | `"WARNING"` | beware: increasing this to DEBUG will make synapse log sensitive information such as access tokens. |
+| matrix.logging.synapseLogLevel | string | `"WARNING"` | The log level for the synapse server |
 | matrix.presence | bool | `true` | Set to false to disable presence (online/offline indicators) |
 | matrix.registration.allowGuests | bool | `false` | Allow users to join rooms as a guest |
 | matrix.registration.autoJoinRooms | list | `[]` | Rooms to automatically join all new users to |
@@ -191,12 +186,12 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | matrix.retentionPeriod | string | `"7d"` | How long to keep redacted events in unredacted form in the database |
 | matrix.search | bool | `true` | Set to false to disable message searching |
 | matrix.security.surpressKeyServerWarning | bool | `true` |  |
-| matrix.serverName | string | `"example.com"` | Domain name of the server: This is not necessarily the host name where the service is reachable. In fact, you may want to omit any subdomains from this value as the server name set here will be the name of your homeserver in the fediverse, and will be the domain name at the end of every user's username |
+| matrix.serverName | string | `"example.com"` | Domain name of the server: This is not necessarily the host name where the service is reachable. In fact, you may want to omit any subdomains from this value as the server name set here will be the name of your homeserver in the fediverse, & will be the domain name at the end of every username |
 | matrix.telemetry | bool | `false` | Enable anonymous telemetry to matrix.org |
 | matrix.uploads | object | `{"maxPixels":"32M","maxSize":"10M"}` | Settings related to image and multimedia uploads |
 | matrix.uploads.maxPixels | string | `"32M"` | Max image size in pixels |
 | matrix.uploads.maxSize | string | `"10M"` | Max upload size in bytes |
-| matrix.urlPreviews.enabled | bool | `false` | Enable URL previews. WARNING: Make sure to review the default rules below to ensure that users cannot crawl sensitive internal endpoints in your cluster. |
+| matrix.urlPreviews.enabled | bool | `false` | Enable URL previews. WARN: Make sure to review default rules below to ensure that users cannot crawl sensitive internal endpoints on yr cluster |
 | matrix.urlPreviews.rules.ip.blacklist[0] | string | `"127.0.0.0/8"` |  |
 | matrix.urlPreviews.rules.ip.blacklist[1] | string | `"10.0.0.0/8"` |  |
 | matrix.urlPreviews.rules.ip.blacklist[2] | string | `"172.16.0.0/12"` |  |
@@ -207,15 +202,15 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | matrix.urlPreviews.rules.ip.blacklist[7] | string | `"fe80::/64"` |  |
 | matrix.urlPreviews.rules.ip.blacklist[8] | string | `"fc00::/7"` |  |
 | matrix.urlPreviews.rules.ip.whitelist | list | `[]` |  |
-| matrix.urlPreviews.rules.maxSize | string | `"10M"` | Maximum size of a crawlable page. Keep this low to prevent a DOS vector |
+| matrix.urlPreviews.rules.maxSize | string | `"10M"` | Max size of a crawlable page. Keep this low to prevent a DOS vector |
 | matrix.urlPreviews.rules.url | object | `{}` | Whitelist and blacklist based on URL pattern matching |
 | nameOverride | string | `""` |  |
 | networkPolicies.enabled | bool | `true` | whether to enable kubernetes network policies or not |
-| postgresql.enabled | bool | `true` | Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure PostgreSQL is available at the hostname below and credentials are configured below |
+| postgresql.enabled | bool | `true` | Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure PostgreSQL is available at the hostname below and credentials are configured under postgresql.global.postgresql.auth |
 | postgresql.global.postgresql.auth.database | string | `"matrix"` | name of database to use for matrix |
 | postgresql.global.postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
-| postgresql.global.postgresql.auth.hostname | string | `""` | hostname of db server. Can be left blank if using bundled bitnami postgresql sub-chart |
-| postgresql.global.postgresql.auth.password | string | `"changeme"` | password of matrix postgres user - ignored if exsitingSecret is passed in |
+| postgresql.global.postgresql.auth.hostname | string | `""` | hostname of db server. Can be left blank if using postgres subchart |
+| postgresql.global.postgresql.auth.password | string | `"changeme"` | password of matrix postgres user - ignored using exsitingSecret |
 | postgresql.global.postgresql.auth.port | int | `5432` | which port to use to connect to your database server |
 | postgresql.global.postgresql.auth.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existingSecret with the admin postgresql password |
 | postgresql.global.postgresql.auth.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
@@ -223,19 +218,25 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | postgresql.global.postgresql.auth.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix to connect to db |
 | postgresql.global.postgresql.auth.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix to connect to db |
 | postgresql.global.postgresql.auth.username | string | `"matrix"` | username of matrix postgres user |
-| postgresql.primary.initdbScriptsConfigMap | string | `"{{ .Release.Name }}-postgresql-initdb"` | If postgresql.enabled, stable/postgresql will run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database  as specified at https://github.com/matrix-org/synapse/blob/master/docs/postgres.md |
+| postgresql.primary.initdbScriptsConfigMap | string | `"{{ .Release.Name }}-postgresql-initdb"` | If postgresql.enabled, stable/postgresql will run the scripts in: templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/matrix-org/synapse/blob/master/docs/postgres.md |
 | postgresql.primary.persistence | object | `{"enabled":true,"size":"8Gi"}` | persistent volume claim configuration for postgresql to persist data |
 | postgresql.primary.persistence.enabled | bool | `true` | Enable PostgreSQL Primary data persistence using PVC |
 | postgresql.primary.persistence.size | string | `"8Gi"` | size of postgresql volume claim |
 | postgresql.primary.podSecurityContext.enabled | bool | `true` |  |
 | postgresql.primary.podSecurityContext.fsGroup | int | `1000` |  |
 | postgresql.primary.podSecurityContext.runAsUser | int | `1000` |  |
-| postgresql.volumePermissions.enabled | bool | `true` | Enable init container that changes the owner and group of the persistent volume |
+| postgresql.volumePermissions.enabled | bool | `true` | Enable init container that changes the owner and group of the PVC |
 | synapse.extraVolumeMounts | list | `[]` |  |
 | synapse.extraVolumes | list | `[]` |  |
-| synapse.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy for synapse image, set to Always if using synapse.image.tag: latest |
+| synapse.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy for synapse image, Use Always if using image.tag: latest |
 | synapse.image.repository | string | `"matrixdotorg/synapse"` | image registry and repository to use for synapse |
-| synapse.image.tag | string | `""` | tag of synapse docker image to use. change this to latest to grab the cutting-edge release of synapse |
+| synapse.image.tag | string | `""` | tag of synapse docker image to use. change this to latest to grab the    cutting-edge release of synapse |
+| synapse.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
+| synapse.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | This annotation is required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
+| synapse.ingress.enabled | bool | `true` |  |
+| synapse.ingress.host | string | `"matrix.chart-example.local"` |  |
+| synapse.ingress.tls[0].hosts[0] | string | `"matrix.chart-example.local"` |  |
+| synapse.ingress.tls[0].secretName | string | `"matrix-tls"` |  |
 | synapse.labels | object | `{"component":"synapse"}` | Labels to be appended to all Synapse resources |
 | synapse.metrics.annotations | bool | `true` |  |
 | synapse.metrics.enabled | bool | `true` | Whether Synapse should capture metrics on an additional endpoint |
@@ -258,13 +259,13 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | synapse.service.federation.type | string | `"ClusterIP"` |  |
 | synapse.service.port | int | `80` | service port for synapse |
 | synapse.service.type | string | `"ClusterIP"` | service type for synpase |
-| volumes.media.capacity | string | `"10Gi"` | Capacity of the media persistent volume claim - ignored if using exsitingClaim |
-| volumes.media.existingClaim | string | `""` | name of an existing persistent volume claim to use for uploaded attachments and multimedia |
-| volumes.media.storageClass | string | `""` | Storage class of the media PVC (optional) - ignored if using exsitingClaim |
-| volumes.signingKey.capacity | string | `"1Mi"` | Capacity of the signing key PVC. Note: 1Mi is more than enough, but some cloud providers set a minimum PVC size of 1Mi or 1Gi, adjust as necessary |
+| volumes.media.capacity | string | `"10Gi"` | Capacity of the media PVC - ignored if using exsitingClaim |
+| volumes.media.existingClaim | string | `""` | name of an existing PVC to use for uploaded attachments and multimedia |
+| volumes.media.storageClass | string | `""` | Storage class of the media PVC - ignored if using exsitingClaim |
+| volumes.signingKey.capacity | string | `"1Mi"` | Capacity of the signing key PVC. Note: 1Mi is more than enough, but some cloud providers set a min PVC size of 1Mi or 1Gi, adjust as necessary |
 | volumes.signingKey.existingClaim | string | `""` | name of an existing persistent volume claim to use for signing key |
 | volumes.signingKey.storageClass | string | `""` | Storage class (optional) |
-| volumes.synapseConfig.capacity | string | `"1Mi"` | Capacity of the signing key PVC. Note: 1Mi is more than enough, but some cloud providers set a minimum PVC size of 1Mi or 1Gi, adjust as necessary |
+| volumes.synapseConfig.capacity | string | `"1Mi"` | Capacity of the signing key PVC. Note: 1Mi is more than enough, but some cloud providers set a min PVC size of 1Mi or 1Gi, adjust as necessary |
 | volumes.synapseConfig.existingClaim | string | `""` | name of an existing persistent volume claim for synapse config file |
 | volumes.synapseConfig.storageClass | string | `""` | Storage class (optional) |
 

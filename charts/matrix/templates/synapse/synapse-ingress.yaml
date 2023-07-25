@@ -1,0 +1,34 @@
+{{- if .Values.synapse.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "matrix.fullname" . }}-synapse
+  labels:
+    {{- include "matrix.labels" . | nindent 4 }}
+  {{- with .Values.synapse.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+{{- if .Values.synapse.ingress.tls }}
+  tls:
+    {{- range .Values.synapse.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+      - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+{{- end }}
+  rules:
+    - host: {{ .Values.synapse.ingress.host }}
+      http:
+        paths:
+          - path: "/"
+            backend:
+              service:
+                name: "{{ include "matrix.fullname" . }}-synapse"
+                port:
+                  number: {{ .Values.synapse.service.port }}
+            pathType: ImplementationSpecific
+{{- end }}

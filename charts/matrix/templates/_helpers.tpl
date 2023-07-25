@@ -89,7 +89,7 @@ Synapse hostname, derived from either the Values.matrix.hostname override or the
 {{- if .Values.matrix.hostname }}
 {{- .Values.matrix.hostname -}}
 {{- else }}
-{{- .Values.ingress.hosts.synapse -}}
+{{- .Values.synapse.ingress.host -}}
 {{- end }}
 {{- end }}
 
@@ -100,7 +100,7 @@ Synapse hostname prepended with https:// to form a complete URL
 {{- if .Values.matrix.hostname }}
 {{- printf "https://%s" .Values.matrix.hostname -}}
 {{- else }}
-{{- printf "https://%s" .Values.ingress.hosts.synapse -}}
+{{- printf "https://%s" .Values.synapse.ingress.host -}}
 {{- end }}
 {{- end }}
 

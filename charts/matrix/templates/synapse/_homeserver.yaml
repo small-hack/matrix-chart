@@ -1861,8 +1861,8 @@ email:
   # supported for backwards-compatibility but is now deprecated.)
   {{- if .Values.mail.elementUrl }}
   client_base_url: {{ .Values.mail.elementUrl }}
-  {{- else if .Values.ingress.enabled }}
-  client_base_url: {{ .Values.ingress.hosts.element }}
+  {{- else if .Values.element.ingress.enabled }}
+  client_base_url: {{ .Values.element.ingress.host }}
   {{- end }}
 
   # Configure the time that a validation email will expire after sending.

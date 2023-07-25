@@ -27,11 +27,11 @@ Installed components:
 
 Thank you for installing jessebot/matrix-chart! If you have any questions or run into any issues, please file a GitHub issue. :)
 
-{{ if .Values.ingress.enabled }}
-Your Synapse homeserver should soon be available at https://{{ .Values.ingress.hosts.synapse }}
-{{- if .Values.element.enabled }}
-Your Element Web instance should soon be available at https://{{ .Values.ingress.hosts.element }}
+{{ if .Values.synapse.ingress.enabled }}
+Your Synapse homeserver should soon be available at https://{{ .Values.synapse.ingress.host }}
 {{- end }}
+{{- if .Values.element.ingress.enabled }}
+Your Element Web instance should soon be available at https://{{ .Values.element.ingress.host }}
 {{- end }}
 
 {{ if .Values.bridges.irc.enabled }}
