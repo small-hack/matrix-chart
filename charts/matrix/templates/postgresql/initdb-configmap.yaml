@@ -8,7 +8,7 @@ metadata:
 data:
   matrix.sql: |
     CREATE DATABASE matrix ENCODING 'UTF8' LOCALE 'C' TEMPLATE template0 OWNER {{ .Values.postgresql.global.postgresql.auth.username }};
-    GRANT ALL PRIVILEGES ON DATABASE {{ .Values.postgresql.global.postgresql.auth.database }} TO {{ .Values.postgresql.global.postgresql.auth.username }};
+    GRANT ALL PRIVILEGES ON DATABASE matrix TO {{ .Values.postgresql.global.postgresql.auth.username }};
     GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {{ .Values.postgresql.global.postgresql.auth.username }};
   {{- if .Values.bridges.irc.enabled }}
   {{/* Scripts are run in alphabetical order */}}
