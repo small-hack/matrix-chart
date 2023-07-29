@@ -11,6 +11,7 @@ on:
 
 jobs:
   release:
+    environment: helm-release
     permissions:
       contents: write
     runs-on: ubuntu-latest
