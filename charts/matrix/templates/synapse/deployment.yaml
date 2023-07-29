@@ -100,14 +100,14 @@ spec:
             - -ec
             - |
               cp /initial/homeserver.yaml /data/homeserver.yaml && \
-              sleep 5000 && \
+              cp /initial/{{ .Values.matrix.serverName }}.log.config /data/ && \
               {{- if .Values.coturn.enabled }}
               yq eval -i '.turn_shared_secret = env(COTURN_SHARED_SECRET)' /data/homeserver.yaml && \
               {{- end }}
               yq eval -i '.database.args.host = env(DATABASE_HOSTNAME)' /data/homeserver.yaml && \
               yq eval -i '.database.args.database = env(DATABASE)' /data/homeserver.yaml && \
               yq eval -i '.database.args.user = env(DATABASE_USERNAME)' /data/homeserver.yaml && \
-              yq eval -i '.database.args.password = env(DATABASE_PASSWORD)' /data/homeserver.yaml && \
+              yq eval -i '.database.args.password = env(DATABASE_PASSWORD)' /data/homeserver.yaml
           volumeMounts:
             - name: synapse-initial-config
               mountPath: "/initial"
@@ -165,8 +165,6 @@ spec:
           volumeMounts:
             - name: synapse-config
               mountPath: /data
-            - name: logging-config
-              mountPath: /data/{{ .Values.matrix.serverName }}.log.config
             - name: signing-key
               mountPath: /data/keys
             - name: media-store
@@ -248,9 +246,6 @@ spec:
             claimName: {{ .Values.bridges.volume.existingClaim }}
             {{- end }}
         {{- end }}
-        - name: logging-config
-          configMap:
-            name: {{ include "matrix.fullname" . }}-synapse-logging-config
         # Ephemeral in-progress uploads
         - name: uploads
           emptyDir: {}
