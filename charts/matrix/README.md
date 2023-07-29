@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 4.1.0](https://img.shields.io/badge/Version-4.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
+![Version: 4.1.1](https://img.shields.io/badge/Version-4.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -169,6 +169,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | element.image.tag | string | `"v1.11.36"` | tag to use for element docker image |
 | element.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | element.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` |  |
+| element.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
 | element.ingress.enabled | bool | `true` | enable ingress for element |
 | element.ingress.host | string | `"element.chart-example.local"` | the hostname to use for element |
 | element.ingress.tls.enabled | bool | `true` |  |
@@ -220,6 +221,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | matrix.federation.enabled | bool | `true` | Set to false to disable federation and run an isolated homeserver |
 | matrix.federation.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | matrix.federation.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
+| matrix.federation.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
 | matrix.federation.ingress.enabled | bool | `true` |  |
 | matrix.federation.ingress.host | string | `"matrix-fed.chart-example.local"` |  |
 | matrix.federation.ingress.tls.enabled | bool | `true` |  |
@@ -283,6 +285,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | synapse.image.tag | string | `""` | tag of synapse docker image to use. change this to latest to grab the    cutting-edge release of synapse |
 | synapse.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | synapse.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | This annotation is required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
+| synapse.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
 | synapse.ingress.enabled | bool | `true` |  |
 | synapse.ingress.host | string | `"matrix.chart-example.local"` |  |
 | synapse.ingress.tls.enabled | bool | `true` |  |

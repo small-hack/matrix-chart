@@ -79,6 +79,8 @@ matrix:
       tls:
         enabled: true
       host: matrix-fed.chart-example.local
+      # -- ingressClassName for the k8s ingress
+      className: "nginx"
       annotations:
         # -- required for the Nginx ingress provider. You can remove it if you
         # use a different ingress provider
@@ -342,6 +344,8 @@ synapse:
   ingress:
     enabled: true
     host: matrix.chart-example.local
+    # -- ingressClassName for the k8s ingress
+    className: "nginx"
     tls:
       enabled: true
     annotations:
@@ -413,6 +417,8 @@ element:
   enabled: true
 
   ingress:
+    # -- ingressClassName for the k8s ingress
+    className: "nginx"
     # -- enable ingress for element
     enabled: true
     tls:
