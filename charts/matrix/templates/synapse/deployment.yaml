@@ -26,7 +26,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      
       securityContext:
         {{- if .Values.synapse.securityContext.runAsUser }}
         runAsUser: {{ .Values.synapse.securityContext.runAsUser }}
@@ -50,10 +49,19 @@ spec:
                 secretKeyRef:
                   name: {{ include "matrix.postgresql.secretName" . }}
                   key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.databaseUsername }}
+            - name: DATABASE_HOSTNAME
+              {{- if .Values.postgresql.enabled }}
+              value: {{ template "postgresql.primary.fullname" .Subcharts.postgresql }}
+              {{ else }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix.postgresql.secretName" . }}
+                  key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.databaseHostname }}
+              {{- end }}
           command:
             - "sh"
             - "-c"
-            - {{ printf "until pg_isready -h %s-postgresql -U ${POSTGRES_USER} ; do sleep 2 ; done" .Release.Name }}
+            - "until pg_isready -h $DATABASE_HOSTNAME -U $POSTGRES_USER; do sleep 2; done"
         {{- end }}
         - name: add-secret-values-to-config
           image: "mikefarah/yq:latest"
