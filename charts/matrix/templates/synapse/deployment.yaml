@@ -15,9 +15,6 @@ spec:
     type: Recreate
   template:
     metadata:
-      annotations:
-        # re-roll deployment on homeserver.yaml change
-        checksum/synapse-config: {{ include (print $.Template.BasePath "/synapse/configmap.yaml") . | sha256sum }}
       labels:
         app.kubernetes.io/name: {{ include "matrix.name" . }}-synapse
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -102,8 +99,8 @@ spec:
             - /bin/sh
             - -ec
             - |
-              cp /initial/{{ .Values.matrix.serverName }}.log.config /data/ && \
               cp /initial/homeserver.yaml /data/homeserver.yaml && \
+              sleep 5000 && \
               {{- if .Values.coturn.enabled }}
               yq eval -i '.turn_shared_secret = env(COTURN_SHARED_SECRET)' /data/homeserver.yaml && \
               {{- end }}
@@ -113,7 +110,7 @@ spec:
               yq eval -i '.database.args.password = env(DATABASE_PASSWORD)' /data/homeserver.yaml && \
           volumeMounts:
             - name: synapse-initial-config
-              mountPath: /initial
+              mountPath: "/initial"
             - name: synapse-config
               mountPath: /data
       # generate signing key only on fresh install
@@ -168,6 +165,8 @@ spec:
           volumeMounts:
             - name: synapse-config
               mountPath: /data
+            - name: logging-config
+              mountPath: /data/{{ .Values.matrix.serverName }}.log.config
             - name: signing-key
               mountPath: /data/keys
             - name: media-store
@@ -249,6 +248,9 @@ spec:
             claimName: {{ .Values.bridges.volume.existingClaim }}
             {{- end }}
         {{- end }}
+        - name: logging-config
+          configMap:
+            name: {{ include "matrix.fullname" . }}-synapse-logging-config
         # Ephemeral in-progress uploads
         - name: uploads
           emptyDir: {}
