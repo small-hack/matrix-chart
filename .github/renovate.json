@@ -1,5 +1,5 @@
 {
   "repositories": [
-    "jessebot/matrix-chart",
+    "https://github.com/jessebot/matrix-chart"
   ]
 }
