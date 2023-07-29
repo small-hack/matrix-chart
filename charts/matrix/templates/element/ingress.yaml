@@ -10,12 +10,15 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-{{- if .Values.element.ingress.tls.enabled }}
+  {{- if .Values.element.ingress.className }}
+  ingressClassName: {{ .Values.element.ingress.className }}
+  {{- end }}
+  {{- if .Values.element.ingress.tls.enabled }}
   tls:
     - hosts:
       - {{ .Values.element.ingress.host }}
       secretName: element-tls
-{{- end }}
+  {{- end }}
   rules:
     - host: {{ .Values.element.ingress.host }}
       http:

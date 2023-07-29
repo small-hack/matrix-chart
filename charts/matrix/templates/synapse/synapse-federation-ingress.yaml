@@ -10,12 +10,15 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-{{- if .Values.matrix.federation.ingress.tls.enabled }}
+  {{- if .Values.element.ingress.className }}
+  ingressClassName: {{ .Values.element.ingress.className }}
+  {{- end }}
+  {{- if .Values.matrix.federation.ingress.tls.enabled }}
   tls:
     - hosts:
       - {{ .Values.matrix.federation.ingress.host }}
       secretName: matrix-federation-tls
-{{- end }}
+  {{- end }}
   rules:
     - host: {{ .Values.matrix.federation.ingress.host }}
       http:

@@ -10,6 +10,9 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  {{- if .Values.synapse.ingress.className }}
+  ingressClassName: {{ .Values.synapse.ingress.className }}
+  {{- end }}
   rules:
     - host: {{ .Values.synapse.ingress.host }}
       http:
