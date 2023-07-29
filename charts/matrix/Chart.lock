@@ -4,6 +4,6 @@ dependencies:
   version: 12.7.1
 - name: coturn
   repository: https://jessebot.github.io/coturn-chart
-  version: 4.1.1
-digest: sha256:d9376b1c128db3824c89cb3ab53a1929821971cff33d04c8f328b6df4d3703b9
-generated: "2023-07-29T16:02:57.703287+02:00"
+  version: 4.1.2
+digest: sha256:6315beeffb70ac329400ee6fe69f54e9d06a4c7b1b208c9c929227786d27d167
+generated: "2023-07-29T19:18:47.412173+02:00"
