@@ -8,7 +8,7 @@ sources:
 
 type: application
 
-version: 4.0.5
+version: 4.1.0
 appVersion: v1.88.0
 
 maintainers:
@@ -21,10 +21,10 @@ maintainers:
 
 dependencies:
   - name: postgresql
-    version: 12.6.9
+    version: 12.7.1
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
   - name: coturn
-    version: 3.0.5
+    version: 4.1.2
     repository: https://jessebot.github.io/coturn-chart
     condition: coturn.enabled

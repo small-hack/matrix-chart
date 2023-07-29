@@ -15,9 +15,6 @@ spec:
     type: Recreate
   template:
     metadata:
-      annotations:
-        # re-roll deployment on homeserver.yaml change
-        checksum/synapse-config: {{ include (print $.Template.BasePath "/synapse/configmap.yaml") . | sha256sum }}
       labels:
         app.kubernetes.io/name: {{ include "matrix.name" . }}-synapse
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -26,7 +23,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      
       securityContext:
         {{- if .Values.synapse.securityContext.runAsUser }}
         runAsUser: {{ .Values.synapse.securityContext.runAsUser }}
@@ -41,6 +37,29 @@ spec:
         runAsNonRoot: {{ .Values.synapse.securityContext.runAsNonRoot }}
         {{- end }}
       initContainers:
+        {{- if .Values.postgresql.enabled }}
+        - name: postgresql-isready
+          image: {{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix.postgresql.secretName" . }}
+                  key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.databaseUsername }}
+            - name: DATABASE_HOSTNAME
+              {{- if .Values.postgresql.enabled }}
+              value: {{ template "postgresql.primary.fullname" .Subcharts.postgresql }}
+              {{ else }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix.postgresql.secretName" . }}
+                  key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.databaseHostname }}
+              {{- end }}
+          command:
+            - "sh"
+            - "-c"
+            - "until pg_isready -h $DATABASE_HOSTNAME -U $POSTGRES_USER; do sleep 2; done"
+        {{- end }}
         - name: add-secret-values-to-config
           image: "mikefarah/yq:latest"
           imagePullPolicy: Always
@@ -69,25 +88,29 @@ spec:
                 secretKeyRef:
                   name: {{ include "matrix.postgresql.secretName" . }}
                   key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.userPasswordKey}}
+            {{- if .Values.coturn.enabled }}
             - name: COTURN_SHARED_SECRET
               valueFrom:
                 secretKeyRef:
                   name: {{ include "matrix.coturn.secretName" . }}
                   key: {{ .Values.coturn.secretKey }}
+            {{- end }}
           command:
             - /bin/sh
             - -ec
             - |
-              cp /initial/{{ .Values.matrix.serverName }}.log.config /data/ && \
               cp /initial/homeserver.yaml /data/homeserver.yaml && \
+              cp /initial/{{ .Values.matrix.serverName }}.log.config /data/ && \
+              {{- if .Values.coturn.enabled }}
+              yq eval -i '.turn_shared_secret = env(COTURN_SHARED_SECRET)' /data/homeserver.yaml && \
+              {{- end }}
               yq eval -i '.database.args.host = env(DATABASE_HOSTNAME)' /data/homeserver.yaml && \
               yq eval -i '.database.args.database = env(DATABASE)' /data/homeserver.yaml && \
               yq eval -i '.database.args.user = env(DATABASE_USERNAME)' /data/homeserver.yaml && \
-              yq eval -i '.database.args.password = env(DATABASE_PASSWORD)' /data/homeserver.yaml && \
-              yq eval -i '.turn_shared_secret = env(COTURN_SHARED_SECRET)' /data/homeserver.yaml
+              yq eval -i '.database.args.password = env(DATABASE_PASSWORD)' /data/homeserver.yaml
           volumeMounts:
             - name: synapse-initial-config
-              mountPath: /initial
+              mountPath: "/initial"
             - name: synapse-config
               mountPath: /data
       # generate signing key only on fresh install

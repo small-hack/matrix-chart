@@ -23,12 +23,12 @@ helm install my-release-name matrix --values values.yaml
 
 - Latest version of [Element](https://element.io/)
 - [Bitnami PostgreSQL subchart](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) to deploy a cluster - needs some work to standardize though, so we also support external postgresql servers
+- [Coturn TURN server subchart](https://github.com/jessebot/coturn-chart) for VoIP calls
 
 #### ⚠️ Optional Features (Untested Since Fork)
 
 These features still need to be tested, but are technically baked into the chart:
 - Choice of lightweight Exim relay or external mail server for email notifications
-- [Coturn TURN server subchart](https://github.com/jessebot/coturn-chart) for VoIP calls
 - [Half-Shot/matrix-appservice-discord](https://github.com/Half-Shot/matrix-appservice-discord) Discord bridge
 - [matrix-org/matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) IRC bridge
 - [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge

@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 4.0.5](https://img.shields.io/badge/Version-4.0.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
+![Version: 4.1.0](https://img.shields.io/badge/Version-4.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -21,8 +21,8 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://jessebot.github.io/coturn-chart | coturn | 3.0.5 |
-| oci://registry-1.docker.io/bitnamicharts | postgresql | 12.6.9 |
+| https://jessebot.github.io/coturn-chart | coturn | 4.1.2 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql | 12.7.1 |
 
 ## Values
 
@@ -99,10 +99,63 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | coturn.certificate.enabled | bool | `false` | set to true to generate a TLS certificate for encrypted comms |
 | coturn.certificate.host | string | `"turn.example.com"` | hostname for TLS cert |
 | coturn.certificate.issuerName | string | `"letsencrypt-staging"` | cert-manager cert Issuer or ClusterIssuer to use |
-| coturn.enabled | bool | `true` | Set to false to disable the included deployment of Coturn |
+| coturn.coturn.auth.existingSecret | string | `""` | existing secret with keys username/password for coturn |
+| coturn.coturn.auth.password | string | `""` | password for the main user of the turn server |
+| coturn.coturn.auth.secretKeys.password | string | `"password"` | key in existing secret for turn server user's password |
+| coturn.coturn.auth.secretKeys.username | string | `"username"` | key in existing secret for turn server user |
+| coturn.coturn.auth.username | string | `"coturn"` | username for the main user of the turn server |
+| coturn.coturn.extraTurnserverConfiguration | string | `"verbose\n"` | extra configuration for turnserver.conf |
+| coturn.coturn.listeningIP | string | `"0.0.0.0"` | coturn's listening IP address |
+| coturn.coturn.logFile | string | `"stdout"` | set the logfile. Defaults to stdout for use with kubectl logs |
+| coturn.coturn.ports.listening | int | `3478` | insecure listening port |
+| coturn.coturn.ports.max | int | `65535` | maximum ephemeral port for coturn |
+| coturn.coturn.ports.min | int | `49152` | minimum ephemeral port for coturn |
+| coturn.coturn.ports.tlsListening | int | `5349` | secure listening port |
+| coturn.coturn.realm | string | `"turn.example.com"` | hostname for the coturn server realm |
+| coturn.enabled | bool | `false` | Set to false to disable the included deployment of Coturn |
 | coturn.existingSecret | string | `""` | Optional: name of an existingSecret with key for sharedSecret |
+| coturn.externalDatabase.database | string | `""` | database to create, ignored if existingSecret is passed in |
+| coturn.externalDatabase.enabled | bool | `false` | enables the use of postgresql instead of the default sqlite for coturn to use the bundled subchart, enable this, and postgresql.enable |
+| coturn.externalDatabase.existingSecret | string | `""` | name of existing Secret to use for postgresql credentials |
+| coturn.externalDatabase.hostname | string | `""` | required if externalDatabase.enabled: true and postgresql.enabled:false |
+| coturn.externalDatabase.password | string | `""` | password for database, ignored if existingSecret is passed in |
+| coturn.externalDatabase.secretKeys.database | string | `""` | key in existing Secret to use for the database name |
+| coturn.externalDatabase.secretKeys.hostname | string | `""` | key in existing Secret to use for the db's hostname |
+| coturn.externalDatabase.secretKeys.password | string | `""` | key in existing Secret to use for db user's password |
+| coturn.externalDatabase.secretKeys.username | string | `""` | key in existing Secret to use for the db user |
+| coturn.externalDatabase.type | string | `"postgresql"` | Currently only postgresql is supported. mysql coming soon |
+| coturn.externalDatabase.username | string | `""` | username for database, ignored if existingSecret is passed in |
+| coturn.image.pullPolicy | string | `"IfNotPresent"` | image pull policy, set to Always if using image.tag: latest |
+| coturn.image.repository | string | `"coturn/coturn"` | container registry and repo for coturn docker image |
+| coturn.image.tag | string | `""` | docker tag for coturn server |
+| coturn.labels | object | `{"component":"coturn"}` | Coturn specific labels |
+| coturn.persistence.accessMode | string | `"ReadWriteOnce"` | access mode for the PVC, ignored if persistence.existingClaim passed in |
+| coturn.persistence.annotations | object | `{}` | annotations for the PVC, ignored if persistence.existingClaim passed in |
+| coturn.persistence.existingClaim | string | `""` | existing PVC to use instead of creating one on the fly |
+| coturn.persistence.size | string | `"1Mi"` | size of the PVC, ignored if persistence.existingClaim passed in |
+| coturn.persistence.storageClass | string | `""` | storageClass for the PVC, ignored if persistence.existingClaim passed in |
 | coturn.ports | object | `{"from":3478,"to":3478}` | UDP port range for TURN connections |
+| coturn.postgresql.enabled | bool | `false` | enables bitnami postgresql subchart, you can disable to use external db |
+| coturn.postgresql.global.postgresql.auth | object | `{"database":"coturn","existingSecret":"","password":"","secretKeys":{"adminPasswordKey":"postgresPassword","database":"database","hostname":"hostname","userPasswordKey":"password","username":"username"},"username":"coturn"}` | global.postgresql.auth overrides postgresql.auth |
+| coturn.postgresql.global.postgresql.auth.database | string | `"coturn"` | database to create, ignored if existingSecret is passed in |
+| coturn.postgresql.global.postgresql.auth.existingSecret | string | `""` | name of existing Secret to use for postgresql credentials |
+| coturn.postgresql.global.postgresql.auth.password | string | `""` | password for db, autogenerated if empty & existingSecret empty |
+| coturn.postgresql.global.postgresql.auth.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existing Secret to use for postgres admin user's password |
+| coturn.postgresql.global.postgresql.auth.secretKeys.database | string | `"database"` | key in existingSecret for database to create |
+| coturn.postgresql.global.postgresql.auth.secretKeys.hostname | string | `"hostname"` | key in existingSecret for database to create |
+| coturn.postgresql.global.postgresql.auth.secretKeys.userPasswordKey | string | `"password"` | key in existing Secret to use for coturn user's password |
+| coturn.postgresql.global.postgresql.auth.secretKeys.username | string | `"username"` | key in exsiting Secret to use for the coturn user |
+| coturn.postgresql.global.postgresql.auth.username | string | `"coturn"` | username for database, ignored if existingSecret is passed in |
+| coturn.resources | object | `{}` | ref: kubernetes.io/docs/concepts/configuration/manage-resources-containers |
 | coturn.secretKey | string | `"coturnSharedSecret"` | key in existing secret with sharedSecret value. Required if coturn.enabled=true and existingSecret not "" |
+| coturn.securityContext.allowPrivilegeEscalation | bool | `true` | allow priviledged access |
+| coturn.securityContext.capabilities.add | list | `["NET_BIND_SERVICE"]` | linux cabilities to allow for the coturn k8s pod |
+| coturn.securityContext.capabilities.drop | list | `["ALL"]` | linux cabilities to disallow for the coturn k8s pod |
+| coturn.securityContext.fsGroup | int | `1000` | all processes of the container are also part of the supplementary groupID |
+| coturn.securityContext.readOnlyRootFilesystem | bool | `false` | allow modificatin to root filesystem |
+| coturn.securityContext.runAsGroup | int | `1000` | for all Containers in the Pod, all processes run w/ this GroupID |
+| coturn.securityContext.runAsUser | int | `1000` | for all Containers in the Pod, all processes run w/ this userID |
+| coturn.service.externalTrafficPolicy | string | `"Local"` | I don't actually know what this is 🤔 open a PR if you know |
 | coturn.service.type | string | `"ClusterIP"` |  |
 | coturn.sharedSecret | string | `""` | shared secert for comms b/w Synapse/Coturn. autogenerated if not provided |
 | coturn.uris | list | `[]` | URIs of the Coturn servers. If deploying Coturn with this chart, include the public IPs of each node in your cluster (or a DNS round-robin hostname) You can also include an external Coturn instance if you'd prefer |
