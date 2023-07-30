@@ -94,10 +94,20 @@ matrix:
     # -- Allow new users to register an account
     enabled: false
 
-    # If set, allows registration of standard or admin accounts by anyone who
+    # -- If set, allows registration of standard or admin accounts by anyone who
     # has the shared secret, even if registration is otherwise disabled.
-    #
-    # sharedSecret: <PRIVATE STRING>
+    # ignored if existingSecret is passed in
+    sharedSecret: ""
+
+    # -- if set, allows user to generate a random shared secret in a k8s secret
+    # ignored if existingSecret is passed in
+    generateSharedSecret: false
+
+    # -- if set, pull sharedSecret from an existing k8s secret
+    existingSecret: ""
+
+    # -- key in existing k8s secret for registration shared secret
+    secretKey: "registrationSharedSecret"
 
     # -- Allow users to join rooms as a guest
     allowGuests: false

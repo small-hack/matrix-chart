@@ -996,13 +996,6 @@ registration_requires_token: {{ .Values.matrix.registration.requiresToken }}
 #
 #enable_3pid_lookup: true
 
-# If set, allows registration of standard or admin accounts by anyone who
-# has the shared secret, even if registration is otherwise disabled.
-#
-{{- if .Values.matrix.registration.sharedSecret }}
-registration_shared_secret: {{ .Values.matrix.registration.sharedSecret }}
-{{- end }}
-
 # Set the number of bcrypt rounds used to generate password hash.
 # Larger numbers increase the work factor needed to generate the hash.
 # The default number is 12 (which equates to 2^12 rounds).
