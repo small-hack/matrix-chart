@@ -16,13 +16,13 @@ data:
       "brand": {{ .Values.element.branding.brand | quote }},
       "branding": {
         {{- if .Values.element.branding.welcomeBackgroundUrl }}
-        "welcomeBackgroundUrl": {{ .Values.element.branding.welcomeBackgroundUrl | quote }},
+        "welcomeBackgroundUrl": {{ .Values.element.branding.welcomeBackgroundUrl | quote }}{{ if .Values.element.branding.authHeaderLogoUrl }},{{- end }}
         {{- end }}
         {{- if .Values.element.branding.authHeaderLogoUrl }}
-        "authHeaderLogoUrl": {{ .Values.element.branding.authHeaderLogoUrl | quote }},
+        "authHeaderLogoUrl": {{ .Values.element.branding.authHeaderLogoUrl | quote }}{{ if .Values.element.branding.authFooterLinks }},{{- end }}
         {{- end }}
         {{- if .Values.element.branding.authFooterLinks }}
-        "authFooterLinks": {{ .Values.element.branding.authFooterLinks | toJson }},
+        "authFooterLinks": {{ .Values.element.branding.authFooterLinks | toJson }}
         {{- end }}
       },
       {{- if .Values.element.integrations.enabled }}
