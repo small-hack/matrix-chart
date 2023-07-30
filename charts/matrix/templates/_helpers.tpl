@@ -146,3 +146,14 @@ Helper function to get the coturn secret containing the sharedSecret
 {{ template "matrix.fullname" . }}-coturn-secret
 {{- end }}
 {{- end }}
+
+{{/*
+Helper function to get the registration secret containing the sharedSecret
+*/}}
+{{- define "registration.secretName" -}}
+{{- if .Values.matrix.registration.existingSecret -}}
+{{ .Values.matrix.registration.existingSecret }}
+{{- else if or .Values.matrix.registration.sharedSecret .Values.matrix.registration.generateSharedSecret -}}
+{{ template "matrix.fullname" . }}-registration-secret
+{{- end }}
+{{- end }}

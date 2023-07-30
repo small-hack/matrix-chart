@@ -95,6 +95,13 @@ spec:
                   name: {{ include "matrix.coturn.secretName" . }}
                   key: {{ .Values.coturn.secretKey }}
             {{- end }}
+            {{- if or .Values.matrix.registration.existingSecret .Values.matrix.registration.sharedSecret .Values.matrix.registration.generateSharedSecret }}
+            - name: REGISTRATION_SHARED_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "registration.secretName" . }}
+                  key: {{ .Values.matrix.registration.secretKey }}
+            {{- end }}
           command:
             - /bin/sh
             - -ec
@@ -103,6 +110,9 @@ spec:
               cp /initial/{{ .Values.matrix.serverName }}.log.config /data/ && \
               {{- if .Values.coturn.enabled }}
               yq eval -i '.turn_shared_secret = env(COTURN_SHARED_SECRET)' /data/homeserver.yaml && \
+              {{- end }}
+              {{- if or .Values.matrix.registration.existingSecret .Values.matrix.registration.sharedSecret .Values.matrix.registration.generateSharedSecret }}
+              yq eval -i '.registration_shared_secret = env(REGISTRATION_SHARED_SECRET)' /data/homeserver.yaml && \
               {{- end }}
               yq eval -i '.database.args.host = env(DATABASE_HOSTNAME)' /data/homeserver.yaml && \
               yq eval -i '.database.args.database = env(DATABASE)' /data/homeserver.yaml && \

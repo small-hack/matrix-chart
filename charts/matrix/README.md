@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 4.1.2](https://img.shields.io/badge/Version-4.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
+![Version: 4.1.3](https://img.shields.io/badge/Version-4.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -235,7 +235,11 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | matrix.registration.allowGuests | bool | `false` | Allow users to join rooms as a guest |
 | matrix.registration.autoJoinRooms | list | `[]` | Rooms to automatically join all new users to |
 | matrix.registration.enabled | bool | `false` | Allow new users to register an account |
+| matrix.registration.existingSecret | string | `""` | if set, pull sharedSecret from an existing k8s secret |
+| matrix.registration.generateSharedSecret | bool | `false` | if set, allows user to generate a random shared secret in a k8s secret ignored if existingSecret is passed in |
 | matrix.registration.requiresToken | bool | `false` | Whether to allow token based registration |
+| matrix.registration.secretKey | string | `"registrationSharedSecret"` | key in existing k8s secret for registration shared secret |
+| matrix.registration.sharedSecret | string | `""` | If set, allows registration of standard or admin accounts by anyone who has the shared secret, even if registration is otherwise disabled. ignored if existingSecret is passed in |
 | matrix.retentionPeriod | string | `"7d"` | How long to keep redacted events in unredacted form in the database |
 | matrix.search | bool | `true` | Set to false to disable message searching |
 | matrix.security.surpressKeyServerWarning | bool | `true` |  |
