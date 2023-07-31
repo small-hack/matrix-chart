@@ -1,6 +1,6 @@
 {{/*
-if postgresql.global.postgresql.auth.existingSecret is not passed in, then we create a
-secret to store the credentials without it being in a configmap in plaintext.
+if matrix.oidc_config.enabled is true, and matrix.oidc_config.existingSecret is not passed in, 
+then we create a secret to store the credentials without it being in a configmap in plaintext.
 */}}
 {{- if and .Values.matrix.oidc_config.enabled (not .Values.matrix.oidc_config.existingSecret) }}
 apiVersion: v1
