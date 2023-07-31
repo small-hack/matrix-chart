@@ -17,10 +17,11 @@ helm install my-release-name matrix --values values.yaml
 
 - Latest version of [Synapse](https://github.com/matrix-org/synapse) (the official homeserver edition of matrix)
 - Ingress definitions for federated Synapse (Matrix homeserver) and Element (frontend and CMS for matrix)
-- Use (existing) Kubernetes Secrets for confidential data, such as passwords
 
 ### Optional Features
 
+- Use (existing) Kubernetes Secrets for confidential data, such as passwords
+- Use OIDC configs for SSO
 - Latest version of [Element](https://element.io/)
 - [Bitnami PostgreSQL subchart](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) to deploy a cluster - needs some work to standardize though, so we also support external postgresql servers
 - [Coturn TURN server subchart](https://github.com/jessebot/coturn-chart) for VoIP calls

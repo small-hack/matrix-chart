@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 4.1.3](https://img.shields.io/badge/Version-4.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
+![Version: 4.2.0](https://img.shields.io/badge/Version-4.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -231,6 +231,28 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | matrix.logging.rootLogLevel | string | `"WARNING"` | Root log level is the default log level for log outputs that don't have more specific settings. |
 | matrix.logging.sqlLogLevel | string | `"WARNING"` | beware: increasing this to DEBUG will make synapse log sensitive information such as access tokens. |
 | matrix.logging.synapseLogLevel | string | `"WARNING"` | The log level for the synapse server |
+| matrix.oidc_config.authorization_endpoint | string | `"https://accounts.example.com/oauth2/auth"` | oauth2 authorization endpoint. Required if provider discovery disabled. |
+| matrix.oidc_config.client_auth_method | string | `"client_secret_post"` | auth method to use when exchanging the token. Valid values are: 'client_secret_basic' (default), 'client_secret_post' and 'none'. |
+| matrix.oidc_config.client_id | string | `"provided-by-your-issuer"` | oauth2 client id to use. Required if 'enabled' is true. |
+| matrix.oidc_config.client_secret | string | `"provided-by-your-issuer"` | oauth2 client secret to use. Required if 'enabled' is true. |
+| matrix.oidc_config.discover | bool | `true` | set to false to disable use of the OIDC discovery mechanism to discover endpoints. |
+| matrix.oidc_config.enabled | bool | `false` | set to true to enable authorization against an OpenID Connect server |
+| matrix.oidc_config.existingSecret | string | `""` | existing secret to use for the OIDC config |
+| matrix.oidc_config.issuer | string | `"https://accounts.example.com/"` | OIDC issuer. Used to validate tokens and (if discovery is enabled) to discover the provider's endpoints. Required if 'enabled' is true. |
+| matrix.oidc_config.jwks_uri | string | `"https://accounts.example.com/.well-known/jwks.json"` | URI where to fetch the JWKS. Required if discovery is disabled and the "openid" scope is used. |
+| matrix.oidc_config.scopes | list | `["openid","profile"]` | list of scopes to request. should normally include the "openid" scope. Defaults to ["openid"]. |
+| matrix.oidc_config.secretKeys.authorization_endpoint | string | `"authorization_endpoint"` | key in secret with the authorization_endpoint if discovery is disabled |
+| matrix.oidc_config.secretKeys.client_id | string | `"client_id"` | key in secret with the client_id |
+| matrix.oidc_config.secretKeys.client_secret | string | `"client_secret"` | key in secret with the client_secret |
+| matrix.oidc_config.secretKeys.issuer | string | `"issuer"` | key in secret with the issuer |
+| matrix.oidc_config.secretKeys.jwks_uri | string | `"jwks_uri"` | key in secret with the if discovery is disabled and openid is scope |
+| matrix.oidc_config.secretKeys.token_endpoint | string | `"token_endpoint"` | key in secret with the token_endpoint if discovery is disabled |
+| matrix.oidc_config.secretKeys.userinfo_endpoint | string | `"userinfo_endpoint"` | key in secret with the userinfo_endpoint if discovery is disabled |
+| matrix.oidc_config.skip_verification | bool | `false` |  |
+| matrix.oidc_config.token_endpoint | string | `"https://accounts.example.com/oauth2/token"` | the oauth2 token endpoint. Required if provider discovery is disabled. |
+| matrix.oidc_config.user_mapping_provider.config.subject_claim | string | `"sub"` | name of the claim containing a unique identifier for user. Defaults to `sub`, which OpenID Connect compliant providers should provide. |
+| matrix.oidc_config.user_mapping_provider.module | string | `"mapping_provider.OidcMappingProvider"` | The custom module's class. Uncomment to use a custom module. Default is 'synapse.handlers.oidc_handler.JinjaOidcMappingProvider'.  github.com/matrix-org/synapse/blob/master/docs/sso_mapping_providers.md#openid-mapping-providers for information on implementing a custom mapping provider. example: module: mapping_provider.OidcMappingProvider |
+| matrix.oidc_config.userinfo_endpoint | string | `"https://accounts.example.com/userinfo"` | the OIDC userinfo endpoint. Required if discovery is disabled and the "openid" scope is not requested. |
 | matrix.presence | bool | `true` | Set to false to disable presence (online/offline indicators) |
 | matrix.registration.allowGuests | bool | `false` | Allow users to join rooms as a guest |
 | matrix.registration.autoJoinRooms | list | `[]` | Rooms to automatically join all new users to |
