@@ -56,7 +56,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | bridges.irc.enabled | bool | `false` | Set to true to enable the IRC bridge |
 | bridges.irc.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bridges.irc.image.repository | string | `"matrixdotorg/matrix-appservice-irc"` |  |
-| bridges.irc.image.tag | string | `"release-1.0.0"` |  |
+| bridges.irc.image.tag | string | `"release-1.0.1"` |  |
 | bridges.irc.presence | bool | `false` | Whether to enable presence (online/offline indicators). If presence is disabled for the homeserver (above), it should be disabled here too |
 | bridges.irc.replicaCount | int | `1` |  |
 | bridges.irc.resources | object | `{}` |  |

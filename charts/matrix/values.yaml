@@ -885,7 +885,7 @@ bridges:
 
     image:
       repository: "matrixdotorg/matrix-appservice-irc"
-      tag: "release-1.0.0"
+      tag: "release-1.0.1"
       pullPolicy: IfNotPresent
     replicaCount: 1
     resources: {}
