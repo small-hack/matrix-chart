@@ -150,10 +150,21 @@ Helper function to get the coturn secret containing the sharedSecret
 {{/*
 Helper function to get the registration secret containing the sharedSecret
 */}}
-{{- define "registration.secretName" -}}
+{{- define "matrix.registration.secretName" -}}
 {{- if .Values.matrix.registration.existingSecret -}}
 {{ .Values.matrix.registration.existingSecret }}
 {{- else if or .Values.matrix.registration.sharedSecret .Values.matrix.registration.generateSharedSecret -}}
 {{ template "matrix.fullname" . }}-registration-secret
+{{- end }}
+{{- end }}
+
+{{/*
+Helper function to get the registration secret containing the sharedSecret
+*/}}
+{{- define "matrix.oidc.secretName" -}}
+{{- if .Values.matrix.odic_config.existingSecret -}}
+{{ .Values.matrix.oidc_config.existingSecret }}
+{{- else if .Values.matrix.oidc_config.sharedSecret -}}
+{{ template "matrix.fullname" . }}-oidc-secret
 {{- end }}
 {{- end }}
