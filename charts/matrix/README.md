@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 4.2.0](https://img.shields.io/badge/Version-4.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
+![Version: 4.3.1](https://img.shields.io/badge/Version-4.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.88.0](https://img.shields.io/badge/AppVersion-v1.88.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -22,7 +22,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | Repository | Name | Version |
 |------------|------|---------|
 | https://jessebot.github.io/coturn-chart | coturn | 4.1.2 |
-| oci://registry-1.docker.io/bitnamicharts | postgresql | 12.7.1 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql | 12.8.0 |
 
 ## Values
 
@@ -32,24 +32,24 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | bridges.discord.auth.botToken | string | `""` | Discord bot token for authentication |
 | bridges.discord.auth.clientId | string | `""` | Discord bot clientID for authentication |
 | bridges.discord.channelName | string | `"[Discord] :guild :name"` |  |
-| bridges.discord.data.capacity | string | `"512Mi"` |  |
-| bridges.discord.data.storageClass | string | `""` |  |
-| bridges.discord.defaultVisibility | string | `"public"` |  |
+| bridges.discord.data.capacity | string | `"512Mi"` | Size of the PVC to allocate for the SQLite database |
+| bridges.discord.data.storageClass | string | `""` | Storage class (optional) |
+| bridges.discord.defaultVisibility | string | `"public"` | Default visibility of bridged rooms (public/private) |
 | bridges.discord.enabled | bool | `false` | Set to true to enable the Discord bridge |
 | bridges.discord.image.pullPolicy | string | `"Always"` |  |
 | bridges.discord.image.repository | string | `"halfshot/matrix-appservice-discord"` |  |
 | bridges.discord.image.tag | string | `"latest"` |  |
-| bridges.discord.joinLeaveEvents | bool | `true` |  |
-| bridges.discord.presence | bool | `true` |  |
-| bridges.discord.readReceipt | bool | `true` |  |
+| bridges.discord.joinLeaveEvents | bool | `true` | Discord notifications when a user joins/leaves the Matrix channel |
+| bridges.discord.presence | bool | `true` | Set to false to disable online/offline presence for Discord users |
+| bridges.discord.readReceipt | bool | `true` | Discord bot read receipt, which advances whenever the bot bridges a msg |
 | bridges.discord.replicaCount | int | `1` |  |
 | bridges.discord.resources | object | `{}` |  |
-| bridges.discord.selfService | bool | `false` |  |
+| bridges.discord.selfService | bool | `false` | Set to true to allow users to bridge rooms themselves using !discord cmds More info: https://t2bot.io/discord |
 | bridges.discord.service.port | int | `9005` |  |
 | bridges.discord.service.type | string | `"ClusterIP"` |  |
-| bridges.discord.typingNotifications | bool | `true` |  |
-| bridges.discord.users.nickname | string | `":nick"` |  |
-| bridges.discord.users.username | string | `":username#:tag"` |  |
+| bridges.discord.typingNotifications | bool | `true` | Set to false to disable typing notifications (only for Discord to Matrix) |
+| bridges.discord.users.nickname | string | `":nick"` | Nickname of bridged Discord users Available vars:   :nick     - user's Discord nickname   :username - user's Discord username   :tag      - user's 4 digit Discord tag   :id       - user's Discord developer ID (long) |
+| bridges.discord.users.username | string | `":username#:tag"` | Username of bridged Discord users Available vars:   :username - user's Discord username   :tag      - user's 4 digit Discord tag   :id       - user's Discord developer ID (long) |
 | bridges.irc.data.capacity | string | `"1Mi"` | Size of the data PVC to allocate |
 | bridges.irc.database | string | `"matrix_irc"` | Postgres database to store IRC bridge data in, this db will be created if postgresql.enabled: true, otherwise you must create it manually |
 | bridges.irc.databaseSslVerify | bool | `true` |  |
@@ -166,7 +166,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | element.enabled | bool | `true` | Set to false to disable a deployment of Element. Users will still be able to connect via any other instances of Element e.g. https://app.element.io, Element Desktop, or any other Matrix clients |
 | element.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy to use for element image, set to Always if using latest tag |
 | element.image.repository | string | `"vectorim/element-web"` | registry and repository to use for element docker image |
-| element.image.tag | string | `"v1.11.36"` | tag to use for element docker image |
+| element.image.tag | string | `"v1.11.38"` | tag to use for element docker image |
 | element.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | element.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` |  |
 | element.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |

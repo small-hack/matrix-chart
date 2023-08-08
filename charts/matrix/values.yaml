@@ -600,7 +600,7 @@ element:
     # -- registry and repository to use for element docker image
     repository: "vectorim/element-web"
     # -- tag to use for element docker image
-    tag: v1.11.36
+    tag: v1.11.38
     # -- pullPolicy to use for element image, set to Always if using latest tag
     pullPolicy: IfNotPresent
   service:
@@ -1001,43 +1001,43 @@ bridges:
     channelName: "[Discord] :guild :name"
 
     users:
-      # Nickname of bridged Discord users
+      # -- Nickname of bridged Discord users
       # Available vars:
       #   :nick     - user's Discord nickname
       #   :username - user's Discord username
       #   :tag      - user's 4 digit Discord tag
       #   :id       - user's Discord developer ID (long)
       nickname: ":nick"
-      # Username of bridged Discord users
+      # -- Username of bridged Discord users
       # Available vars:
       #   :username - user's Discord username
       #   :tag      - user's 4 digit Discord tag
       #   :id       - user's Discord developer ID (long)
       username: ":username#:tag"
 
-    # Set to false to disable online/offline presence for Discord users
+    # -- Set to false to disable online/offline presence for Discord users
     presence: true
 
-    # Set to false to disable typing notifications (only for Discord to Matrix)
+    # -- Set to false to disable typing notifications (only for Discord to Matrix)
     typingNotifications: true
 
-    # Set to true to allow users to bridge rooms themselves using !discord cmds
+    # -- Set to true to allow users to bridge rooms themselves using !discord cmds
     # More info: https://t2bot.io/discord
     selfService: false
 
-    # Discord bot read receipt, which advances whenever the bot bridges a msg
+    # -- Discord bot read receipt, which advances whenever the bot bridges a msg
     readReceipt: true
 
-    # Discord notifications when a user joins/leaves the Matrix channel
+    # -- Discord notifications when a user joins/leaves the Matrix channel
     joinLeaveEvents: true
 
-    # Default visibility of bridged rooms (public/private)
+    # -- Default visibility of bridged rooms (public/private)
     defaultVisibility: public
 
     data:
-      # Size of the PVC to allocate for the SQLite database
+      # -- Size of the PVC to allocate for the SQLite database
       capacity: 512Mi
-      # Storage class (optional)
+      # -- Storage class (optional)
       storageClass: ""
 
     image:
