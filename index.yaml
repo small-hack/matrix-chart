@@ -3,6 +3,36 @@ entries:
   matrix:
   - apiVersion: v2
     appVersion: v1.88.0
+    created: "2023-08-08T07:54:17.146279914Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 12.8.0
+    - condition: coturn.enabled
+      name: coturn
+      repository: https://jessebot.github.io/coturn-chart
+      version: 4.1.2
+    description: A Helm chart to deploy a Matrix homeserver stack into Kubernetes
+    digest: 2618df6e8aa871b27d26e866181629cb9e104111d796f0a05763e90c01a42bc6
+    home: https://github.com/jessebot/matrix-chart
+    icon: https://dacruz21.github.io/helm-charts/icons/matrix.svg
+    maintainers:
+    - email: rhea@isomemetric.com
+      name: Arkaniad
+      url: https://github.com/Arkaniad/
+    - email: jessebot@linux.com
+      name: jessebot
+      url: https://github.com/jessebot/
+    name: matrix
+    sources:
+    - https://github.com/jessebot/matrix-chart
+    type: application
+    urls:
+    - https://github.com/jessebot/matrix-chart/releases/download/matrix-4.3.1/matrix-4.3.1.tgz
+    version: 4.3.1
+  - apiVersion: v2
+    appVersion: v1.88.0
     created: "2023-08-08T07:46:49.177443527Z"
     dependencies:
     - condition: postgresql.enabled
@@ -414,4 +444,4 @@ entries:
     urls:
     - https://github.com/jessebot/matrix-chart/releases/download/matrix-3.0.1/matrix-3.0.1.tgz
     version: 3.0.1
-generated: "2023-08-08T07:46:49.177576128Z"
+generated: "2023-08-08T07:54:17.146371015Z"
