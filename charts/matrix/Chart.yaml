@@ -8,8 +8,9 @@ sources:
 
 type: application
 
-version: 4.2.0
 # renovate: image=matrixdotorg/synapse
+version: 4.3.0
+
 appVersion: v1.88.0
 
 maintainers:
@@ -22,7 +23,7 @@ maintainers:
 
 dependencies:
   - name: postgresql
-    version: 12.7.1
+    version: 12.8.0
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
   - name: coturn
