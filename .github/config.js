@@ -4,7 +4,7 @@ module.exports = {
   gitAuthor: 'Renovate Bot <bot@renovateapp.com>',
   platform: 'github',
   includeForks: true,
-  dryRun: 'null',
+  dryRun: null,
   repositories: ['jessebot/matrix-chart'],
     extends: ['config:base'],
     allowPostUpgradeCommandTemplating: true,
