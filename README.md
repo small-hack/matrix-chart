@@ -1,4 +1,5 @@
 # Matrix Chart
+<a href="https://github.com/jessebot/matrix-chart/releases"><img src="https://img.shields.io/github/v/release/jessebot/matrix-chart?style=plastic&labelColor=blue&color=green&logo=GitHub&logoColor=white"></a>
 
 A Helm chart for deploying a Matrix homeserver stack in Kubernetes. This is a fork of [Arkaniad/matrix-chart](https://github.com/Arkaniad/matrix-chart), which is a fork of [typokign/matrix-chart](https://github.com/typokign/matrix-chart). 
 
