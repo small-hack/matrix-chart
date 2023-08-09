@@ -1,68 +1,42 @@
 # Matrix Chart
+<a href="https://github.com/jessebot/matrix-chart/releases"><img src="https://img.shields.io/github/v/release/jessebot/matrix-chart?style=plastic&labelColor=blue&color=green&logo=GitHub&logoColor=white"></a>
 
-A Helm chart for deploying a Matrix homeserver stack in Kubernetes.
+A Helm chart for deploying a Matrix homeserver stack in Kubernetes. This is a fork of [Arkaniad/matrix-chart](https://github.com/Arkaniad/matrix-chart), which is a fork of [typokign/matrix-chart](https://github.com/typokign/matrix-chart). 
 
-## Features
+## TLDR
 
-- Latest version of Synapse
-- (Optional) Latest version of Riot Web
-- (Optional) Choice of lightweight Exim relay or external mail server for email notifications
-- (Optional) Coturn TURN server for VoIP calls
-- (Optional) PostgreSQL cluster via stable/postgresql chart
-- (Optional) [matrix-org/matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) IRC bridge
-- (Optional) [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge
-- (Optional) [Half-Shot/matrix-appservice-discord](https://github.com/Half-Shot/matrix-appservice-discord) Discord bridge
-- Fully configurable via values.yaml
-- Ingress definition for federated Synapse and Riot
+See [charts/matrix/README.md](./charts/matrix/README.md) for docs auto-generated from the [`values.yaml`](./charts/matrix/values.yaml).
+Read through the parameters and modify them locally before installing the chart:
 
-## Installation
-
-Some documentation is available in values.yaml, and a complete configuration guide is coming soon.
-
-Choose one of the two options below to install the chart.
-
-### Chart Repository (recommended)
-
-This chart is published to my Helm chart repository at https://dacruz21.github.io/helm-charts. To install this chart:
-
-1. Create an empty chart to hold your configuration
-
-    ```shell script
-    helm create mychart
-    cd mychart
-    ```
-
-1. Add this chart to your chart's dependencies by editing `Chart.yaml` and adding the following lines:
-
-    ```yaml
-    dependencies:
-      - name: matrix
-        version: 2.8.0
-        repository: https://dacruz21.github.io/helm-charts
-    ```
-
-1. Run `helm dependency update` to download the chart into the `charts/` directory.
-
-1. Configure the chart by editing `values.yaml`, adding a `matrix:` object, and adding any config overrides under this object.
-
-1. Deploy your customized chart with `helm install mychart .`
-
-### Git
-
-You can also clone this repo directly and override the values.yaml provided. To do so, run the following commands:
-
-```shell script
-git clone https://github.com/dacruz21/matrix-chart.git
-cd matrix-chart
-helm dependency update
-helm install matrix .
+```bash
+helm repo add matrix https://jessebot.github.io/matrix-chart
+helm install my-release-name matrix --values values.yaml
 ```
 
-## Security
-Helm currently [does not officially support chart signatures created by GPG keys stored on smartcards](https://github.com/helm/helm/issues/2843#issuecomment-379532906). This may change in the future, in which case I will start packaging this chart with the standard `.prov` signatures, but until then signatures must be verified manually.
 
-GPG signatures are available within the chart repo and can be found by appending `.gpg` to the end of the package URL. For example, the signature for v2.8.0 is available at https://dacruz21.github.io/helm-charts/matrix-2.8.0.tgz.gpg.
+## Current Features
 
-These GPG signatures are signed with the same PGP key that is used to sign commits in this Git repository. The key is available by searching for david@typokign.com on a public keyserver, or by downloading it from my website at https://typokign.com/key.gpg.
+- Latest version of [Synapse](https://github.com/matrix-org/synapse) (the official homeserver edition of matrix)
+- Ingress definitions for federated Synapse (Matrix homeserver) and Element (frontend and CMS for matrix)
 
-If you find any security vulnerabilities in this Helm chart, please contact me by sending a PGP-encrypted email (encrypted to `F13C346C0DE56944`) to david@typokign.com. Vulnerabilities in upstream services should be reported to that service's developers.
+### Optional Features
+
+- Use (existing) Kubernetes Secrets for confidential data, such as passwords
+- Use OIDC configs for SSO
+- Latest version of [Element](https://element.io/)
+- [Bitnami PostgreSQL subchart](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) to deploy a cluster - needs some work to standardize though, so we also support external postgresql servers
+- [Coturn TURN server subchart](https://github.com/jessebot/coturn-chart) for VoIP calls
+
+#### ⚠️ Optional Features (Untested Since Fork)
+
+These features still need to be tested, but are technically baked into the chart:
+- Choice of lightweight Exim relay or external mail server for email notifications
+- [Half-Shot/matrix-appservice-discord](https://github.com/Half-Shot/matrix-appservice-discord) Discord bridge
+- [matrix-org/matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) IRC bridge
+- [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge
+
+
+## Status
+This chart is now maintained mostly by me, @jessebot, but I'd love contributors as well! My goal is to provide regular updates using dependabot (maybe renovatebot soon) and provide some level of basic security from a k8s perspective. The aim as of right now has been removing any plaintext secrets and allowing for existing PVCs. I'm also trying to standardize the chart more by following predictable values.yaml patterns.
+
+Note: I may stop supporting this if a larger entity maintains a better matrix chart (e.g. Bitnami releases a matrix helm chart), as then I'll just write PRs directly to them. At that time I'll put in a note in this README before publically archiving the repo.
