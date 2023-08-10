@@ -22,7 +22,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | Repository | Name | Version |
 |------------|------|---------|
 | https://jessebot.github.io/coturn-chart | coturn | 4.2.0 |
-| oci://registry-1.docker.io/bitnamicharts | postgresql | 12.8.1 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql | 12.8.2 |
 
 ## Values
 

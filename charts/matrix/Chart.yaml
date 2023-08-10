@@ -23,7 +23,7 @@ maintainers:
 
 dependencies:
   - name: postgresql
-    version: 12.8.1
+    version: 12.8.2
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
   - name: coturn
