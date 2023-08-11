@@ -8,10 +8,10 @@ sources:
 
 type: application
 
-version: 4.4.1
+version: 4.5.0
 
 # renovate: image=matrixdotorg/synapse
-appVersion: v1.88.0
+appVersion: v1.89.0
 
 maintainers:
   - name: "Arkaniad"
