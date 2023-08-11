@@ -6,7 +6,7 @@ module.exports = {
   includeForks: true,
   dryRun: null,
   repositories: ['jessebot/matrix-chart'],
-    extends: ['config:base', ":disableDependencyDashboard"],
+    extends: ['config:base', ':disableDependencyDashboard'],
     allowPostUpgradeCommandTemplating: true,
     allowedPostUpgradeCommands: ['^.*'],
     regexManagers: [
