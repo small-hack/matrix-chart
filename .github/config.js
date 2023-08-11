@@ -5,7 +5,7 @@ module.exports = {
   platform: 'github',
   includeForks: true,
   dryRun: null,
-  "dependencyDashboard": false,
+  dependencyDashboard: false,
   repositories: ['jessebot/matrix-chart'],
     extends: ['config:base'],
     allowPostUpgradeCommandTemplating: true,
