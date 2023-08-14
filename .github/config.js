@@ -5,8 +5,10 @@ module.exports = {
   platform: 'github',
   includeForks: true,
   dryRun: null,
+  dependencyDashboard: false,
   repositories: ['jessebot/matrix-chart'],
-    extends: ['config:base', ':disableDependencyDashboard'],
+    extends: ['config:base'],
+    dependencyDashboard: false,
     allowPostUpgradeCommandTemplating: true,
     allowedPostUpgradeCommands: ['^.*'],
     regexManagers: [
