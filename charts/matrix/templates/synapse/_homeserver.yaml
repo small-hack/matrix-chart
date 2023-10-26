@@ -716,17 +716,22 @@ media_store_path: "/data/media_store"
 # Media storage providers allow media to be stored in different
 # locations.
 #
-#media_storage_providers:
-#  - module: file_system
-#    # Whether to write new local files.
-#    store_local: false
-#    # Whether to write new remote media
-#    store_remote: false
-#    # Whether to block upload requests waiting for write to this
-#    # provider to complete
-#    store_synchronous: false
-#    config:
-#       directory: /mnt/some/other/directory
+
+{{- if .Values.s3.enabled }}
+# https://github.com/matrix-org/synapse-s3-storage-provider/tree/main
+media_storage_providers:
+  - module: s3_storage_provider.S3StorageProviderBackend
+    # Whether to write new local files.
+    store_local: true
+    # Whether to write new remote media
+    store_remote: true
+    # Whether to block upload requests waiting for write to this
+    # provider to complete
+    store_synchronous: true
+    config:
+      endpoint_url: {{ .Values.s3.endpoint }}
+      bucket: {{ .Values.s3.bucket }}
+{{- end }}
 
 # Directory where in-progress uploads are stored.
 #

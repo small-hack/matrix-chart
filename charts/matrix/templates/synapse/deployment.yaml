@@ -203,6 +203,11 @@ spec:
         - name: "synapse"
           image: {{ include "matrix.image" . }}
           imagePullPolicy: {{ .Values.synapse.image.pullPolicy }}
+          {{- if .Values.s3.enabled }}
+          command:
+            - |
+              pip install synapse-s3-storage-provider
+          {{- end }}
           env:
             {{- if .Values.synapse.securityContext.env }}
             {{- if .Values.synapse.securityContext.runAsUser }}
@@ -213,6 +218,19 @@ spec:
             - name: GID
               value: "{{ .Values.synapse.securityContext.runAsGroup }}"
             {{- end }}
+            {{- end }}
+            {{- if .Values.s3.enabled }}
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.s3.existingSecret }}
+                  key: {{ .Values.s3.secretKeys.accessKey }}
+
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.s3.existingSecret }}
+                  key: {{ .Values.s3.secretKeys.secretKey }}
             {{- end }}
           ports:
             - name: http

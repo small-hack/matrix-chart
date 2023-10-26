@@ -335,6 +335,20 @@ matrix:
     # -- The log level for the synapse server
     synapseLogLevel: WARNING
 
+s3:
+  # -- enable s3 storage
+  enabled: false
+  # -- your s3 endpoint
+  endpoint: ""
+  # -- name of the bucket to use
+  bucket: ""
+  # -- use credentials from an existing kubernetes secret
+  existingSecret: ""
+  # -- these are the keys within the existing k8s secret to use for s3 credentials
+  secretKeys:
+    accessKey: "S3_ACCESS_KEY"
+    secretKey: "S3_SECRET_KEY"
+
 # Persistent volumes configuration
 volumes:
   # Uploaded attachments/multimedia
@@ -451,6 +465,7 @@ synapse:
     className: "nginx"
     tls:
       enabled: true
+      secretName: "matrix-tls"
     annotations:
       # -- This annotation is required for the Nginx ingress provider. You can
       # remove it if you use a different ingress provider
@@ -525,7 +540,10 @@ element:
     # -- enable ingress for element
     enabled: true
     tls:
+      # -- enable a fairly stock ingress, open a github issue if you need more features
       enabled: true
+      # -- name for the element tls secret for ingress
+      secretName: "element-tls"
     # -- the hostname to use for element
     host: element.chart-example.local
     annotations:
@@ -600,7 +618,7 @@ element:
     # -- registry and repository to use for element docker image
     repository: "vectorim/element-web"
     # -- tag to use for element docker image
-    tag: v1.11.38
+    tag: v1.11.47
     # -- pullPolicy to use for element image, set to Always if using latest tag
     pullPolicy: IfNotPresent
   service:
