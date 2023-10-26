@@ -465,6 +465,7 @@ synapse:
     className: "nginx"
     tls:
       enabled: true
+      secretName: "matrix-tls"
     annotations:
       # -- This annotation is required for the Nginx ingress provider. You can
       # remove it if you use a different ingress provider
@@ -539,7 +540,10 @@ element:
     # -- enable ingress for element
     enabled: true
     tls:
+      # -- enable a fairly stock ingress, open a github issue if you need more features
       enabled: true
+      # -- name for the element tls secret for ingress
+      secretName: "element-tls"
     # -- the hostname to use for element
     host: element.chart-example.local
     annotations:

@@ -17,7 +17,7 @@ spec:
   tls:
     - hosts:
       - {{ .Values.element.ingress.host }}
-      secretName: element-tls
+      secretName: {{ .Values.element.ingress.tls.secretName }}
   {{- end }}
   rules:
     - host: {{ .Values.element.ingress.host }}

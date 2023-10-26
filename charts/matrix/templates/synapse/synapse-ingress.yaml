@@ -26,7 +26,7 @@ spec:
                   number: {{ .Values.synapse.service.port }}
 {{- if .Values.synapse.ingress.tls.enabled }}
   tls:
-    - secretName: matrix-tls
+    - secretName: {{ .Values.synapse.ingress.tls.secretName }}
       hosts:
         - {{ .Values.synapse.ingress.host }}
 {{- end }}

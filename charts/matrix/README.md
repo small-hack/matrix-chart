@@ -172,7 +172,8 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | element.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
 | element.ingress.enabled | bool | `true` | enable ingress for element |
 | element.ingress.host | string | `"element.chart-example.local"` | the hostname to use for element |
-| element.ingress.tls.enabled | bool | `true` |  |
+| element.ingress.tls.enabled | bool | `true` | enable a fairly stock ingress, open a github issue if you need more features |
+| element.ingress.tls.secretName | string | `"element-tls"` | name for the element tls secret for ingress |
 | element.integrations.api | string | `"https://scalar.vector.im/api"` | API for the integration server |
 | element.integrations.enabled | bool | `true` | enables the Integrations menu, including:    widgets, bots, and other plugins to Element |
 | element.integrations.ui | string | `"https://scalar.vector.im/"` | UI to load when a user selects the Integrations button at the top-right    of a room |
@@ -320,6 +321,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | synapse.ingress.enabled | bool | `true` |  |
 | synapse.ingress.host | string | `"matrix.chart-example.local"` |  |
 | synapse.ingress.tls.enabled | bool | `true` |  |
+| synapse.ingress.tls.secretName | string | `"matrix-tls"` |  |
 | synapse.labels | object | `{"component":"synapse"}` | Labels to be appended to all Synapse resources |
 | synapse.metrics.annotations | bool | `true` |  |
 | synapse.metrics.enabled | bool | `true` | Whether Synapse should capture metrics on an additional endpoint |
