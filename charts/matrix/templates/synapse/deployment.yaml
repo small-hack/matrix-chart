@@ -168,7 +168,7 @@ spec:
               yq eval -i '.database.args.host = env(DATABASE_HOSTNAME)' /data/homeserver.yaml && \
               yq eval -i '.database.args.database = env(DATABASE)' /data/homeserver.yaml && \
               yq eval -i '.database.args.user = env(DATABASE_USERNAME)' /data/homeserver.yaml && \
-              yq eval -i '.database.args.password = env(DATABASE_PASSWORD)' /data/homeserver.yaml
+              yq eval -i '.database.args.password = env(DATABASE_PASSWORD)' /data/homeserver.yaml && \
           volumeMounts:
             - name: synapse-initial-config
               mountPath: "/initial"
@@ -203,6 +203,11 @@ spec:
         - name: "synapse"
           image: {{ include "matrix.image" . }}
           imagePullPolicy: {{ .Values.synapse.image.pullPolicy }}
+          {{- if .Values.s3.enabled }}
+          command:
+            - |
+              pip install synapse-s3-storage-provider
+          {{- end }}
           env:
             {{- if .Values.synapse.securityContext.env }}
             {{- if .Values.synapse.securityContext.runAsUser }}
@@ -213,6 +218,19 @@ spec:
             - name: GID
               value: "{{ .Values.synapse.securityContext.runAsGroup }}"
             {{- end }}
+            {{- end }}
+            {{- if .Values.s3.enabled }}
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.s3.existingSecret }}
+                  key: {{ .Values.s3.secretKeys.accessKey }}
+
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.s3.existingSecret }}
+                  key: {{ .Values.s3.secretKeys.secretKey }}
             {{- end }}
           ports:
             - name: http
