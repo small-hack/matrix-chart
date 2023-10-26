@@ -166,7 +166,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | element.enabled | bool | `true` | Set to false to disable a deployment of Element. Users will still be able to connect via any other instances of Element e.g. https://app.element.io, Element Desktop, or any other Matrix clients |
 | element.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy to use for element image, set to Always if using latest tag |
 | element.image.repository | string | `"vectorim/element-web"` | registry and repository to use for element docker image |
-| element.image.tag | string | `"v1.11.38"` | tag to use for element docker image |
+| element.image.tag | string | `"v1.11.47"` | tag to use for element docker image |
 | element.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | element.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` |  |
 | element.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
