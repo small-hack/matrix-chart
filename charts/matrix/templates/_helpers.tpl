@@ -1,4 +1,3 @@
-{{/* vim: set filetype=mustache: */}}
 {{/*
 Expand the name of the chart.
 */}}
@@ -159,12 +158,12 @@ Helper function to get the registration secret containing the sharedSecret
 {{- end }}
 
 {{/*
-Helper function to get the registration secret containing the sharedSecret
+Helper function to get the OIDC secret containing the OIDC client id, client secret, and issuer
 */}}
 {{- define "matrix.oidc.secretName" -}}
-{{- if .Values.matrix.odic_config.existingSecret -}}
+{{- if .Values.matrix.oidc_config.existingSecret -}}
 {{ .Values.matrix.oidc_config.existingSecret }}
-{{- else if .Values.matrix.oidc_config.sharedSecret -}}
+{{- else -}}
 {{ template "matrix.fullname" . }}-oidc-secret
 {{- end }}
 {{- end }}

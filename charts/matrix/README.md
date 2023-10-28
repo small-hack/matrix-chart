@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 4.6.0](https://img.shields.io/badge/Version-4.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.0](https://img.shields.io/badge/AppVersion-v1.95.0-informational?style=flat-square)
+![Version: 4.6.1](https://img.shields.io/badge/Version-4.6.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.0](https://img.shields.io/badge/AppVersion-v1.95.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -10,7 +10,6 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| Arkaniad | <rhea@isomemetric.com> | <https://github.com/Arkaniad/> |
 | jessebot | <jessebot@linux.com> | <https://github.com/jessebot/> |
 
 ## Source Code
