@@ -1539,7 +1539,9 @@ oidc_config:
     # See https://github.com/matrix-org/synapse/blob/master/docs/sso_mapping_providers.md#openid-mapping-providers
     # for information on implementing a custom mapping provider.
     #
+    {{- if .Values.matrix.oidc_config.user_mapping_provider.module }}
     module: {{ .Values.matrix.oidc_config.user_mapping_provider.module }} 
+    {{- end }}
 
     # Custom configuration values for the module. This section will be passed as
     # a Python dictionary to the user mapping provider module's `parse_config`
@@ -1552,8 +1554,9 @@ oidc_config:
       # name of the claim containing a unique identifier for the user.
       # Defaults to `sub`, which OpenID Connect compliant providers should provide.
       #
-      #subject_claim: "sub"
-
+      {{- if .Values.matrix.oidc_config.user_mapping_provider.config.subject_claim }}
+      subject_claim: {{ .Values.matrix.oidc_config.user_mapping_provider.config.subject_claim }}
+      {{- end }}
       # Jinja2 template for the localpart of the MXID.
       #
       # When rendering, this template is given the following variables:
@@ -1561,13 +1564,15 @@ oidc_config:
       #     Token
       #
       # This must be configured if using the default mapping provider.
-      #
-      {{/*      localpart_template: "{{ user.preferred_username }}"*/}}
+      {{- if .Values.matrix.oidc_config.user_mapping_provider.config.localpart_template }}
+      localpart_template: {{ .Values.matrix.oidc_config.user_mapping_provider.config.localpart_template }}
+      {{- end }}
+
+      {{- if .Values.matrix.oidc_config.user_mapping_provider.config.display_name_template }}
       # Jinja2 template for the display name to set on first login.
-      #
       # If unset, no displayname will be set.
-      #
-      {{/*      #display_name_template: "{{ user.given_name }} {{ user.last_name }}"*/}}
+      display_name_template: {{ .Values.matrix.oidc_config.user_mapping_provider.config.display_name_template }}
+      {{- end }}
   {{- end }}
 
 
