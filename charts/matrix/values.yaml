@@ -203,7 +203,7 @@ matrix:
       # for information on implementing a custom mapping provider.
       # example:
       # module: mapping_provider.OidcMappingProvider
-      module: mapping_provider.OidcMappingProvider
+      module: ""
 
       # Custom configuration values for the module. This section will be passed as
       # a Python dictionary to the user mapping provider module's `parse_config`
@@ -215,7 +215,12 @@ matrix:
       config:
         # -- name of the claim containing a unique identifier for user. Defaults
         # to `sub`, which OpenID Connect compliant providers should provide.
-        subject_claim: "sub"
+        subject_claim: ""
+        # This must be configured if using the default mapping provider.
+        localpart_template: ""
+        # Jinja2 template for the display name to set on first login.
+        # If unset, no displayname will be set.
+        display_name_template: ""
 
   # Settings for the URL preview crawler
   urlPreviews:

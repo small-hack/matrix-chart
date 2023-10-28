@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 4.6.1](https://img.shields.io/badge/Version-4.6.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.0](https://img.shields.io/badge/AppVersion-v1.95.0-informational?style=flat-square)
+![Version: 4.6.2](https://img.shields.io/badge/Version-4.6.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.0](https://img.shields.io/badge/AppVersion-v1.95.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -250,8 +250,10 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | matrix.oidc_config.secretKeys.userinfo_endpoint | string | `"userinfo_endpoint"` | key in secret with the userinfo_endpoint if discovery is disabled |
 | matrix.oidc_config.skip_verification | bool | `false` |  |
 | matrix.oidc_config.token_endpoint | string | `"https://accounts.example.com/oauth2/token"` | the oauth2 token endpoint. Required if provider discovery is disabled. |
-| matrix.oidc_config.user_mapping_provider.config.subject_claim | string | `"sub"` | name of the claim containing a unique identifier for user. Defaults to `sub`, which OpenID Connect compliant providers should provide. |
-| matrix.oidc_config.user_mapping_provider.module | string | `"mapping_provider.OidcMappingProvider"` | The custom module's class. Uncomment to use a custom module. Default is 'synapse.handlers.oidc_handler.JinjaOidcMappingProvider'.  github.com/matrix-org/synapse/blob/master/docs/sso_mapping_providers.md#openid-mapping-providers for information on implementing a custom mapping provider. example: module: mapping_provider.OidcMappingProvider |
+| matrix.oidc_config.user_mapping_provider.config.display_name_template | string | `""` |  |
+| matrix.oidc_config.user_mapping_provider.config.localpart_template | string | `""` |  |
+| matrix.oidc_config.user_mapping_provider.config.subject_claim | string | `""` | name of the claim containing a unique identifier for user. Defaults to `sub`, which OpenID Connect compliant providers should provide. |
+| matrix.oidc_config.user_mapping_provider.module | string | `""` | The custom module's class. Uncomment to use a custom module. Default is 'synapse.handlers.oidc_handler.JinjaOidcMappingProvider'.  github.com/matrix-org/synapse/blob/master/docs/sso_mapping_providers.md#openid-mapping-providers for information on implementing a custom mapping provider. example: module: mapping_provider.OidcMappingProvider |
 | matrix.oidc_config.userinfo_endpoint | string | `"https://accounts.example.com/userinfo"` | the OIDC userinfo endpoint. Required if discovery is disabled and the "openid" scope is not requested. |
 | matrix.presence | bool | `true` | Set to false to disable presence (online/offline indicators) |
 | matrix.registration.allowGuests | bool | `false` | Allow users to join rooms as a guest |
