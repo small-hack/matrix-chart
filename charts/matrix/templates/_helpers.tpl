@@ -156,14 +156,3 @@ Helper function to get the registration secret containing the sharedSecret
 {{ template "matrix.fullname" . }}-registration-secret
 {{- end }}
 {{- end }}
-
-{{/*
-Helper function to get the OIDC secret containing the OIDC client id, client secret, and issuer
-*/}}
-{{- define "matrix.oidc.secretName" -}}
-{{- if .Values.matrix.oidc_config.existingSecret -}}
-{{ .Values.matrix.oidc_config.existingSecret }}
-{{- else -}}
-{{ template "matrix.fullname" . }}-oidc-secret
-{{- end }}
-{{- end }}

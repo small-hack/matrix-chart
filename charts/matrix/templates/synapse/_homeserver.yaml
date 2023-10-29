@@ -1492,94 +1492,18 @@ saml2_config:
   #
   #template_dir: "res/templates"
 
-
 # OpenID Connect integration. The following settings can be used to make Synapse
 # use an OpenID Connect Provider for authentication, instead of its internal
 # password database.
 #
 # See https://github.com/matrix-org/synapse/blob/master/docs/openid.md.
 #
-oidc_config:
-  # Uncomment the following to enable authorization against an OpenID Connect
-  # server. Defaults to false.
-  #
-  enabled: {{ .Values.matrix.oidc_config.enabled }}
-
-  {{- if .Values.matrix.oidc_config.enabled }}
-  # Uncomment the following to disable use of the OIDC discovery mechanism to
-  # discover endpoints. Defaults to true.
-  discover: {{ .Values.matrix.oidc_config.discover }}
-
-  # auth method to use when exchanging the token.
-  # Valid values are 'client_secret_basic' (default), 'client_secret_post' and
-  # 'none'.
-  #
-  client_auth_method: {{ .Values.matrix.oidc_config.client_auth_method }}
-
-  # list of scopes to request. This should normally include the "openid" scope.
-  # Defaults to ["openid"].
-  #
-  {{- if .Values.matrix.oidc_config.scopes }}
-  scopes:
-  {{- range .Values.matrix.oidc_config.scopes }}
-    - {{ . | quote }}
+{{- if .Values.matrix.oidc.enabled }}
+oidc_providers:
+  {{- range .Values.matrix.oidc.providers }}
+  - {{ . | toYaml | indent 4 | trim }}
   {{- end }}
-  {{- end }}
-
-  # Uncomment to skip metadata verification. Defaults to false.
-  #
-  # Use this if you are connecting to a provider that is not OpenID Connect
-  # compliant.
-  # Avoid this in production.
-  #
-  skip_verification: {{ .Values.matrix.oidc_config.skip_verification }}
-
-  # An external module can be provided here as a custom solution to mapping
-  # attributes returned from a OIDC provider onto a matrix user.
-  #
-  user_mapping_provider:
-    # The custom module's class. Uncomment to use a custom module.
-    # Default is 'synapse.handlers.oidc_handler.JinjaOidcMappingProvider'.
-    #
-    # See https://github.com/matrix-org/synapse/blob/master/docs/sso_mapping_providers.md#openid-mapping-providers
-    # for information on implementing a custom mapping provider.
-    #
-    {{- if .Values.matrix.oidc_config.user_mapping_provider.module }}
-    module: {{ .Values.matrix.oidc_config.user_mapping_provider.module }} 
-    {{- end }}
-
-    # Custom configuration values for the module. This section will be passed as
-    # a Python dictionary to the user mapping provider module's `parse_config`
-    # method.
-    #
-    # The examples below are intended for the default provider: they should be
-    # changed if using a custom provider.
-    #
-    config:
-      # name of the claim containing a unique identifier for the user.
-      # Defaults to `sub`, which OpenID Connect compliant providers should provide.
-      #
-      {{- if .Values.matrix.oidc_config.user_mapping_provider.config.subject_claim }}
-      subject_claim: {{ .Values.matrix.oidc_config.user_mapping_provider.config.subject_claim }}
-      {{- end }}
-      # Jinja2 template for the localpart of the MXID.
-      #
-      # When rendering, this template is given the following variables:
-      #   * user: The claims returned by the UserInfo Endpoint and/or in the ID
-      #     Token
-      #
-      # This must be configured if using the default mapping provider.
-      {{- if .Values.matrix.oidc_config.user_mapping_provider.config.localpart_template }}
-      localpart_template: {{ .Values.matrix.oidc_config.user_mapping_provider.config.localpart_template }}
-      {{- end }}
-
-      {{- if .Values.matrix.oidc_config.user_mapping_provider.config.display_name_template }}
-      # Jinja2 template for the display name to set on first login.
-      # If unset, no displayname will be set.
-      display_name_template: {{ .Values.matrix.oidc_config.user_mapping_provider.config.display_name_template }}
-      {{- end }}
-  {{- end }}
-
+{{- end }}
 
 # Enable CAS for registration and login.
 #
@@ -1590,7 +1514,6 @@ oidc_config:
 #   #displayname_attribute: name
 #   #required_attributes:
 #   #    name: value
-
 
 # Additional settings to use with single-sign on systems such as OpenID Connect,
 # SAML2 and CAS.
