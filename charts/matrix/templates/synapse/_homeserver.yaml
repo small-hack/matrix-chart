@@ -213,9 +213,7 @@ listeners:
     bind_addresses: ['0.0.0.0']
 
     resources:
-      - names:
-          - "client"
-          - "federation"
+      - names: [client, federation]
         compress: false
 
     # example additional_resources:
@@ -231,7 +229,7 @@ listeners:
     bind_addresses: ['0.0.0.0']
 
     resources:
-      - names: ["metrics"]
+      - names: [metrics]
 {{- end }}
   # Turn on the twisted ssh manhole service on localhost on the given
   # port.
@@ -1522,9 +1520,10 @@ oidc_config:
   # Defaults to ["openid"].
   #
   {{- if .Values.matrix.oidc_config.scopes }}
-  scopes: | 
+  scopes:
   {{- range .Values.matrix.oidc_config.scopes }}
     - {{ . | quote }}
+  {{- end }}
   {{- end }}
 
   # Uncomment to skip metadata verification. Defaults to false.
