@@ -130,7 +130,7 @@ matrix:
   # ref: https://github.com/matrix-org/synapse/blob/master/docs/openid.md.
   oidc:
     # -- set to true to enable authorization against an OpenID Connect server
-    enabled: true
+    enabled: false
     # -- existing secret to use for the OIDC config
     existingSecret: ""
     # keys in an existing secret to use for oidc config
