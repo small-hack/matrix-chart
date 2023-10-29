@@ -102,45 +102,44 @@ spec:
                   name: {{ include "matrix.registration.secretName" . }}
                   key: {{ .Values.matrix.registration.secretKey }}
             {{- end }}
-            {{- if .Values.matrix.oidc_config.enabled }}
+            {{- if and .Values.matrix.oidc.enabled .Values.matrix.oidc.existingSecret }}
+            {{- if .Values.matrix.odic.secretKeys.issuer }}
             - name: ISSUER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "matrix.oidc.secretName" . }}
-                  key: {{ .Values.matrix.oidc_config.secretKeys.issuer }}
+                  name: {{ .Values.matrix.oidc.existingSecret }}
+                  key: {{ .Values.matrix.odic.secretKeys.issuer }}
+            {{- end }}
             - name: CLIENT_ID
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "matrix.oidc.secretName" . }}
-                  key: {{ .Values.matrix.oidc_config.secretKeys.client_id }}
+                  name: {{ .Values.matrix.oidc.existingSecret }}
+                  key: {{ .Values.matrix.odic.secretKeys.client_id }}
             - name: CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "matrix.oidc.secretName" . }}
-                  key: {{ .Values.matrix.oidc_config.secretKeys.client_secret}}
-            {{- if not .Values.matrix.oidc_config.discover }}
+                  name: {{ .Values.matrix.oidc.existingSecret }}
+                  key: {{ .Values.matrix.odic.secretKeys.client_secret}}
+            {{- if .Values.matrix.odic.secretKeys.authorization_endpoint}}
             - name: AUTH_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "matrix.oidc.secretName" . }}
-                  key: {{ .Values.matrix.oidc_config.secretKeys.authorization_endpoint }}
+                  name: {{ .Values.matrix.oidc.existingSecret }}
+                  key: {{ .Values.matrix.odic.secretKeys.authorization_endpoint }}
+            {{- end }}
+            {{- if .Values.matrix.odic.secretKeys.token_endpoint }}
             - name: TOKEN_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "matrix.oidc.secretName" . }}
-                  key: {{ .Values.matrix.oidc_config.secretKeys.token_endpoint }}
+                  name: {{ .Values.matrix.oidc.existingSecret }}
+                  key: {{ .Values.matrix.odic.secretKeys.token_endpoint }}
+            {{- end }}
+            {{- if .Values.matrix.odic.secretKeys.userinfo_endpoint }}
             - name: USERINFO_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "matrix.oidc.secretName" . }}
-                  key: {{ .Values.matrix.oidc_config.secretKeys.userinfo_endpoint }}
-            {{- if eq .Values.matrix.oidc_config.scopes "openid" }}
-            - name: JWKS_URI 
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "matrix.oidc.secretName" . }}
-                  key: {{ .Values.matrix.oidc_config.secretKeys.jwks_uri }}
-            {{- end }}
+                  name: {{ .Values.matrix.oidc.existingSecret }}
+                  key: {{ .Values.matrix.odic.secretKeys.userinfo_endpoint }}
             {{- end }}
             {{- end }}
           command:
@@ -155,14 +154,18 @@ spec:
               {{- if or .Values.matrix.registration.existingSecret .Values.matrix.registration.sharedSecret .Values.matrix.registration.generateSharedSecret }}
               yq eval -i '.registration_shared_secret = env(REGISTRATION_SHARED_SECRET)' /data/homeserver.yaml && \
               {{- end }}
-              {{- if .Values.matrix.oidc_config.enabled }}
-              yq eval -i '.oidc_config.issuer = env(ISSUER)' /data/homeserver.yaml && \
-              yq eval -i '.oidc_config.client_id = env(CLIENT_ID)' /data/homeserver.yaml && \
-              yq eval -i '.oidc_config.client_secret = env(CLIENT_SECRET)' /data/homeserver.yaml && \
-              {{- if not .Values.matrix.oidc_config.discover }}
-              yq eval -i '.oidc_config.authorization_endpoint = env(AUTH_ENDPOINT)' /data/homeserver.yaml && \
-              yq eval -i '.oidc_config.token_endpoint = env(TOKEN_ENDPOINT)' /data/homeserver.yaml && \
-              yq eval -i '.oidc_config.userinfo_endpoint = env(USERINFO_ENDPOINT)' /data/homeserver.yaml && \
+              {{- if and .Values.matrix.oidc.enabled .Values.matrix.oidc.existingSecret }}
+              yq eval -i '.oidc_providers[0].issuer = env(ISSUER)' /data/homeserver.yaml && \
+              yq eval -i '.oidc_providers[0].client_id = env(CLIENT_ID)' /data/homeserver.yaml && \
+              yq eval -i '.oidc_providers[0].client_secret = env(CLIENT_SECRET)' /data/homeserver.yaml && \
+              {{- if .Values.matrix.oidc.secretKeys.authorization_endpoint }}
+              yq eval -i '.oidc_providers[0].authorization_endpoint = env(AUTH_ENDPOINT)' /data/homeserver.yaml && \
+              {{- end }}
+              {{- if .Values.matrix.oidc.secretKeys.token_endpoint }}
+              yq eval -i '.oidc_providers[0].token_endpoint = env(TOKEN_ENDPOINT)' /data/homeserver.yaml && \
+              {{- end }}
+              {{- if .Values.matrix.oidc.secretKeys.userinfo_endpoint }}
+              yq eval -i '.oidc_providers[0].userinfo_endpoint = env(USERINFO_ENDPOINT)' /data/homeserver.yaml && \
               {{- end }}
               {{- end }}
               yq eval -i '.database.args.host = env(DATABASE_HOSTNAME)' /data/homeserver.yaml && \
