@@ -858,17 +858,25 @@ mail:
     labels:
       component: mail
 
-  # External mail server
+  # External SMTP (mail) server
   external:
-    # -- External mail server hostname
+    # -- External mail server hostname - ignored if existingSecret not ""
     host: ""
-    # -- External mail server port
-    port: 25  # SSL: 465, STARTTLS: 587
-    # -- External mail server username
+    # -- External mail server port INSECURE: 25, SSL: 465, STARTTLS: 587
+    port: 587
+    # -- External mail server username - ignored if existingSecret not ""
     username: ""
-    # -- External mail server password
+    # -- External mail server password - ignored if existingSecret not ""
     password: ""
+    # -- require TLS, I think
     requireTransportSecurity: true
+    # -- use an existing k8s Secret for your host, username, and password
+    existingSecret: ""
+    # -- secret keys to use for your existing SMTP server
+    secretKeys:
+      host: "host"
+      username: "username"
+      password: "password"
 
 bridges:
   irc:

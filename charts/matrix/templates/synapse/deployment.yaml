@@ -142,6 +142,24 @@ spec:
                   key: {{ .Values.matrix.oidc.secretKeys.userinfo_endpoint }}
             {{- end }}
             {{- end }}
+            {{- if and .Values.mail.enabled .Values.mail.external.existingSecret }}
+            - name: SMTP_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mail.external.existingSecret }}
+                  key: {{ .Values.mail.external.secretKeys.host }}
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mail.external.existingSecret }}
+                  key: {{ .Values.mail.external.secretKeys.username }}
+            - name: SMTP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mail.external.existingSecret }}
+                  key: {{ .Values.mail.external.secretKeys.password }}
+
+            {{- end }}
           command:
             - /bin/sh
             - -ec
@@ -172,6 +190,11 @@ spec:
               yq eval -i '.database.args.database = env(DATABASE)' /data/homeserver.yaml && \
               yq eval -i '.database.args.user = env(DATABASE_USERNAME)' /data/homeserver.yaml && \
               yq eval -i '.database.args.password = env(DATABASE_PASSWORD)' /data/homeserver.yaml
+              {{- if and .Values.mail.enabled .Values.mail.external.existingSecret }}
+              yq eval -i '.email.smtp_host = env(SMTP_HOST)' /data/homeserver.yaml
+              yq eval -i '.email.smtp_user = env(SMTP_USER)' /data/homeserver.yaml
+              yq eval -i '.email.smtp_pass = env(SMTP_PASS)' /data/homeserver.yaml
+              {{- end }}
           volumeMounts:
             - name: synapse-initial-config
               mountPath: "/initial"
