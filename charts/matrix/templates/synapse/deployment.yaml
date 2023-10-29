@@ -47,8 +47,8 @@ spec:
                   name: {{ include "matrix.postgresql.secretName" . }}
                   key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.databaseUsername }}
             - name: DATABASE_HOSTNAME
-              {{- if .Values.postgresql.enabled }}
-              value: {{ template "postgresql.primary.fullname" .Subcharts.postgresql }}
+              {{- if not .Values.postgresql.global.postgresql.auth.existingSecret }}
+              value: {{ template "postgresql.v1.primary.fullname" .Subcharts.postgresql }}
               {{ else }}
               valueFrom:
                 secretKeyRef:
@@ -66,7 +66,7 @@ spec:
           env:
             - name: DATABASE_HOSTNAME
               {{- if .Values.postgresql.enabled }}
-              value: {{ template "postgresql.primary.fullname" .Subcharts.postgresql }}
+              value: {{ template "postgresql.v1.primary.fullname" .Subcharts.postgresql }}
               {{ else }}
               valueFrom:
                 secretKeyRef:
