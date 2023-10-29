@@ -148,7 +148,7 @@ matrix:
       # -- key in secret with the userinfo_endpoint if discovery is disabled
       userinfo_endpoint: ""
     # -- each of these will be templated under oidc_providers in homeserver.yaml
-    # ref: https://matrix-org.github.io/synapse/latest/openid.html?search= 
+    # ref: https://matrix-org.github.io/synapse/latest/openid.html?search=
     providers:
       # -- id of your identity provider, e.g. dex
       - idp_id: ""
@@ -210,7 +210,7 @@ matrix:
             # for twitter: https://matrix-org.github.io/synapse/latest/openid.html?search=#twitter
             picture_template: "{{ user.data.profile_image_url }}"
         # optional - maybe useful for keycloak
-        backchannel_logout_enabled: true # Optional
+        backchannel_logout_enabled: true
 
   # Settings for the URL preview crawler
   urlPreviews:
