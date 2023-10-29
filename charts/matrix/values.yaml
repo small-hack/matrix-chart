@@ -152,7 +152,9 @@ matrix:
 
     # -- list of scopes to request. should normally include the "openid" scope.
     # Defaults to ["openid"].
-    scopes: ["openid", "profile"]
+    scopes:
+      - "openid"
+      - "profile"
 
     # -- oauth2 authorization endpoint. Required if provider discovery disabled.
     authorization_endpoint: "https://accounts.example.com/oauth2/auth"
