@@ -103,43 +103,43 @@ spec:
                   key: {{ .Values.matrix.registration.secretKey }}
             {{- end }}
             {{- if and .Values.matrix.oidc.enabled .Values.matrix.oidc.existingSecret }}
-            {{- if .Values.matrix.odic.secretKeys.issuer }}
+            {{- if .Values.matrix.oidc.secretKeys.issuer }}
             - name: ISSUER
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.matrix.oidc.existingSecret }}
-                  key: {{ .Values.matrix.odic.secretKeys.issuer }}
+                  key: {{ .Values.matrix.oidc.secretKeys.issuer }}
             {{- end }}
             - name: CLIENT_ID
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.matrix.oidc.existingSecret }}
-                  key: {{ .Values.matrix.odic.secretKeys.client_id }}
+                  key: {{ .Values.matrix.oidc.secretKeys.client_id }}
             - name: CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.matrix.oidc.existingSecret }}
-                  key: {{ .Values.matrix.odic.secretKeys.client_secret}}
-            {{- if .Values.matrix.odic.secretKeys.authorization_endpoint}}
+                  key: {{ .Values.matrix.oidc.secretKeys.client_secret}}
+            {{- if .Values.matrix.oidc.secretKeys.authorization_endpoint}}
             - name: AUTH_ENDPOINT
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.matrix.oidc.existingSecret }}
-                  key: {{ .Values.matrix.odic.secretKeys.authorization_endpoint }}
+                  key: {{ .Values.matrix.oidc.secretKeys.authorization_endpoint }}
             {{- end }}
-            {{- if .Values.matrix.odic.secretKeys.token_endpoint }}
+            {{- if .Values.matrix.oidc.secretKeys.token_endpoint }}
             - name: TOKEN_ENDPOINT
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.matrix.oidc.existingSecret }}
-                  key: {{ .Values.matrix.odic.secretKeys.token_endpoint }}
+                  key: {{ .Values.matrix.oidc.secretKeys.token_endpoint }}
             {{- end }}
-            {{- if .Values.matrix.odic.secretKeys.userinfo_endpoint }}
+            {{- if .Values.matrix.oidc.secretKeys.userinfo_endpoint }}
             - name: USERINFO_ENDPOINT
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.matrix.oidc.existingSecret }}
-                  key: {{ .Values.matrix.odic.secretKeys.userinfo_endpoint }}
+                  key: {{ .Values.matrix.oidc.secretKeys.userinfo_endpoint }}
             {{- end }}
             {{- end }}
           command:
