@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 4.7.0](https://img.shields.io/badge/Version-4.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.0](https://img.shields.io/badge/AppVersion-v1.95.0-informational?style=flat-square)
+![Version: 4.7.1](https://img.shields.io/badge/Version-4.7.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.0](https://img.shields.io/badge/AppVersion-v1.95.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
@@ -193,11 +193,13 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | imagePullSecrets | list | `[]` |  |
 | mail.elementUrl | string | `""` | Optional: Element instance URL. If ingress is enabled, this is unnecessary, else if this is empty, emails will contain a link to https://app.element.io |
 | mail.enabled | bool | `false` | disabled all email notifications by default. NOTE: If enabled, either enable the Exim relay or configure an external mail server below |
-| mail.external.host | string | `""` | External mail server hostname |
-| mail.external.password | string | `""` | External mail server password |
-| mail.external.port | int | `25` | External mail server port |
-| mail.external.requireTransportSecurity | bool | `true` |  |
-| mail.external.username | string | `""` | External mail server username |
+| mail.external.existingSecret | string | `""` | use an existing k8s Secret for your host, username, and password |
+| mail.external.host | string | `""` | External mail server hostname - ignored if existingSecret not "" |
+| mail.external.password | string | `""` | External mail server password - ignored if existingSecret not "" |
+| mail.external.port | int | `587` | External mail server port INSECURE: 25, SSL: 465, STARTTLS: 587 |
+| mail.external.requireTransportSecurity | bool | `true` | require TLS, I think |
+| mail.external.secretKeys | object | `{"host":"host","password":"password","username":"username"}` | secret keys to use for your existing SMTP server |
+| mail.external.username | string | `""` | External mail server username - ignored if existingSecret not "" |
 | mail.from | string | `"Matrix <matrix@example.com>"` | Name and email address for outgoing mail |
 | mail.relay.enabled | bool | `true` | whether to enable exim relay or not |
 | mail.relay.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -233,7 +235,7 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | matrix.logging.synapseLogLevel | string | `"WARNING"` | The log level for the synapse server |
 | matrix.oidc.enabled | bool | `false` | set to true to enable authorization against an OpenID Connect server |
 | matrix.oidc.existingSecret | string | `""` | existing secret to use for the OIDC config |
-| matrix.oidc.providers | list | `[{"authorization_endpoint":"https://accounts.example.com/oauth2/auth","backchannel_logout_enabled":true,"client_auth_method":"client_secret_post","client_id":"provided-by-your-issuer","client_secret":"provided-by-your-issuer","discover":true,"idp_brand":"","idp_id":"","idp_name":"","issuer":"https://accounts.example.com/","scopes":["openid","profile"],"skip_verification":false,"token_endpoint":"https://accounts.example.com/oauth2/token","user_mapping_provider":{"config":{"display_name_template":"","localpart_template":"","picture_template":"{{ user.data.profile_image_url }}","subject_claim":""}},"userinfo_endpoint":"https://accounts.example.com/userinfo"}]` | each of these will be templated under oidc_providers in homeserver.yaml ref: https://matrix-org.github.io/synapse/latest/openid.html?search=  |
+| matrix.oidc.providers | list | `[{"authorization_endpoint":"https://accounts.example.com/oauth2/auth","backchannel_logout_enabled":true,"client_auth_method":"client_secret_post","client_id":"provided-by-your-issuer","client_secret":"provided-by-your-issuer","discover":true,"idp_brand":"","idp_id":"","idp_name":"","issuer":"https://accounts.example.com/","scopes":["openid","profile"],"skip_verification":false,"token_endpoint":"https://accounts.example.com/oauth2/token","user_mapping_provider":{"config":{"display_name_template":"","localpart_template":"","picture_template":"{{ user.data.profile_image_url }}","subject_claim":""}},"userinfo_endpoint":"https://accounts.example.com/userinfo"}]` | each of these will be templated under oidc_providers in homeserver.yaml ref: https://matrix-org.github.io/synapse/latest/openid.html?search= |
 | matrix.oidc.providers[0] | object | `{"authorization_endpoint":"https://accounts.example.com/oauth2/auth","backchannel_logout_enabled":true,"client_auth_method":"client_secret_post","client_id":"provided-by-your-issuer","client_secret":"provided-by-your-issuer","discover":true,"idp_brand":"","idp_id":"","idp_name":"","issuer":"https://accounts.example.com/","scopes":["openid","profile"],"skip_verification":false,"token_endpoint":"https://accounts.example.com/oauth2/token","user_mapping_provider":{"config":{"display_name_template":"","localpart_template":"","picture_template":"{{ user.data.profile_image_url }}","subject_claim":""}},"userinfo_endpoint":"https://accounts.example.com/userinfo"}` | id of your identity provider, e.g. dex |
 | matrix.oidc.providers[0].authorization_endpoint | string | `"https://accounts.example.com/oauth2/auth"` | oauth2 authorization endpoint. Required if provider discovery disabled. |
 | matrix.oidc.providers[0].client_auth_method | string | `"client_secret_post"` | auth method to use when exchanging the token. Valid values are: 'client_secret_basic' (default), 'client_secret_post' and 'none'. |
