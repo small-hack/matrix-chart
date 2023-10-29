@@ -1519,7 +1519,12 @@ oidc_config:
   # list of scopes to request. This should normally include the "openid" scope.
   # Defaults to ["openid"].
   #
-  scopes: {{ .Values.matrix.oidc_config.scopes }}
+  {{- if .Values.matrix.oidc_config.scopes }}
+  scopes:
+  {{- range .Values.matrix.oidc_config.scopes }}
+    - {{ . | quote }}
+  {{- end }}
+  {{- end }}
 
   # Uncomment to skip metadata verification. Defaults to false.
   #
