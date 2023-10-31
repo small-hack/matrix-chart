@@ -27,7 +27,8 @@ jobs:
           helm repo add coturn https://jessebot.github.io/coturn-chart
 
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.4.0
+        # pinned from advice of https://github.com/helm/chart-testing-action/issues/132#issuecomment-1786978856
+        uses: helm/chart-testing-action@cb49023b9227b1097e5eddd8824f48bdea11b1aa
 
       - name: Run chart-testing (list-changed)
         id: list-changed
