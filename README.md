@@ -5,7 +5,8 @@ A Helm chart for deploying a Matrix homeserver stack on Kubernetes.
 
 ## TLDR
 
-See [charts/matrix/README.md](./charts/matrix/README.md) for docs auto-generated from the [`values.yaml`](./charts/matrix/values.yaml).
+See the [`README.md`](https://github.com/small-hack/matrix-chart/blob/main/charts/matrix/README.md) for docs auto-generated from the [`values.yaml`](https://github.com/small-hack/matrix-chart/blob/main/charts/matrix/values.yaml).
+
 Read through the parameters and modify them locally before installing the chart:
 
 ```bash
