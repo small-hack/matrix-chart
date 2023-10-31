@@ -1,7 +1,7 @@
 # Matrix Chart
 <a href="https://github.com/small-hack/matrix-chart/releases"><img src="https://img.shields.io/github/v/release/small-hack/matrix-chart?style=plastic&labelColor=blue&color=green&logo=GitHub&logoColor=white"></a>
 
-A Helm chart for deploying a Matrix homeserver stack in Kubernetes. This is a fork of [Arkaniad/matrix-chart](https://github.com/Arkaniad/matrix-chart), which is a fork of [typokign/matrix-chart](https://github.com/typokign/matrix-chart). We recently transferred this chart from [@jessebot](https://github.comc/jessebot) to the small-hack org to help with maintanence longterm :)
+A Helm chart for deploying a Matrix homeserver stack on Kubernetes.
 
 ## TLDR
 
@@ -9,9 +9,13 @@ See [charts/matrix/README.md](./charts/matrix/README.md) for docs auto-generated
 Read through the parameters and modify them locally before installing the chart:
 
 ```bash
+# add the helm repo locally
 helm repo add matrix https://small-hack.github.io/matrix-chart
+
+# downloads the values.yaml locally
 helm show values matrix/matrix > values.yaml
-# make sure you review and update your values.yaml first
+
+# install the chart
 helm install my-release-name matrix/matrix --values values.yaml
 ```
 
@@ -40,9 +44,9 @@ These features still need to be tested, but are technically baked into the chart
 - [matrix-org/matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) IRC bridge
 - [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge
 
-## Status
+## About and Status
 
-Working on full stability, but always happy to receive GitHub Issues or PRs 💙
+This is a fork of [Arkaniad/matrix-chart](https://github.com/Arkaniad/matrix-chart), which is a fork of [typokign/matrix-chart](https://github.com/typokign/matrix-chart). We recently transferred this chart from [@jessebot](https://github.comc/jessebot) to the small-hack org to help with maintanence longterm :) Working on full stability, but always happy to receive GitHub Issues or PRs 💙
 
 Our goal is to provide regular updates using renovatebot and provide some level of basic security from a k8s perspective. We're also trying to standardize the chart more by following predictable values.yaml patterns.
 
