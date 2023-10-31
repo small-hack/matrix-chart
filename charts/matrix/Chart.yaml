@@ -24,6 +24,6 @@ dependencies:
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
   - name: coturn
-    version: 4.2.1
+    version: 4.3.0
     repository: https://jessebot.github.io/coturn-chart
     condition: coturn.enabled
