@@ -22,7 +22,7 @@
                   "minor=$(echo $version | cut -d. -f2)",
                   "patch=$(echo $version | cut -d. -f3)",
                   "minor=$(expr $minor + 1)",
-                  "echo /"Replacing $version with $major.$minor.$patch/"",
+                  "echo \"Replacing $version with $major.$minor.$patch\"",
                   "sed -i \"s/^version:.*/version: $\{major\}.$\{minor\}.$\{patch\}/g\" {{{parentDir}}}/Chart.yaml",
                   "cat {{{parentDir}}}/Chart.yaml"
                 ],
