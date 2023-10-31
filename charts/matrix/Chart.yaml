@@ -1,6 +1,6 @@
 apiVersion: v2
 name: matrix
-description: A Helm chart to deploy a Matrix homeserver stack into Kubernetes
+description: A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 icon: "https://dacruz21.github.io/helm-charts/icons/matrix.svg"
 home: "https://github.com/small-hack/matrix-chart"
 sources:
