@@ -1,14 +1,14 @@
 apiVersion: v2
 name: matrix
-description: A Helm chart to deploy a Matrix homeserver stack into Kubernetes
+description: A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 icon: "https://dacruz21.github.io/helm-charts/icons/matrix.svg"
-home: "https://github.com/jessebot/matrix-chart"
+home: "https://github.com/small-hack/matrix-chart"
 sources:
-  - "https://github.com/jessebot/matrix-chart"
+  - "https://github.com/small-hack/matrix-chart"
 
 type: application
 
-version: 4.8.0
+version: 5.0.0
 
 # renovate: image=matrixdotorg/synapse
 appVersion: v1.95.0
@@ -20,7 +20,7 @@ maintainers:
 
 dependencies:
   - name: postgresql
-    version: 12.12.10
+    version: 13.1.5
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
   - name: coturn

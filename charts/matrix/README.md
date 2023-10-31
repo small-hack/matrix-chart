@@ -1,10 +1,10 @@
 # matrix
 
-![Version: 4.8.0](https://img.shields.io/badge/Version-4.8.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.0](https://img.shields.io/badge/AppVersion-v1.95.0-informational?style=flat-square)
+![Version: 5.0.0](https://img.shields.io/badge/Version-5.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.0](https://img.shields.io/badge/AppVersion-v1.95.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
-**Homepage:** <https://github.com/jessebot/matrix-chart>
+**Homepage:** <https://github.com/small-hack/matrix-chart>
 
 ## Maintainers
 
@@ -14,14 +14,14 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 
 ## Source Code
 
-* <https://github.com/jessebot/matrix-chart>
+* <https://github.com/small-hack/matrix-chart>
 
 ## Requirements
 
 | Repository | Name | Version |
 |------------|------|---------|
 | https://jessebot.github.io/coturn-chart | coturn | 4.3.0 |
-| oci://registry-1.docker.io/bitnamicharts | postgresql | 12.12.10 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql | 13.1.5 |
 
 ## Values
 

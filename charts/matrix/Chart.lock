@@ -1,9 +1,9 @@
 dependencies:
 - name: postgresql
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 12.12.10
+  version: 13.1.5
 - name: coturn
   repository: https://jessebot.github.io/coturn-chart
   version: 4.3.0
-digest: sha256:8cc768711364e7df62e26930972b6d2a1fd0b6de2cfad22a6ec81b0179c1b9c5
-generated: "2023-10-31T09:20:12.729319391Z"
+digest: sha256:dff8abafc7332bf167bf4faa8845944f5b450e54d3eb0a1b7a3a45cfed1c0329
+generated: "2023-10-31T10:13:54.50646624Z"
