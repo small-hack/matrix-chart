@@ -1,14 +1,18 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
   "regexManagers": [
         {
             "fileMatch": ["(^|/)Chart\\.yaml$"],
             "matchStrings": [
-                '#\\s?renovate: image=(?<depName>.*?)\\s?appVersion:\\s?\\"?(?<currentValue>[\\w+\\.\\-]*)',
+                "#\\s?renovate: image=(?<depName>.*?)\\s?appVersion:\\s?\\\"?(?<currentValue>[\\w+\\.\\-]*)",
             ],
-            "datasourceTemplate": "docker",
+            "datasourceTemplate": "docker"
         },
     ],
-  "packageRules": [
+    "packageRules": [
         {
             "matchManagers": ["helm-requirements", "helm-values", "regex"],
             "postUpgradeTasks": {
@@ -18,8 +22,8 @@
                   "minor=$(echo $version | cut -d. -f2)",
                   "patch=$(echo $version | cut -d. -f3)",
                   "minor=$(expr $minor + 1)",
-                  'echo "Replacing $version with $major.$minor.$patch"',
-                  'sed -i "s/^version:.*/version: $\{major\}.$\{minor\}.$\{patch\}/g" {{{parentDir}}}/Chart.yaml',
+                  "echo /"Replacing $version with $major.$minor.$patch/"",
+                  "sed -i \"s/^version:.*/version: $\{major\}.$\{minor\}.$\{patch\}/g\" {{{parentDir}}}/Chart.yaml",
                   "cat {{{parentDir}}}/Chart.yaml"
                 ],
             },
