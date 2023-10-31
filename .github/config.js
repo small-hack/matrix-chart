@@ -1,12 +1,6 @@
 module.exports = {
-  branchPrefix: 'test-renovate/',
-  username: 'renovate-release',
-  gitAuthor: 'Renovate Bot <bot@renovateapp.com>',
-  platform: 'github',
-  includeForks: true,
-  dryRun: null,
   dependencyDashboard: false,
-  repositories: ['jessebot/matrix-chart'],
+  repositories: ['small-hack/matrix-chart'],
     extends: ['config:base'],
     dependencyDashboard: false,
     allowPostUpgradeCommandTemplating: true,
