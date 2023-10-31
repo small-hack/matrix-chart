@@ -20,7 +20,7 @@ maintainers:
 
 dependencies:
   - name: postgresql
-    version: 12.12.10
+    version: 13.1.5
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
   - name: coturn
