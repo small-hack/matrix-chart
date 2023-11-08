@@ -55,6 +55,16 @@ spec:
                   name: {{ include "matrix.postgresql.secretName" . }}
                   key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.databaseHostname }}
               {{- end }}
+            {{- if .Values.postgresql.sslmode }}
+            - name: PGSSLMODE
+              value: {{ .Values.postgresql.sslmode }}
+            - name: PGSSLCERT
+              value: {{ .Values.postgresql.sslcert }}
+            - name: PGSSLKEY
+              value: {{ .Values.postgresql.sslkey }}
+            - name: PGSSLROOTCERT
+              value: {{ .Values.postgresql.sslrootcert }}
+            {{- end }}
           command:
             - "sh"
             - "-c"
@@ -260,6 +270,19 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.s3.existingSecret }}
                   key: {{ .Values.s3.secretKeys.secretKey }}
+            {{- end }}
+            {{- if .Values.postgresql.sslmode }}
+            - name: PGSSLMODE
+              value: {{ .Values.postgresql.sslmode }}
+            - name: PGSSLCERT
+              value: {{ .Values.postgresql.sslcert }}
+            - name: PGSSLKEY
+              value: {{ .Values.postgresql.sslkey }}
+            - name: PGSSLROOTCERT
+              value: {{ .Values.postgresql.sslrootcert }}
+            {{- end }}
+            {{- if .Values.synapse.extraEnv }}
+            {{- toYaml .Values.synapse.extraEnv | nindent 12 }}
             {{- end }}
           ports:
             - name: http

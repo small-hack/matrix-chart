@@ -603,7 +603,18 @@ database:
         database: "REPLACE_ME"
         host: "REPLACE_ME"
         port: {{ .Values.postgresql.port }}
+        {{- if .Values.postgresql.sslmode }}
         sslmode: {{ .Values.postgresql.sslmode }}
+        {{- end }}
+        {{- if .Values.postgresql.sslkey }}
+        sslkey: {{ .Values.postgresql.sslkey }}
+        {{- end }}
+        {{- if .Values.postgresql.sslcert }}
+        sslcert: {{ .Values.postgresql.sslcert }}
+        {{- end }}
+        {{- if .Values.postgresql.sslrootcert }}
+        sslrootcert: {{ .Values.postgresql.sslrootcert }}
+        {{- end }}
         cp_min: 5
         cp_max: 10
 

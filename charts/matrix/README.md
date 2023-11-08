@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 5.1.0](https://img.shields.io/badge/Version-5.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.1](https://img.shields.io/badge/AppVersion-v1.95.1-informational?style=flat-square)
+![Version: 5.2.0](https://img.shields.io/badge/Version-5.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.1](https://img.shields.io/badge/AppVersion-v1.95.1-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -306,6 +306,10 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | postgresql.primary.podSecurityContext.enabled | bool | `true` |  |
 | postgresql.primary.podSecurityContext.fsGroup | int | `1000` |  |
 | postgresql.primary.podSecurityContext.runAsUser | int | `1000` |  |
+| postgresql.sslcert | string | `""` |  |
+| postgresql.sslkey | string | `""` |  |
+| postgresql.sslmode | string | `""` | optional SSL parameters for postgresql, if using your own db instead of the subchart see more: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS |
+| postgresql.sslrootcert | string | `""` |  |
 | postgresql.volumePermissions.enabled | bool | `true` | Enable init container that changes the owner and group of the PVC |
 | s3.bucket | string | `""` | name of the bucket to use |
 | s3.cronjob.enabled | bool | `false` | enable a regular cleanup k8s cronjob to automatically backup everything to your s3 bucket for you and delete it from local disk ref: https://github.com/matrix-org/synapse-s3-storage-provider/tree/main#regular-cleanup-job |
@@ -316,8 +320,9 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | s3.existingSecret | string | `""` | use credentials from an existing kubernetes secret |
 | s3.secretKeys.accessKey | string | `"S3_ACCESS_KEY"` | key in existing secret fo the S3 key |
 | s3.secretKeys.secretKey | string | `"S3_SECRET_KEY"` | key in existing secret fo the S3 secret |
-| synapse.extraVolumeMounts | list | `[]` |  |
-| synapse.extraVolumes | list | `[]` |  |
+| synapse.extraEnv | list | `[]` | optiona: extra env variables to pass to the matrix synapse deployment |
+| synapse.extraVolumeMounts | list | `[]` | optional: extra volume mounts for the matrix synapse deployment |
+| synapse.extraVolumes | list | `[]` | optional: extra volumes for the matrix synapse deployment |
 | synapse.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy for synapse image, Use Always if using image.tag: latest |
 | synapse.image.repository | string | `"matrixdotorg/synapse"` | image registry and repository to use for synapse |
 | synapse.image.tag | string | `""` | tag of synapse docker image to use. change this to latest to grab the    cutting-edge release of synapse |
