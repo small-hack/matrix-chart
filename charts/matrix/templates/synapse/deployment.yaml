@@ -261,6 +261,16 @@ spec:
                   name: {{ .Values.s3.existingSecret }}
                   key: {{ .Values.s3.secretKeys.secretKey }}
             {{- end }}
+            {{- if .Values.postgresql.sslmode }}
+            - name: PGSSLMODE
+              value: {{ .Values.postgresql.sslmode }}
+            - name: PGSSLCERT
+              value: {{ .Values.postgresql.sslcert }}
+            - name: PGSSLKEY
+              value: {{ .Values.postgresql.sslkey }}
+            - name: PGSSLROOTCERT
+              value: {{ .Values.postgresql.sslrootcert }}
+            {{- end }}
             {{- if .Values.matrix.extraEnv }}
             {{- toYaml .Values.synapse.extraEnv | nindent 12 }}
             {{- end }}
