@@ -1,0 +1,142 @@
+{{- if and .Values.s3.enabled ( .Values.s3.cronjob.enabled ) }}
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "matrix.fullname" . }}-synapse-s3-cleanup
+  labels:
+{{ include "matrix.labels" . | indent 4 }}
+{{ include "matrix.synapse.labels" . | indent 4}}
+spec:
+  schedule: {{ .Values.s3.cronjob.schedule }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: "synapse"
+              image: {{ include "matrix.image" . }}
+              imagePullPolicy: {{ .Values.synapse.image.pullPolicy }}
+              command:
+                - |
+                  pip install synapse-s3-storage-provider
+                  cd s3_media_upload
+                  s3_media_upload update /data/media_store 2m
+                  s3_media_upload upload /data/media_store {{ .Values.s3.bucket }} --storage-class STANDARD_IA --delete
+              volumeMounts:
+                - name: synapse-config
+                  mountPath: /data
+                - name: signing-key
+                  mountPath: /data/keys
+                - name: media-store
+                  mountPath: /data/media_store
+                {{- if or .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.irc.enabled }}
+                - name: bridges
+                  mountPath: /bridges
+                  readOnly: true
+                {{- end }}
+                - name: uploads
+                  mountPath: /data/uploads
+                - name: tmp
+                  mountPath: /tmp
+                {{- if gt (len .Values.synapse.extraVolumeMounts) 0 }}
+                {{- toYaml .Values.synapse.extraVolumeMounts | nindent 12 }}
+                {{- end }}
+              env:
+                {{- if .Values.synapse.securityContext.env }}
+                {{- if .Values.synapse.securityContext.runAsUser }}
+                - name: UID
+                  value: "{{ .Values.synapse.securityContext.runAsUser }}"
+                {{- end }}
+                {{- if .Values.synapse.securityContext.runAsGroup }}
+                - name: GID
+                  value: "{{ .Values.synapse.securityContext.runAsGroup }}"
+                {{- end }}
+                {{- end }}
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.s3.existingSecret }}
+                      key: {{ .Values.s3.secretKeys.accessKey }}
+
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.s3.existingSecret }}
+                      key: {{ .Values.s3.secretKeys.secretKey }}
+              ports:
+                - name: http
+                  containerPort: 8008
+                  protocol: TCP
+              readinessProbe:
+                httpGet:
+                  path: /_matrix/static/
+                  port: http
+                {{- if .Values.synapse.probes.readiness }}
+                {{- toYaml .Values.synapse.probes.readiness | nindent 12 }}
+                {{- end }}
+              startupProbe:
+                httpGet:
+                  path: /_matrix/static/
+                  port: http
+                {{- if .Values.synapse.probes.startup }}
+                {{- toYaml .Values.synapse.probes.startup | nindent 12 }}
+                {{- end }}
+              livenessProbe:
+                httpGet:
+                  path: /_matrix/static/
+                  port: http
+                {{- if .Values.synapse.probes.liveness }}
+                {{- toYaml .Values.synapse.probes.liveness | nindent 12 }}
+                {{- end }}
+              securityContext:
+                capabilities:
+                  drop:
+                    - ALL
+                readOnlyRootFilesystem: true
+                allowPrivilegeEscalation: false
+              {{- with .Values.synapse.resources }}
+              resources:
+                {{- toYaml . | nindent 12 }}
+              {{- end }}
+          volumes:
+            - name: synapse-config
+              persistentVolumeClaim:
+                {{- if not .Values.volumes.synapseConfig.existingClaim }}
+                claimName: {{ include "matrix.fullname" . }}-synapse-config
+                {{ else }}
+                claimName: {{ .Values.volumes.synapseConfig.existingClaim }}
+                {{- end }}
+            - name: signing-key
+              persistentVolumeClaim:
+                {{- if not .Values.volumes.signingKey.existingClaim }}
+                claimName: {{ include "matrix.fullname" . }}-signing-key
+                {{ else }}
+                claimName: {{ .Values.volumes.signingKey.existingClaim }}
+                {{- end }}
+            - name: media-store
+              persistentVolumeClaim:
+                {{- if not .Values.volumes.media.existingClaim }}
+                claimName: {{ include "matrix.fullname" . }}-media-store
+                {{ else }}
+                claimName: {{ .Values.volumes.media.existingClaim }}
+                {{- end }}
+            {{- if or .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.irc.enabled }}
+            - name: bridges
+              persistentVolumeClaim:
+                {{- if not .Values.bridges.volume.existingClaim }}
+                claimName: {{ include "matrix.fullname" . }}-bridges
+                {{ else }}
+                claimName: {{ .Values.bridges.volume.existingClaim }}
+                {{- end }}
+            {{- end }}
+            # Ephemeral in-progress uploads
+            - name: uploads
+              emptyDir: {}
+            - name: tmp
+              emptyDir: {}
+            {{- if gt (len .Values.synapse.extraVolumes) 0 }}
+            {{ toYaml .Values.synapse.extraVolumes | nindent 8}}
+            {{- end }}
+          restartPolicy: OnFailure
+{{- end }}

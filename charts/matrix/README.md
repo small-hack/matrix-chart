@@ -1,8 +1,8 @@
 # matrix
 
-![Version: 5.0.0](https://img.shields.io/badge/Version-5.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.0](https://img.shields.io/badge/AppVersion-v1.95.0-informational?style=flat-square)
+![Version: 5.0.1](https://img.shields.io/badge/Version-5.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.1](https://img.shields.io/badge/AppVersion-v1.95.1-informational?style=flat-square)
 
-A Helm chart to deploy a Matrix homeserver stack into Kubernetes
+A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
 **Homepage:** <https://github.com/small-hack/matrix-chart>
 
@@ -308,10 +308,13 @@ A Helm chart to deploy a Matrix homeserver stack into Kubernetes
 | postgresql.primary.podSecurityContext.runAsUser | int | `1000` |  |
 | postgresql.volumePermissions.enabled | bool | `true` | Enable init container that changes the owner and group of the PVC |
 | s3.bucket | string | `""` | name of the bucket to use |
-| s3.enabled | bool | `false` | enable s3 storage |
+| s3.cronjob.enabled | bool | `true` | enable a regular cleanup k8s cronjob to automatically backup everything to s3 for you ref: https://github.com/matrix-org/synapse-s3-storage-provider/tree/main#regular-cleanup-job |
+| s3.cronjob.schedule | string | `"0 0 * * *"` | cron schedule to run the k8s cronjob. Defaults to every day at midnight |
+| s3.enabled | bool | `false` | enable s3 storage via https://github.com/matrix-org/synapse-s3-storage-provider |
 | s3.endpoint | string | `""` | your s3 endpoint |
 | s3.existingSecret | string | `""` | use credentials from an existing kubernetes secret |
-| s3.secretKeys | object | `{"accessKey":"S3_ACCESS_KEY","secretKey":"S3_SECRET_KEY"}` | these are the keys within the existing k8s secret to use for s3 credentials |
+| s3.secretKeys.accessKey | string | `"S3_ACCESS_KEY"` | key in existing secret fo the S3 key |
+| s3.secretKeys.secretKey | string | `"S3_SECRET_KEY"` | key in existing secret fo the S3 secret |
 | synapse.extraVolumeMounts | list | `[]` |  |
 | synapse.extraVolumes | list | `[]` |  |
 | synapse.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy for synapse image, Use Always if using image.tag: latest |

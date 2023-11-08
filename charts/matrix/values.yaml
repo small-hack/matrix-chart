@@ -331,7 +331,7 @@ matrix:
     synapseLogLevel: WARNING
 
 s3:
-  # -- enable s3 storage
+  # -- enable s3 storage via https://github.com/matrix-org/synapse-s3-storage-provider
   enabled: false
   # -- your s3 endpoint
   endpoint: ""
@@ -339,10 +339,18 @@ s3:
   bucket: ""
   # -- use credentials from an existing kubernetes secret
   existingSecret: ""
-  # -- these are the keys within the existing k8s secret to use for s3 credentials
+  # these are the keys within the existing k8s secret to use for s3 credentials
   secretKeys:
+    # -- key in existing secret fo the S3 key
     accessKey: "S3_ACCESS_KEY"
+    # -- key in existing secret fo the S3 secret
     secretKey: "S3_SECRET_KEY"
+  cronjob:
+    # -- enable a regular cleanup k8s cronjob to automatically backup everything to s3 for you
+    # ref: https://github.com/matrix-org/synapse-s3-storage-provider/tree/main#regular-cleanup-job
+    enabled: true
+    # -- cron schedule to run the k8s cronjob. Defaults to every day at midnight
+    schedule: "0 0 * * *"
 
 # Persistent volumes configuration
 volumes:
