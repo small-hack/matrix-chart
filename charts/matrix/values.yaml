@@ -346,11 +346,15 @@ s3:
     # -- key in existing secret fo the S3 secret
     secretKey: "S3_SECRET_KEY"
   cronjob:
-    # -- enable a regular cleanup k8s cronjob to automatically backup everything to s3 for you
-    # ref: https://github.com/matrix-org/synapse-s3-storage-provider/tree/main#regular-cleanup-job
-    enabled: true
+    # -- enable a regular cleanup k8s cronjob to automatically backup everything
+    # to your s3 bucket for you and delete it from local disk ref:
+    # https://github.com/matrix-org/synapse-s3-storage-provider/tree/main#regular-cleanup-job
+    enabled: false
     # -- cron schedule to run the k8s cronjob. Defaults to every day at midnight
     schedule: "0 0 * * *"
+    # -- this is the age of files you'd like to clean up, defaults files not used
+    # within two months (2m)
+    file_age: 2m
 
 # Persistent volumes configuration
 volumes:

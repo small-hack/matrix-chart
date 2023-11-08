@@ -21,7 +21,7 @@ spec:
                 - |
                   pip install synapse-s3-storage-provider
                   cd s3_media_upload
-                  s3_media_upload update /data/media_store 2m
+                  s3_media_upload update /data/media_store {{ .Values.s3.cronjob.file_age }}
                   s3_media_upload upload /data/media_store {{ .Values.s3.bucket }} --storage-class STANDARD_IA --delete
               volumeMounts:
                 - name: synapse-config

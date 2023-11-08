@@ -308,7 +308,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | postgresql.primary.podSecurityContext.runAsUser | int | `1000` |  |
 | postgresql.volumePermissions.enabled | bool | `true` | Enable init container that changes the owner and group of the PVC |
 | s3.bucket | string | `""` | name of the bucket to use |
-| s3.cronjob.enabled | bool | `true` | enable a regular cleanup k8s cronjob to automatically backup everything to s3 for you ref: https://github.com/matrix-org/synapse-s3-storage-provider/tree/main#regular-cleanup-job |
+| s3.cronjob.enabled | bool | `false` | enable a regular cleanup k8s cronjob to automatically backup everything to your s3 bucket for you and delete it from local disk ref: https://github.com/matrix-org/synapse-s3-storage-provider/tree/main#regular-cleanup-job |
+| s3.cronjob.file_age | string | `"2m"` | this is the age of files you'd like to clean up, defaults files not used within two months (2m) |
 | s3.cronjob.schedule | string | `"0 0 * * *"` | cron schedule to run the k8s cronjob. Defaults to every day at midnight |
 | s3.enabled | bool | `false` | enable s3 storage via https://github.com/matrix-org/synapse-s3-storage-provider |
 | s3.endpoint | string | `""` | your s3 endpoint |
