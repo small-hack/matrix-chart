@@ -281,7 +281,7 @@ spec:
             - name: PGSSLROOTCERT
               value: {{ .Values.postgresql.sslrootcert }}
             {{- end }}
-            {{- if .Values.matrix.extraEnv }}
+            {{- if .Values.synapse.extraEnv }}
             {{- toYaml .Values.synapse.extraEnv | nindent 12 }}
             {{- end }}
           ports:
