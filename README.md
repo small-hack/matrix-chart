@@ -31,12 +31,20 @@ helm install my-release-name matrix/matrix --values values.yaml
 - Use (existing) Kubernetes Secrets for confidential data, such as passwords
 - Use OIDC configs for SSO (see synapse [docs](https://github.com/matrix-org/synapse/blob/747416e94cd8f137b9173c132f7c44ea1c59534d/docs/openid.md) for more info)
 - Latest version of [Element](https://element.io/)
-- [Bitnami PostgreSQL subchart](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) to deploy a cluster - needs some work to standardize though, so we also support external postgresql servers
 - [Coturn TURN server subchart](https://github.com/jessebot/coturn-chart) for VoIP calls
 - Use [s3 to store stuff](https://github.com/matrix-org/synapse-s3-storage-provider/tree/main)
 - Use an existing Kubernetes Secret for an external mail server for email notifications
 
-#### ⚠️ Optional Features (Untested Since Fork)
+#### Databases
+
+You must select one of the following options:
+
+- Use the [Bitnami PostgreSQL subchart](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) (set `postgresql.enabled` to `true`)
+- Use your own external database, which can also be PostgreSQL. (set `externalDatabase.enabled` to `true`)
+
+Note: you cannot enable both `externalDatabase` and `postgresql`. You must select _one_.
+
+### ⚠️ Optional Features (Untested Since Fork)
 
 These features still need to be tested, but are technically baked into the chart from the fork:
 

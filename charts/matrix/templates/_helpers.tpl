@@ -121,6 +121,8 @@ Helper function to get the postgres secret containing the database credentials
 {{- define "matrix.postgresql.secretName" -}}
 {{- if and .Values.postgresql.enabled .Values.postgresql.global.postgresql.auth.existingSecret -}}
 {{ .Values.postgresql.global.postgresql.auth.existingSecret }}
+{{- else if and .Values.externalDatabase.enabled .Values.externalDatabase.existingSecret -}}
+{{ .Values.externalDatabase.existingSecret }}
 {{- else -}}
 {{ template "matrix.fullname" . }}-db-secret
 {{- end }}
