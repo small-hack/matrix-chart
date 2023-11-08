@@ -190,7 +190,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | element.service.type | string | `"ClusterIP"` |  |
 | element.welcomeUserId | string | `""` | Set to the user ID (@username:domain.tld) of a bot to invite all new users to a DM with the bot upon registration |
 | externalDatabase.database | string | `"matrix"` | name of the database to try and connect to |
-| externalDatabase.enabled | bool | `false` | enable using an external database instead of the Bitnami PostgreSQL sub-chart |
+| externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
 | externalDatabase.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
 | externalDatabase.hostname | string | `""` | hostname of db server. Can be left blank if using postgres subchart |
 | externalDatabase.password | string | `"changeme"` | password of matrix postgres user - ignored using exsitingSecret |
@@ -304,7 +304,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.urlPreviews.rules.url | object | `{}` | Whitelist and blacklist based on URL pattern matching |
 | nameOverride | string | `""` |  |
 | networkPolicies.enabled | bool | `true` | whether to enable kubernetes network policies or not |
-| postgresql.enabled | bool | `true` | Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure all externalDatabase are filled out |
+| postgresql.enabled | bool | `true` | Whether to deploy the Bitnami Postgresql sub chart If postgresql.enabled is set to true, externalDatabase.enabled must be set to false else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
 | postgresql.global.postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
 | postgresql.global.postgresql.auth.password | string | `"changeme"` | password of matrix postgres user - ignored using exsitingSecret |
 | postgresql.global.postgresql.auth.port | int | `5432` | which port to use to connect to your database server |
