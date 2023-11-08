@@ -74,15 +74,9 @@ spec:
           image: "mikefarah/yq:latest"
           imagePullPolicy: Always
           env:
+            {{- if .Values.postgresql.enabled }}
             - name: DATABASE_HOSTNAME
-              {{- if .Values.postgresql.enabled }}
               value: {{ template "postgresql.v1.primary.fullname" .Subcharts.postgresql }}
-              {{ else }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "matrix.postgresql.secretName" . }}
-                  key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.databaseHostname }}
-              {{- end }}
             - name: DATABASE
               valueFrom:
                 secretKeyRef:
@@ -98,6 +92,28 @@ spec:
                 secretKeyRef:
                   name: {{ include "matrix.postgresql.secretName" . }}
                   key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.userPasswordKey}}
+            {{- else if .Values.externalDatabase.enabled }}
+            - name: DATABASE_HOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix.postgresql.secretName" . }}
+                  key: {{ .Values.externalDatabase.secretKeys.databaseHostname }}
+            - name: DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix.postgresql.secretName" . }}
+                  key: {{ .Values.externalDatabase.secretKeys.database }}
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix.postgresql.secretName" . }}
+                  key: {{ .Values.externalDatabase.secretKeys.databaseUsername }}
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix.postgresql.secretName" . }}
+                  key: {{ .Values.externalDatabase.secretKeys.userPasswordKey}}
+            {{- end }}
             {{- if .Values.coturn.enabled }}
             - name: COTURN_SHARED_SECRET
               valueFrom:
@@ -271,15 +287,15 @@ spec:
                   name: {{ .Values.s3.existingSecret }}
                   key: {{ .Values.s3.secretKeys.secretKey }}
             {{- end }}
-            {{- if .Values.postgresql.sslmode }}
+            {{- if .Values.externalDatabase.sslmode }}
             - name: PGSSLMODE
-              value: {{ .Values.postgresql.sslmode }}
+              value: {{ .Values.externalDatabase.sslmode }}
             - name: PGSSLCERT
-              value: {{ .Values.postgresql.sslcert }}
+              value: {{ .Values.externalDatabase.sslcert }}
             - name: PGSSLKEY
-              value: {{ .Values.postgresql.sslkey }}
+              value: {{ .Values.externalDatabase.sslkey }}
             - name: PGSSLROOTCERT
-              value: {{ .Values.postgresql.sslrootcert }}
+              value: {{ .Values.externalDatabase.sslrootcert }}
             {{- end }}
             {{- if .Values.synapse.extraEnv }}
             {{- toYaml .Values.synapse.extraEnv | nindent 12 }}

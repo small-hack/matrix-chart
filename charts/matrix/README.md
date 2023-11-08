@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 5.2.0](https://img.shields.io/badge/Version-5.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.1](https://img.shields.io/badge/AppVersion-v1.95.1-informational?style=flat-square)
+![Version: 6.0.0](https://img.shields.io/badge/Version-6.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.1](https://img.shields.io/badge/AppVersion-v1.95.1-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -189,6 +189,22 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | element.service.port | int | `80` |  |
 | element.service.type | string | `"ClusterIP"` |  |
 | element.welcomeUserId | string | `""` | Set to the user ID (@username:domain.tld) of a bot to invite all new users to a DM with the bot upon registration |
+| externalDatabase.database | string | `"matrix"` | name of the database to try and connect to |
+| externalDatabase.enabled | bool | `false` | enable using an external database instead of the Bitnami PostgreSQL sub-chart |
+| externalDatabase.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
+| externalDatabase.hostname | string | `""` | hostname of db server. Can be left blank if using postgres subchart |
+| externalDatabase.password | string | `"changeme"` | password of matrix postgres user - ignored using exsitingSecret |
+| externalDatabase.port | int | `5432` | which port to use to connect to your database server |
+| externalDatabase.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existingSecret with the admin postgresql password |
+| externalDatabase.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
+| externalDatabase.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
+| externalDatabase.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix to connect to db |
+| externalDatabase.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix to connect to db |
+| externalDatabase.sslcert | string | `""` | optional: tls/ssl cert for postgresql connections |
+| externalDatabase.sslkey | string | `""` | optional: tls/ssl key for postgresql connections |
+| externalDatabase.sslmode | string | `""` | sslmode to use, example: verify-full |
+| externalDatabase.sslrootcert | string | `""` | optional: tls/ssl root cert for postgresql connections |
+| externalDatabase.username | string | `"matrix"` | username of matrix postgres user |
 | fullnameOverride | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
 | mail.elementUrl | string | `""` | Optional: Element instance URL. If ingress is enabled, this is unnecessary, else if this is empty, emails will contain a link to https://app.element.io |
@@ -288,9 +304,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.urlPreviews.rules.url | object | `{}` | Whitelist and blacklist based on URL pattern matching |
 | nameOverride | string | `""` |  |
 | networkPolicies.enabled | bool | `true` | whether to enable kubernetes network policies or not |
-| postgresql.enabled | bool | `true` | Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure PostgreSQL is available at the hostname below and credentials are configured under postgresql.global.postgresql.auth |
+| postgresql.enabled | bool | `true` | Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure all externalDatabase are filled out |
 | postgresql.global.postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
-| postgresql.global.postgresql.auth.hostname | string | `""` | hostname of db server. Can be left blank if using postgres subchart |
 | postgresql.global.postgresql.auth.password | string | `"changeme"` | password of matrix postgres user - ignored using exsitingSecret |
 | postgresql.global.postgresql.auth.port | int | `5432` | which port to use to connect to your database server |
 | postgresql.global.postgresql.auth.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existingSecret with the admin postgresql password |
@@ -306,10 +321,6 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | postgresql.primary.podSecurityContext.enabled | bool | `true` |  |
 | postgresql.primary.podSecurityContext.fsGroup | int | `1000` |  |
 | postgresql.primary.podSecurityContext.runAsUser | int | `1000` |  |
-| postgresql.sslcert | string | `""` |  |
-| postgresql.sslkey | string | `""` |  |
-| postgresql.sslmode | string | `""` | optional SSL parameters for postgresql, if using your own db instead of the subchart see more: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS |
-| postgresql.sslrootcert | string | `""` |  |
 | postgresql.volumePermissions.enabled | bool | `true` | Enable init container that changes the owner and group of the PVC |
 | s3.bucket | string | `""` | name of the bucket to use |
 | s3.cronjob.enabled | bool | `false` | enable a regular cleanup k8s cronjob to automatically backup everything to your s3 bucket for you and delete it from local disk ref: https://github.com/matrix-org/synapse-s3-storage-provider/tree/main#regular-cleanup-job |

@@ -384,20 +384,55 @@ volumes:
     existingClaim: ""
 
 
-# PostgreSQL Database configuration, for more options:
+externalDatabase:
+  # -- enable using an external database instead of the Bitnami PostgreSQL sub-chart
+  enabled: false
+  # optional SSL parameters for postgresql, if using your own db instead of the subchart
+  # ref: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+  # -- sslmode to use, example: verify-full
+  sslmode: ""
+  # make sure any paths here are reflected in synapse.extraVolumes and synapse.extraVolumeMounts
+  # -- optional: tls/ssl root cert for postgresql connections
+  sslrootcert: ""
+  # -- optional: tls/ssl cert for postgresql connections
+  sslcert: ""
+  # -- optional: tls/ssl key for postgresql connections
+  sslkey: ""
+  # database credentials to use if you don't use an existingSecret
+  # -- username of matrix postgres user
+  username: matrix
+  # -- password of matrix postgres user - ignored using exsitingSecret
+  password: changeme
+  # -- which port to use to connect to your database server
+  port: 5432
+  # -- hostname of db server. Can be left blank if using postgres subchart
+  hostname: ""
+  # -- name of the database to try and connect to
+  database: "matrix"
+  # -- Name of existing secret to use for PostgreSQL credentials
+  existingSecret: ""
+  # if externalDatabase.existingSecret is provided, the following are ignored
+  # password, username, hostname, database
+  # secretKeys to grab from existingSecret
+  secretKeys:
+    # -- key in existingSecret with hostname of the database
+    databaseHostname: hostname
+    # -- key in existingSecret with name of the database
+    database: database
+    # -- key in existingSecret with username for matrix to connect to db
+    databaseUsername: username
+    # -- key in existingSecret with password for matrix to connect to db
+    userPasswordKey: password
+    # -- key in existingSecret with the admin postgresql password
+    adminPasswordKey: postgresPassword
+
+
+# PostgreSQL Database configuration for synapse, for more options:
 # https://github.com/bitnami/charts/tree/main/bitnami/postgresql
 postgresql:
   # -- Whether to deploy the stable/postgresql chart with this chart.
-  # If disabled, make sure PostgreSQL is available at the hostname below and
-  # credentials are configured under postgresql.global.postgresql.auth
+  # If disabled, make sure all externalDatabase are filled out
   enabled: true
-  # -- optional SSL parameters for postgresql, if using your own db instead of the subchart
-  # see more: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
-  sslmode: ""
-  sslrootcert: ""
-  sslcert: ""
-  sslkey: ""
-  # only used for bitnami postgres chart
   volumePermissions:
     # -- Enable init container that changes the owner and group of the PVC
     enabled: true
@@ -412,14 +447,11 @@ postgresql:
         password: changeme
         # -- which port to use to connect to your database server
         port: 5432
-        # -- hostname of db server. Can be left blank if using postgres subchart
-        hostname: ""
-
         # -- Name of existing secret to use for PostgreSQL credentials
         existingSecret: ""
         # secretKeys to grab from existingSecret
         # if postgresql.existingSecret is provided, the following are ignored
-        # postgresql.password/username/hostname/database/port
+        # postgresql.password/username/hostname/database
         secretKeys:
           # -- key in existingSecret with hostname of the database
           databaseHostname: hostname

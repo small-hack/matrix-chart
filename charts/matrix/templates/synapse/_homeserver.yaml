@@ -602,18 +602,22 @@ database:
         password: "REPLACE_ME"
         database: "REPLACE_ME"
         host: "REPLACE_ME"
+        {{- if .Values.postgresql.enabled }}
         port: {{ .Values.postgresql.port }}
-        {{- if .Values.postgresql.sslmode }}
-        sslmode: {{ .Values.postgresql.sslmode }}
+        {{- else if .Values.externalDatabase.enabled }}
+        port: {{ .Values.externalDatabase.port }}
         {{- end }}
-        {{- if .Values.postgresql.sslkey }}
-        sslkey: {{ .Values.postgresql.sslkey }}
+        {{- if .Values.externalDatabase.sslmode }}
+        sslmode: {{ .Values.externalDatabase.sslmode }}
         {{- end }}
-        {{- if .Values.postgresql.sslcert }}
-        sslcert: {{ .Values.postgresql.sslcert }}
+        {{- if .Values.externalDatabase.sslkey }}
+        sslkey: {{ .Values.externalDatabase.sslkey }}
         {{- end }}
-        {{- if .Values.postgresql.sslrootcert }}
-        sslrootcert: {{ .Values.postgresql.sslrootcert }}
+        {{- if .Values.externalDatabase.sslcert }}
+        sslcert: {{ .Values.externalDatabase.sslcert }}
+        {{- end }}
+        {{- if .Values.externalDatabase.sslrootcert }}
+        sslrootcert: {{ .Values.externalDatabase.sslrootcert }}
         {{- end }}
         cp_min: 5
         cp_max: 10
