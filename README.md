@@ -40,7 +40,7 @@ helm install my-release-name matrix/matrix --values values.yaml
 You must select one of the following options:
 
 - Use the [Bitnami PostgreSQL subchart](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) (set `postgresql.enabled` to `true`)
-- Use your own external database, which should also be PostgreSQL. (set `externalDatabase.enabled` to `true`)
+- Use your own external database, which can also be PostgreSQL. (set `externalDatabase.enabled` to `true`)
 
 Note: you cannot enable both `externalDatabase` and `postgresql`. You must select _one_.
 
