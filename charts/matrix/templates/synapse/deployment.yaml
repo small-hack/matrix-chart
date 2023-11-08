@@ -261,6 +261,9 @@ spec:
                   name: {{ .Values.s3.existingSecret }}
                   key: {{ .Values.s3.secretKeys.secretKey }}
             {{- end }}
+            {{- if .Values.matrix.extraEnv }}
+            {{- toYaml .Values.synapse.extraEnv | nindent 12 }}
+            {{- end }}
           ports:
             - name: http
               containerPort: 8008

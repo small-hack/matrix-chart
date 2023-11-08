@@ -391,6 +391,13 @@ postgresql:
   # If disabled, make sure PostgreSQL is available at the hostname below and
   # credentials are configured under postgresql.global.postgresql.auth
   enabled: true
+  # -- optional SSL parameters for postgresql, if using your own db instead of the subchart
+  # see more: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+  sslmode: ""
+  sslrootcert: ""
+  sslcert: ""
+  sslkey: ""
+  # only used for bitnami postgres chart
   volumePermissions:
     # -- Enable init container that changes the owner and group of the PVC
     enabled: true
@@ -529,9 +536,13 @@ synapse:
     port: 9092
     annotations: true
 
+  # -- optiona: extra env variables to pass to the matrix synapse deployment
+  extraEnv: []
+
+  # -- optional: extra volumes for the matrix synapse deployment
   extraVolumes: []
 
-
+  # -- optional: extra volume mounts for the matrix synapse deployment
   extraVolumeMounts: []
 
 # Element client configuration. see: https://element.io/
