@@ -354,6 +354,9 @@ spec:
             capabilities:
               drop:
                 - ALL
+            runAsGroup: {{ .Values.synapse.securityContext.runAsGroup }}
+            runAsUser: {{ .Values.synapse.securityContext.runAsUser }}
+            runAsNonRoot: {{ .Values.synapse.securityContext.runAsNonRoot }}
             readOnlyRootFilesystem: {{ .Values.synapse.securityContext.readOnlyRootFilesystem }}
             allowPrivilegeEscalation: {{ .Values.synapse.securityContext.allowPrivilegeEscalation }}
           {{- with .Values.synapse.resources }}
