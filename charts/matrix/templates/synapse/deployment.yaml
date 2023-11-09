@@ -406,6 +406,7 @@ spec:
             {{ else }}
             claimName: {{ .Values.volumes.signingKey.existingClaim }}
             {{- end }}
+        {{- if .Values.s3.enabled }}
         - name: extra-packages
           persistentVolumeClaim:
             {{- if .Values.volumes.extraPipPackages.existingClaim }}
@@ -413,6 +414,7 @@ spec:
             {{ else }}
             claimName: {{ include "matrix.fullname" . }}-extra-pip-packages
             {{- end }}
+        {{- end }}
         - name: media-store
           persistentVolumeClaim:
             {{- if not .Values.volumes.media.existingClaim }}
