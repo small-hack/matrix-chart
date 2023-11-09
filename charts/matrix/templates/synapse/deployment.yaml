@@ -316,10 +316,8 @@ spec:
               value: {{ .Values.externalDatabase.sslrootcert }}
             {{- end }}
             {{- if .Values.s3.enabled }}
-            - name: PYTHONUSERBASE
-              value: /data/extra_pip_packages 
-            - name: PIP_CACHE_DIR
-              value: /tmp
+            - name: PYTHONPATH
+              value: "/data/extra_pip_packages:$PYTHONPATH"
             {{- end }}
             {{- if .Values.synapse.extraEnv }}
             {{- toYaml .Values.synapse.extraEnv | nindent 12 }}
