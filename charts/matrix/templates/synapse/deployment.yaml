@@ -267,7 +267,6 @@ spec:
             - /bin/sh
             - -ec
             - |
-              ls -hal /data
               pip install --user synapse-s3-storage-provider
           volumeMounts:
             - name: synapse-config
