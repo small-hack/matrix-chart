@@ -1,4 +1,4 @@
-{{- if not .Values.volumes.extraPipPackages.existingClaim }}
+{{- if and .Values.s3.enabled (not .Values.volumes.extraPipPackages.existingClaim) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

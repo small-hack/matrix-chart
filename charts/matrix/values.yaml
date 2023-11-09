@@ -371,13 +371,14 @@ volumes:
     storageClass: ""
     # -- name of an existing persistent volume claim for synapse config file
     existingClaim: ""
+  # optional PVC used only when s3.enabled is set to true, to install synapse-s3-storage-provider
   extraPipPackages:
-    # -- Capacity of the signing key PVC. Note: 1Mi is more than enough, but
+    # -- Capacity of the extra pip packages PVC. Note: 1Mi is more than enough, but
     # some cloud providers set a min PVC size of 1Mi or 1Gi, adjust as necessary
     capacity: 100Mi
     # -- Storage class (optional)
     storageClass: ""
-    # -- name of an existing persistent volume claim for synapse config file
+    # -- name of an existing persistent volume claim for the extra pip packages
     existingClaim: ""
 
 

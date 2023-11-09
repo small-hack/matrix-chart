@@ -372,8 +372,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.service.federation.type | string | `"ClusterIP"` |  |
 | synapse.service.port | int | `80` | service port for synapse |
 | synapse.service.type | string | `"ClusterIP"` | service type for synpase |
-| volumes.extraPipPackages.capacity | string | `"100Mi"` | Capacity of the signing key PVC. Note: 1Mi is more than enough, but some cloud providers set a min PVC size of 1Mi or 1Gi, adjust as necessary |
-| volumes.extraPipPackages.existingClaim | string | `""` | name of an existing persistent volume claim for synapse config file |
+| volumes.extraPipPackages.capacity | string | `"100Mi"` | Capacity of the extra pip packages PVC. Note: 1Mi is more than enough, but some cloud providers set a min PVC size of 1Mi or 1Gi, adjust as necessary |
+| volumes.extraPipPackages.existingClaim | string | `""` | name of an existing persistent volume claim for the extra pip packages |
 | volumes.extraPipPackages.storageClass | string | `""` | Storage class (optional) |
 | volumes.media.capacity | string | `"10Gi"` | Capacity of the media PVC - ignored if using exsitingClaim |
 | volumes.media.existingClaim | string | `""` | name of an existing PVC to use for uploaded attachments and multimedia |
