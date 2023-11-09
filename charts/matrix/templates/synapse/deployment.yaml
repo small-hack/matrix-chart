@@ -184,7 +184,19 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.mail.external.existingSecret }}
                   key: {{ .Values.mail.external.secretKeys.password }}
+            {{- end }}
+            {{- if .Values.s3.enabled }}
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.s3.existingSecret }}
+                  key: {{ .Values.s3.secretKeys.accessKey }}
 
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.s3.existingSecret }}
+                  key: {{ .Values.s3.secretKeys.secretKey }}
             {{- end }}
           command:
             - /bin/sh
@@ -212,15 +224,19 @@ spec:
               yq eval -i '.oidc_providers[0].userinfo_endpoint = env(USERINFO_ENDPOINT)' /data/homeserver.yaml && \
               {{- end }}
               {{- end }}
+              {{- if .Values.s3.enabled }}
+              yq eval -i '.media_storage_providers[0].config.access_key_id = env(AWS_ACCESS_KEY_ID)' /data/homeserver.yaml && \
+              yq eval -i '.media_storage_providers[0].config.secret_access_key = env(AWS_SECRET_ACCESS_KEY)' /data/homeserver.yaml && \
+              {{- end }}
+              {{- if and .Values.mail.enabled .Values.mail.external.existingSecret }}
+              yq eval -i '.email.smtp_host = env(SMTP_HOST)' /data/homeserver.yaml && \
+              yq eval -i '.email.smtp_user = env(SMTP_USER)' /data/homeserver.yaml && \
+              yq eval -i '.email.smtp_pass = env(SMTP_PASS)' /data/homeserver.yaml && \
+              {{- end }}
               yq eval -i '.database.args.host = env(DATABASE_HOSTNAME)' /data/homeserver.yaml && \
               yq eval -i '.database.args.database = env(DATABASE)' /data/homeserver.yaml && \
               yq eval -i '.database.args.user = env(DATABASE_USERNAME)' /data/homeserver.yaml && \
               yq eval -i '.database.args.password = env(DATABASE_PASSWORD)' /data/homeserver.yaml
-              {{- if and .Values.mail.enabled .Values.mail.external.existingSecret }}
-              yq eval -i '.email.smtp_host = env(SMTP_HOST)' /data/homeserver.yaml
-              yq eval -i '.email.smtp_user = env(SMTP_USER)' /data/homeserver.yaml
-              yq eval -i '.email.smtp_pass = env(SMTP_PASS)' /data/homeserver.yaml
-              {{- end }}
           volumeMounts:
             - name: synapse-initial-config
               mountPath: "/initial"
@@ -291,19 +307,6 @@ spec:
             - name: GID
               value: "{{ .Values.synapse.securityContext.runAsGroup }}"
             {{- end }}
-            {{- end }}
-            {{- if .Values.s3.enabled }}
-            - name: AWS_ACCESS_KEY_ID
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.s3.existingSecret }}
-                  key: {{ .Values.s3.secretKeys.accessKey }}
-
-            - name: AWS_SECRET_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.s3.existingSecret }}
-                  key: {{ .Values.s3.secretKeys.secretKey }}
             {{- end }}
             {{- if .Values.externalDatabase.sslmode }}
             - name: PGSSLMODE

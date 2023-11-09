@@ -326,6 +326,12 @@ s3:
   endpoint: ""
   # -- name of the bucket to use
   bucket: ""
+  # -- optional region to use for s3
+  region: ""
+  # -- optional Server Side Encryption for Customer-provided keys
+  sse_c_key: ""
+  # -- optional SSE-C algorithm - very likely AES256
+  sse_algorithm: "AES256"
   # -- use credentials from an existing kubernetes secret
   existingSecret: ""
   # these are the keys within the existing k8s secret to use for s3 credentials

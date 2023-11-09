@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 6.2.0](https://img.shields.io/badge/Version-6.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.1](https://img.shields.io/badge/AppVersion-v1.95.1-informational?style=flat-square)
+![Version: 6.2.1](https://img.shields.io/badge/Version-6.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.1](https://img.shields.io/badge/AppVersion-v1.95.1-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -328,8 +328,11 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | s3.enabled | bool | `false` | enable s3 storage via https://github.com/matrix-org/synapse-s3-storage-provider |
 | s3.endpoint | string | `""` | your s3 endpoint |
 | s3.existingSecret | string | `""` | use credentials from an existing kubernetes secret |
+| s3.region | string | `""` | optional region to use for s3 |
 | s3.secretKeys.accessKey | string | `"S3_ACCESS_KEY"` | key in existing secret fo the S3 key |
 | s3.secretKeys.secretKey | string | `"S3_SECRET_KEY"` | key in existing secret fo the S3 secret |
+| s3.sse_algorithm | string | `"AES256"` | optional SSE-C algorithm - very likely AES256 |
+| s3.sse_c_key | string | `""` | optional Server Side Encryption for Customer-provided keys |
 | synapse.extraEnv | list | `[]` | optiona: extra env variables to pass to the matrix synapse deployment |
 | synapse.extraVolumeMounts | list | `[]` | optional: extra volume mounts for the matrix synapse deployment |
 | synapse.extraVolumes | list | `[]` | optional: extra volumes for the matrix synapse deployment |
