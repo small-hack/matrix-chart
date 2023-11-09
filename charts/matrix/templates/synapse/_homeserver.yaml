@@ -737,15 +737,28 @@ media_store_path: "/data/media_store"
 media_storage_providers:
   - module: s3_storage_provider.S3StorageProviderBackend
     # Whether to write new local files.
-    store_local: true
+    store_local: True
     # Whether to write new remote media
-    store_remote: true
+    store_remote: True
     # Whether to block upload requests waiting for write to this
     # provider to complete
-    store_synchronous: true
+    store_synchronous: True
     config:
-      endpoint_url: {{ .Values.s3.endpoint }}
       bucket: {{ .Values.s3.bucket }}
+      # All of the below options are optional, for use with non-AWS S3-like
+      # services, or to specify access tokens here instead of some external method.
+      {{- if .Values.s3.region }}
+      region_name: {{ .Values.s3.region }}
+      {{- end }}
+      endpoint_url: {{ .Values.s3.endpoint }}
+      access_key_id: ""
+      secret_access_key: ""
+      {{- if .Values.s3.sse_c_key }}
+      # Server Side Encryption for Customer-provided keys
+      sse_customer_key: {{ .Values.s3.sse_c_key }}
+      # Your SSE-C algorithm is very likely AES256
+      sse_customer_algo: {{ .Values.s3.sse_algorithm }}
+      {{- end }}
 {{- end }}
 
 # Directory where in-progress uploads are stored.
