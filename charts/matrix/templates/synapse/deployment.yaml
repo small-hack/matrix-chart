@@ -260,7 +260,7 @@ spec:
             - /bin/sh
             - -ec
             - |
-              pip install synapse-s3-storage-provider
+              pip install --user synapse-s3-storage-provider
               start.py
           {{- end }}
           env:
