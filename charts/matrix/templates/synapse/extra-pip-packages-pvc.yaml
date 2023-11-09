@@ -1,0 +1,18 @@
+{{- if and .Values.s3.enabled (not .Values.volumes.extraPipPackages.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "matrix.fullname" . }}-extra-pip-packages
+  labels:
+{{ include "matrix.labels" . | indent 4}}
+{{ include "matrix.synapse.labels" . | indent 4}}
+spec:
+  {{- if .Values.volumes.extraPipPackages.storageClass }}
+  storageClassName: {{ .Values.volumes.extraPipPackages.storageClass }}
+  {{- end }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.volumes.extraPipPackages.capacity }}
+{{- end }}
