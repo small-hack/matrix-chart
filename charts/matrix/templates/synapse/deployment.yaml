@@ -281,6 +281,13 @@ spec:
         - name: "synapse"
           image: {{ include "matrix.image" . }}
           imagePullPolicy: {{ .Values.synapse.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              echo $PYTHONPATH
+              pip list
+              start.py
           env:
             {{- if .Values.synapse.securityContext.env }}
             {{- if .Values.synapse.securityContext.runAsUser }}
@@ -317,7 +324,7 @@ spec:
             {{- end }}
             {{- if .Values.s3.enabled }}
             - name: PYTHONPATH
-              value: "/data/extra_pip_packages:$PYTHONPATH"
+              value: "$PYTHONPATH:/data/extra_pip_packages"
             {{- end }}
             {{- if .Values.synapse.extraEnv }}
             {{- toYaml .Values.synapse.extraEnv | nindent 12 }}
