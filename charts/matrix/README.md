@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 6.2.1](https://img.shields.io/badge/Version-6.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.1](https://img.shields.io/badge/AppVersion-v1.95.1-informational?style=flat-square)
+![Version: 6.2.2](https://img.shields.io/badge/Version-6.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.1](https://img.shields.io/badge/AppVersion-v1.95.1-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -333,6 +333,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | s3.secretKeys.secretKey | string | `"S3_SECRET_KEY"` | key in existing secret fo the S3 secret |
 | s3.sse_algorithm | string | `"AES256"` | optional SSE-C algorithm - very likely AES256 |
 | s3.sse_c_key | string | `""` | optional Server Side Encryption for Customer-provided keys |
+| s3.store_local | bool | `true` | whether to write storage locally to a volume (this is in addition to the s3 storage) |
 | synapse.extraEnv | list | `[]` | optiona: extra env variables to pass to the matrix synapse deployment |
 | synapse.extraVolumeMounts | list | `[]` | optional: extra volume mounts for the matrix synapse deployment |
 | synapse.extraVolumes | list | `[]` | optional: extra volumes for the matrix synapse deployment |

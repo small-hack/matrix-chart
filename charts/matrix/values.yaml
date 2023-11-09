@@ -322,6 +322,8 @@ matrix:
 s3:
   # -- enable s3 storage via https://github.com/matrix-org/synapse-s3-storage-provider
   enabled: false
+  # -- whether to write storage locally to a volume (this is in addition to the s3 storage)
+  store_local: true
   # -- your s3 endpoint
   endpoint: ""
   # -- name of the bucket to use

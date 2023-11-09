@@ -737,12 +737,15 @@ media_store_path: "/data/media_store"
 media_storage_providers:
   - module: s3_storage_provider.S3StorageProviderBackend
     # Whether to write new local files.
-    store_local: True
+    {{- if .Values.s3.store_local }}
+    store_local: true
+    {{- else }}
+    store_local: false
+    {{- end }}
     # Whether to write new remote media
-    store_remote: True
-    # Whether to block upload requests waiting for write to this
-    # provider to complete
-    store_synchronous: True
+    store_remote: true
+    # Whether to block upload requests waiting for write to this provider to complete
+    store_synchronous: true
     config:
       bucket: {{ .Values.s3.bucket }}
       # All of the below options are optional, for use with non-AWS S3-like
