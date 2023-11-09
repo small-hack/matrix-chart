@@ -347,6 +347,12 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.metrics.annotations | bool | `true` |  |
 | synapse.metrics.enabled | bool | `true` | Whether Synapse should capture metrics on an additional endpoint |
 | synapse.metrics.port | int | `9092` | Port to listen on for metrics scraping |
+| synapse.podSecurityContext | object | `{"env":false,"fsGroup":1000,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | securityContext for the entire synapse pod, including the all containers Does not work by default in all cloud providers, disable by default |
+| synapse.podSecurityContext.env | bool | `false` | Enable if your k8s environment allows containers to chuser/setuid https://github.com/matrix-org/synapse/blob/96cf81e312407f0caba1b45ba9899906b1dcc098/docker/start.py#L196 |
+| synapse.podSecurityContext.fsGroup | int | `1000` | A special supplemental group that applies to all containers in a pod. Some volume types allow the Kubelet to change the ownership of that volume to be owned by the pod: 1. The owning GID will be the FSGroup 2. The setgid bit is set (new files created in the volume will be owned by FSGroup) 3. The permission bits are OR'd with rw-rw---- If unset, the Kubelet will not modify the ownership and permissions of any volume. Note that this field cannot be set when spec.os.name is windows. |
+| synapse.podSecurityContext.runAsGroup | int | `1000` | group ID to run the synapse POD as |
+| synapse.podSecurityContext.runAsNonRoot | bool | `true` | Indicates that the pod's containers must run as a non-root user. If true, the Kubelet will validate the image at runtime to ensure that it does not run as UID 0 (root) and fail to start the container if it does. If unset or false, no such validation will be performed. |
+| synapse.podSecurityContext.runAsUser | int | `1000` | user ID to run the synapse POD as |
 | synapse.probes.liveness.periodSeconds | int | `10` | liveness probe seconds trying again |
 | synapse.probes.liveness.timeoutSeconds | int | `5` | liveness probe seconds before timing out |
 | synapse.probes.readiness.periodSeconds | int | `10` | readiness probe seconds trying again |
@@ -356,11 +362,12 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.probes.startup.timeoutSeconds | int | `5` | startup probe seconds before timing out |
 | synapse.replicaCount | int | `1` |  |
 | synapse.resources | object | `{}` |  |
-| synapse.securityContext.env | bool | `false` | Enable if your k8s environment allows containers to chuser/setuid https://github.com/matrix-org/synapse/blob/96cf81e312407f0caba1b45ba9899906b1dcc098/docker/start.py#L196 |
-| synapse.securityContext.fsGroup | int | `1000` |  |
-| synapse.securityContext.runAsGroup | int | `1000` | group to run the synapse container as |
-| synapse.securityContext.runAsNonRoot | bool | `true` |  |
-| synapse.securityContext.runAsUser | int | `1000` | user to run the synapse container as |
+| synapse.securityContext | object | `{"allowPrivilegeEscalation":false,"readOnlyRootFilesystem":false,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | securityContext for the synapse CONTAINER ONLY Does not work by default in all cloud providers, disable by default |
+| synapse.securityContext.allowPrivilegeEscalation | bool | `false` | AllowPrivilegeEscalation controls whether a process can gain more privileges than its parent process. This bool directly controls if the no_new_privs flag will be set on the container process. AllowPrivilegeEscalation is true always when the container is: 1) run as Privileged 2) has CAP_SYS_ADMIN Note that this field cannot be set when spec.os.name is windows. |
+| synapse.securityContext.readOnlyRootFilesystem | bool | `false` | Whether this container has a read-only root filesystem. Default is false. Note that this field cannot be set when spec.os.name is windows. |
+| synapse.securityContext.runAsGroup | int | `1000` | group ID to run the synapse container as |
+| synapse.securityContext.runAsNonRoot | bool | `true` | Indicates that the container must run as a non-root user. If true, the Kubelet will validate the image at runtime to ensure that it does not run as UID 0 (root) and fail to start the container if it does. If unset or false, no such validation will be performed. |
+| synapse.securityContext.runAsUser | int | `1000` | user ID to run the synapse container as |
 | synapse.service.federation.port | int | `80` |  |
 | synapse.service.federation.type | string | `"ClusterIP"` |  |
 | synapse.service.port | int | `80` | service port for synapse |
