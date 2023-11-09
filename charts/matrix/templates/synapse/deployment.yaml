@@ -250,20 +250,38 @@ spec:
               mountPath: /data
             - name: signing-key
               mountPath: /data/keys
+        {{- if .Values.s3.enabled }}
+        - name: pip-install-extra-packages
+          image: {{ include "matrix.image" . }}
+          imagePullPolicy: {{ .Values.synapse.image.pullPolicy }}
+          env:
+            - name: SYNAPSE_SERVER_NAME
+              value: {{ .Values.matrix.serverName }}
+            - name: SYNAPSE_REPORT_STATS
+              value: {{ .Values.matrix.telemetry | ternary "yes" "no" | quote }}
+            - name: PYTHONUSERBASE
+              value: /data/extra_pip_packages 
+            - name: PIP_CACHE_DIR
+              value: /tmp
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              ls -hal /data
+              pip install --user synapse-s3-storage-provider
+          volumeMounts:
+            - name: synapse-config
+              mountPath: /data
+            - name: signing-key
+              mountPath: /data/keys
+            - name: extra-packages
+              mountPath: /data/extra_pip_packages
+          {{- end }}
       {{- end }} {{/* end if .Release.IsInstall */}}
       containers:
         - name: "synapse"
           image: {{ include "matrix.image" . }}
           imagePullPolicy: {{ .Values.synapse.image.pullPolicy }}
-          {{- if .Values.s3.enabled }}
-          command:
-            - /bin/sh
-            - -ec
-            - |
-              ls -hal /usr/local/lib/python3.11/site-packages
-              PYTHONUSERBASE=/usr/local/lib/python3.11/site-packages pip install --user synapse-s3-storage-provider
-              start.py
-          {{- end }}
           env:
             {{- if .Values.synapse.securityContext.env }}
             {{- if .Values.synapse.securityContext.runAsUser }}
@@ -298,6 +316,12 @@ spec:
             - name: PGSSLROOTCERT
               value: {{ .Values.externalDatabase.sslrootcert }}
             {{- end }}
+            {{- if .Values.s3.enabled }}
+            - name: PYTHONUSERBASE
+              value: /data/extra_pip_packages 
+            - name: PIP_CACHE_DIR
+              value: /tmp
+            {{- end }}
             {{- if .Values.synapse.extraEnv }}
             {{- toYaml .Values.synapse.extraEnv | nindent 12 }}
             {{- end }}
@@ -317,6 +341,10 @@ spec:
               mountPath: /data/keys
             - name: media-store
               mountPath: /data/media_store
+            {{- if .Values.s3.enabled }}
+            - name: extra-packages
+              mountPath: /data/extra_pip_packages
+            {{- end }}
             {{- if or .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.irc.enabled }}
             - name: bridges
               mountPath: /bridges
@@ -380,6 +408,13 @@ spec:
             claimName: {{ include "matrix.fullname" . }}-signing-key
             {{ else }}
             claimName: {{ .Values.volumes.signingKey.existingClaim }}
+            {{- end }}
+        - name: extra-packages
+          persistentVolumeClaim:
+            {{- if .Values.volumes.extraPipPackages.existingClaim }}
+            claimName: {{ .Values.volumes.extraPipPackages.existingClaim }}
+            {{ else }}
+            claimName: {{ include "matrix.fullname" . }}-extra-pip-packages
             {{- end }}
         - name: media-store
           persistentVolumeClaim:
