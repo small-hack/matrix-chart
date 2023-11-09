@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 6.0.0](https://img.shields.io/badge/Version-6.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.1](https://img.shields.io/badge/AppVersion-v1.95.1-informational?style=flat-square)
+![Version: 6.1.0](https://img.shields.io/badge/Version-6.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.95.1](https://img.shields.io/badge/AppVersion-v1.95.1-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -21,7 +21,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | Repository | Name | Version |
 |------------|------|---------|
 | https://jessebot.github.io/coturn-chart | coturn | 4.3.0 |
-| oci://registry-1.docker.io/bitnamicharts | postgresql | 13.2.2 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql | 13.2.3 |
 
 ## Values
 
@@ -263,7 +263,6 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.oidc.providers[0].issuer | string | `"https://accounts.example.com/"` | OIDC issuer. Used to validate tokens and (if discovery is enabled) to discover the provider's endpoints. Required if 'enabled' is true. |
 | matrix.oidc.providers[0].scopes | list | `["openid","profile"]` | list of scopes to request. should normally include the "openid" scope. Defaults to ["openid"]. |
 | matrix.oidc.providers[0].token_endpoint | string | `"https://accounts.example.com/oauth2/token"` | the oauth2 token endpoint. Required if provider discovery is disabled. |
-| matrix.oidc.providers[0].user_mapping_provider.config | object | `{"display_name_template":"","localpart_template":"","picture_template":"{{ user.data.profile_image_url }}","subject_claim":""}` | The custom module's class. Uncomment to use a custom module. Default is 'synapse.handlers.oidc_handler.JinjaOidcMappingProvider'.  github.com/matrix-org/synapse/blob/master/docs/sso_mapping_providers.md#openid-mapping-providers for information on implementing a custom mapping provider. example: module: mapping_provider.OidcMappingProvider Custom configuration values for the module. This section will be passed as a Python dictionary to the user mapping provider module's `parse_config` method. The examples below are intended for the default provider: they should be changed if using a custom provider. |
 | matrix.oidc.providers[0].user_mapping_provider.config.subject_claim | string | `""` | name of the claim containing a unique identifier for user. Defaults to `sub`, which OpenID Connect compliant providers should provide. |
 | matrix.oidc.providers[0].userinfo_endpoint | string | `"https://accounts.example.com/userinfo"` | the OIDC userinfo endpoint. Required if discovery is disabled and the "openid" scope is not requested. |
 | matrix.oidc.secretKeys.authorization_endpoint | string | `""` | key in secret with the authorization_endpoint if discovery is disabled |

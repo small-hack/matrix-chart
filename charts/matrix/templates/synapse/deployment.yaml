@@ -259,9 +259,6 @@ spec:
           command:
             - |
               pip install synapse-s3-storage-provider
-              {{- if .Values.matrix.oidc_config.user_mapping_provider.module }}
-              pip install {{ .Values.matrix.oidc_config.user_mapping_provider.module }}
-              {{- end }}
           {{- end }}
           env:
             {{- if .Values.synapse.securityContext.env }}
