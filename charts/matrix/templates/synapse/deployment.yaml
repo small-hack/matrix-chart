@@ -257,8 +257,11 @@ spec:
           imagePullPolicy: {{ .Values.synapse.image.pullPolicy }}
           {{- if .Values.s3.enabled }}
           command:
+            - /bin/sh
+            - -ec
             - |
               pip install synapse-s3-storage-provider
+              start.py
           {{- end }}
           env:
             {{- if .Values.synapse.securityContext.env }}
