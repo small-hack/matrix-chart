@@ -324,7 +324,7 @@ spec:
             {{- end }}
             {{- if .Values.s3.enabled }}
             - name: PYTHONPATH
-              value: "$PYTHONPATH:/data/extra_pip_packages"
+              value: "/usr/local/lib/python3.11/site-packages:/data/extra_pip_packages/lib/python3.11/site-packages"
             {{- end }}
             {{- if .Values.synapse.extraEnv }}
             {{- toYaml .Values.synapse.extraEnv | nindent 12 }}
