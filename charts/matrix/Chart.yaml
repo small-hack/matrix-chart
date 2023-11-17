@@ -11,7 +11,7 @@ type: application
 version: 6.2.1
 
 # renovate: image=matrixdotorg/synapse
-appVersion: v1.95.1
+appVersion: v1.96.1
 
 maintainers:
   - name: "jessebot"
