@@ -1,5 +1,6 @@
 module.exports = {
     extends: ['config:recommended'],
     allowPostUpgradeCommandTemplating: true,
-    allowedPostUpgradeCommands: ['^.*']
+    allowedPostUpgradeCommands: ['^.*'],
+    repositories: ['small-hack/matrix-chart']
 };
