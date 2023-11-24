@@ -5,7 +5,7 @@
   ],
   "forkProcessing": "enabled",
   "allowedPostUpgradeCommands": [
-    "version=.*"",
+    "version=.*",
     "major=.*",
     "minor=.*",
     "patch=.*",
