@@ -1,5 +1,5 @@
 module.exports = {
-    extends: ['config:base'],
+    extends: ['config:recommended'],
     allowPostUpgradeCommandTemplating: true,
     allowedPostUpgradeCommands: ['^.*']
 };
