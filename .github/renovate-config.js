@@ -4,6 +4,6 @@ module.exports = {
     allowedPostUpgradeCommands: ['^.*'],
     repositories: ['small-hack/matrix-chart'],
     platform: 'github',
-    includeForks: true,
+    forkProcessing: "enabled",
     configMigration: true
 };
