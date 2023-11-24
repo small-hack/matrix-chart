@@ -51,6 +51,17 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
         run: ct install --target-branch ${{ github.event.repository.default_branch }}
 
+
       # update the docs
       - uses: gabe565/setup-helm-docs-action@v1
-      - run: helm-docs
+      - name: generate helm docs with helm-docs
+        run: helm-docs
+      - name: commit helm docs changes
+
+      # commit the docs changes back up
+      - uses: EndBug/add-and-commit@v9
+        with:
+          add: 'charts/matrix/README.md'
+          author_name: jessebot
+          committer_name: friend
+          message: 'Automated GHA - Updating helm docs'
