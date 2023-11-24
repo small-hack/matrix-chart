@@ -34,8 +34,8 @@
                 "minor=$(expr $minor + 1)",
                 "echo \"Replacing $version with $major.$minor.$patch\"",
                 "sed -i \"s/^version:.*/version: $major.$minor.$patch/g\" {{{parentDir}}}/Chart.yaml",
-                "cat {{{parentDir}}}/Chart.yaml",
-              ],
+                "cat {{{parentDir}}}/Chart.yaml"
+              ]
           },
           "fileFilters": ["**/Chart.yaml"],
           "executionMode": "branch"
