@@ -6,10 +6,9 @@
   "forkProcessing": "enabled",
   "regexManagers": [
     {
-      "fileMatch": ["(^|/)Chart\\.yaml$"],
-      "matchStrings": [
-          "#\\s?renovate: image=(?<depName>.*?)\\s?appVersion:\\s?\\\"?(?<currentValue>[\\w+\\.\\-]*)",
-      ],
+      "description": "Update docker image references",
+      "fileMatch": ["^charts\\/matrix\\/Chart\\.yaml$"],
+      "matchStrings": ["image: (?<depName>.*?):(?<currentValue>.*?)\\s+"],
       "datasourceTemplate": "docker"
     },
     {
