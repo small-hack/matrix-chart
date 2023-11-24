@@ -6,6 +6,8 @@ module.exports = {
     platform: 'github',
     forkProcessing: "enabled",
     configMigration: true,
+    onboarding: false,
+    requireConfig: false,
     regexManagers: [
         {
             fileMatch: ['(^|/)Chart\\.yaml$'],
