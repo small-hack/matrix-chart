@@ -1,58 +1,33 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
-  "forkProcessing": "enabled",
-  "customManagers": [
-    {
-      "customType": "regex",
-      "description": "Update matrix docker image references",
-      "fileMatch": [
-        "^charts\\/matrix\\/Chart\\.yaml$"
-      ],
-      "matchStrings": [
-        "appVersion: '(?<currentValue>.*?)'\\s+",
-        "version: '(?<currentValue>.*?)'\\s+"
-      ],
-      "depNameTemplate": "matrixdotorg/synapse",
-      "datasourceTemplate": "docker"
-    },
-    {
-      "customType": "regex",
-      "description": "Update docker image references",
-      "fileMatch": [
-        "^charts\\/matrix\\/Chart\\.yaml$"
-      ],
-      "matchStrings": [
-        "image: (?<depName>.*?):(?<currentValue>.*?)\\s+"
-      ],
-      "datasourceTemplate": "docker"
-    }
-  ],
-  "packageRules": [
-    {
-      "matchManagers": [
-        "helm-requirements",
-        "helm-values",
-        "custom.regex"
-      ],
-      "postUpgradeTasks": {
-        "commands": [
-          "version=$(grep '^version:' {{{parentDir}}}/Chart.yaml | awk '{print $2}')",
-          "major=$(echo $version | cut -d. -f1)",
-          "minor=$(echo $version | cut -d. -f2)",
-          "patch=$(echo $version | cut -d. -f3)",
-          "minor=$(expr $minor + 1)",
-          "echo \"Replacing $version with $major.$minor.$patch\"",
-          "sed -i \"s/^version:.*/version: $major.$minor.$patch/g\" {{{parentDir}}}/Chart.yaml",
-          "cat {{{parentDir}}}/Chart.yaml"
+    "extends": ["config:recommended"],
+    "allowPostUpgradeCommandTemplating": true,
+    "allowedPostUpgradeCommands": ["^.*"],
+    "repositories": ["small-hack/matrix-chart"],
+    "platform": "github",
+    "forkProcessing": "enabled",
+    "configMigration": true,
+    "onboarding": false,
+    "requireConfig": "optional",
+    "customManagers": [
+      {
+        "customType": "regex",
+        "fileMatch": ["(^|/)Chart\\.yaml$"],
+        "matchStrings": [
+          "#\\s?renovate: image=(?<depName>.*?)\\s?appVersion:\\s?\\\"?(?<currentValue>[\\w+\\.\\-]*)"
         ],
-        "fileFilters": [
-          "**/Chart.yaml"
-        ],
-        "executionMode": "branch"
+        "datasourceTemplate": "docker"
       }
-    }
-  ]
+    ],
+    "packageRules": [
+      {
+        "matchManagers": ["helm-requirements", "helm-values", "custom.regex"],
+        "postUpgradeTasks": {
+          "commands": [
+            "version=$(grep '^version:' {{{parentDir}}}/Chart.yaml | awk '{print $2}')\n                  major=$(echo $version | cut -d. -f1)\n                  minor=$(echo $version | cut -d. -f2)\n                  patch=$(echo $version | cut -d. -f3)\n                  minor=$(expr $minor + 1)\n                  echo \"Replacing $version with $major.$minor.$patch\"\n                  sed -i \"s/^version:.*/version: ${major}.${minor}.${patch}/g\" {{{parentDir}}}/Chart.yaml\n                  cat {{{parentDir}}}/Chart.yaml\n                  "
+          ],
+          "fileFilters": ["**/Chart.yaml"],
+          "executionMode": "branch"
+        }
+      }
+    ]
 }
