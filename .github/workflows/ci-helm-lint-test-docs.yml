@@ -1,4 +1,4 @@
-name: Lint and Test Chart
+name: Lint, Test, Document Chart
 
 on:
   pull_request:
@@ -50,3 +50,7 @@ jobs:
         id: install
         if: steps.list-changed.outputs.changed == 'true'
         run: ct install --target-branch ${{ github.event.repository.default_branch }}
+
+      # update the docs
+      - uses: gabe565/setup-helm-docs-action@v1
+      - run: helm-docs
