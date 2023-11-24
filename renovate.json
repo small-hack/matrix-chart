@@ -4,16 +4,6 @@
     "config:base"
   ],
   "forkProcessing": "enabled",
-  "allowedPostUpgradeCommands": [
-    "version=.*",
-    "major=.*",
-    "minor=.*",
-    "patch=.*",
-    "minor=.*",
-    "echo .*",
-    "sed -i .* Chart.yaml$",
-    "cat .*/Chart.yaml$"
-  ],
   "regexManagers": [
     {
       "description": "Update matrix docker image references",
