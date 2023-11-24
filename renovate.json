@@ -19,7 +19,6 @@
       "description": "Update element docker image references",
       "fileMatch": ["^charts\\/matrix\\/Chart\\.yaml$"],
       "matchStrings": [
-        "appVersion: '(?<currentValue>.*?)'\\s+",
         "version: '(?<currentValue>.*?)'\\s+"
       ],
       "depNameTemplate": "vectorim/element-web",
