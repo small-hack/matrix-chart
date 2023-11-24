@@ -20,16 +20,6 @@
       ],
       "depNameTemplate": "vectorim/element-web",
       "datasourceTemplate": "docker"
-    },
-    {
-      "description": "Update element docker image references",
-      "fileMatch": ["^charts\\/matrix\\/README\\.md$"],
-      "matchStrings": [
-        "\\|\\s+image.tag\\s+\\|\\s+string\\s+\\|\\s+`\"(?<currentValue>.*?)\"`\\s+\\|\\s+\\|\\s+",
-        "(:\\s|-)(?<currentValue>\\d+\\.\\d+\\.\\d+(?:\\+\\d+)?)"
-      ],
-      "depNameTemplate": "vectorim/element-web",
-      "datasourceTemplate": "docker"
     }
   ]
 }
