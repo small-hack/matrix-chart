@@ -1,0 +1,32 @@
+name: Generate helm docs
+
+on:
+  pull_request:
+    paths:
+      - 'charts/matrix/Chart.yaml'
+      - 'charts/matrix/values.yaml'
+
+permissions:
+  contents: read
+
+jobs:
+  update-docs:
+    name: update-docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # update the docs
+      - uses: gabe565/setup-helm-docs-action@v1
+      - name: generate helm docs with helm-docs
+        run: helm-docs
+
+      # commit the docs changes back up
+      - uses: EndBug/add-and-commit@v9
+        name: commit helm docs changes
+        with:
+          add: 'charts/matrix/README.md'
+          author_name: jessebot
+          committer_name: friend
+          message: 'Automated GHA - Updating helm docs'
