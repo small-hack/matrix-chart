@@ -5,6 +5,7 @@ module.exports = {
     repositories: ['small-hack/matrix-chart'],
     platform: 'github',
     includeForks: true,
+    configMigration: true,
     regexManagers: [
         {
             fileMatch: ['(^|/)Chart\\.yaml$'],
