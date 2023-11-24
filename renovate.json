@@ -23,7 +23,7 @@
         "matchManagers": ["helm-requirements", "helm-values", "custom.regex"],
         "postUpgradeTasks": {
           "commands": [
-            "version=$(grep '^version:' charts/matrix/Chart.yaml | awk '{print $2}')\n                  major=$(echo $version | cut -d. -f1)\n                  minor=$(echo $version | cut -d. -f2)\n                  patch=$(echo $version | cut -d. -f3)\n                  minor=$(expr $minor + 1)\n                  echo \"Replacing $version with $major.$minor.$patch\"\n                  sed -i \"s/^version:.*/version: ${major}.${minor}.${patch}/g\" charts/matrix/Chart.yaml\n                  cat charts/matrix/Chart.yaml\n                  "
+            "version=$(grep '^version:' charts/matrix/Chart.yaml | awk '{print $2}')\n                  major=$(echo $version | cut -d. -f1)\n                  minor=$(echo $version | cut -d. -f2)\n                  patch=$(echo $version | cut -d. -f3)\n                  minor=$(expr $minor + 1)\n                  echo \"Replacing $version with $major.$minor.$patch\"\n                  sed -i \"s/^version:.*/version: ${major}.${minor}.${patch}/g\" charts/matrix/Chart.yaml\n                  cat charts/matrix/Chart.yaml\n            sed -i \"s/${version}/${major}.${minor}.${patch}/g\" charts/matrix/README.md\n"
           ],
           "fileFilters": ["**/Chart.yaml"],
           "executionMode": "branch"
