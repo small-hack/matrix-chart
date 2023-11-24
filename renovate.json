@@ -1,13 +1,16 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "forkProcessing": "enabled",
-  "regexManagers": [
+  "customManagers": [
     {
+      "customType": "regex",
       "description": "Update matrix docker image references",
-      "fileMatch": ["^charts\\/matrix\\/Chart\\.yaml$"],
+      "fileMatch": [
+        "^charts\\/matrix\\/Chart\\.yaml$"
+      ],
       "matchStrings": [
         "appVersion: '(?<currentValue>.*?)'\\s+",
         "version: '(?<currentValue>.*?)'\\s+"
@@ -16,29 +19,40 @@
       "datasourceTemplate": "docker"
     },
     {
+      "customType": "regex",
       "description": "Update docker image references",
-      "fileMatch": ["^charts\\/matrix\\/Chart\\.yaml$"],
-      "matchStrings": ["image: (?<depName>.*?):(?<currentValue>.*?)\\s+"],
+      "fileMatch": [
+        "^charts\\/matrix\\/Chart\\.yaml$"
+      ],
+      "matchStrings": [
+        "image: (?<depName>.*?):(?<currentValue>.*?)\\s+"
+      ],
       "datasourceTemplate": "docker"
     }
   ],
   "packageRules": [
-      {
-        "matchManagers": ["helm-requirements", "helm-values", "regex"],
-        "postUpgradeTasks": {
-            "commands": [
-                "version=$(grep '^version:' {{{parentDir}}}/Chart.yaml | awk '{print $2}')",
-                "major=$(echo $version | cut -d. -f1)",
-                "minor=$(echo $version | cut -d. -f2)",
-                "patch=$(echo $version | cut -d. -f3)",
-                "minor=$(expr $minor + 1)",
-                "echo \"Replacing $version with $major.$minor.$patch\"",
-                "sed -i \"s/^version:.*/version: $major.$minor.$patch/g\" {{{parentDir}}}/Chart.yaml",
-                "cat {{{parentDir}}}/Chart.yaml"
-              ],
-              "fileFilters": ["**/Chart.yaml"],
-              "executionMode": "branch"
-        }
+    {
+      "matchManagers": [
+        "helm-requirements",
+        "helm-values",
+        "custom.regex"
+      ],
+      "postUpgradeTasks": {
+        "commands": [
+          "version=$(grep '^version:' {{{parentDir}}}/Chart.yaml | awk '{print $2}')",
+          "major=$(echo $version | cut -d. -f1)",
+          "minor=$(echo $version | cut -d. -f2)",
+          "patch=$(echo $version | cut -d. -f3)",
+          "minor=$(expr $minor + 1)",
+          "echo \"Replacing $version with $major.$minor.$patch\"",
+          "sed -i \"s/^version:.*/version: $major.$minor.$patch/g\" {{{parentDir}}}/Chart.yaml",
+          "cat {{{parentDir}}}/Chart.yaml"
+        ],
+        "fileFilters": [
+          "**/Chart.yaml"
+        ],
+        "executionMode": "branch"
       }
+    }
   ]
 }
