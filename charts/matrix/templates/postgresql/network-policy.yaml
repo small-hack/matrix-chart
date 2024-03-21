@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "matrix.fullname" . }}-postgresql
+  name: {{ include "matrix.fullname" . }}-synapse-postgresql
   labels:
 {{ include "matrix.labels" . | indent 4 }}
 spec:
