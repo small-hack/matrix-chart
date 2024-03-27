@@ -1,12 +1,5 @@
 {
-    "extends": ["config:recommended"],
-    "allowPostUpgradeCommandTemplating": true,
-    "allowedPostUpgradeCommands": ["^.*"],
-    "repositories": ["small-hack/matrix-chart"],
-    "platform": "github",
-    "configMigration": true,
-    "onboarding": false,
-    "requireConfig": "optional",
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "customManagers": [
       {
         "customType": "regex",
