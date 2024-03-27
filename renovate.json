@@ -4,7 +4,6 @@
     "allowedPostUpgradeCommands": ["^.*"],
     "repositories": ["small-hack/matrix-chart"],
     "platform": "github",
-    "forkProcessing": "enabled",
     "configMigration": true,
     "onboarding": false,
     "requireConfig": "optional",
@@ -18,39 +17,17 @@
         "datasourceTemplate": "docker"
       }
     ],
-    "packageRules": [
-      {
-        "matchManagers": ["helm-requirements", "helm-values", "custom.regex"],
-        "matchUpdateTypes": ["patch"],
-        "postUpgradeTasks": {
-          "commands": [
-            "version=$(grep '^version:' charts/matrix/Chart.yaml | awk '{print $2}')\n major=$(echo $version | cut -d. -f1)\n minor=$(echo $version | cut -d. -f2)\n patch=$(echo $version | cut -d. -f3)\n patch=$(expr $patch + 1)\n  echo \"Replacing $version with $major.$minor.$patch\"\n sed -i \"s/^version:.*/version: ${major}.${minor}.${patch}/g\" charts/matrix/Chart.yaml\n cat charts/matrix/Chart.yaml\n sed -i \"s/${version}/${major}.${minor}.${patch}/g\" charts/matrix/README.md\n"
-          ],
-          "fileFilters": ["**/Chart.yaml"],
-          "executionMode": "branch"
-        } 
-      },
-      {
-        "matchManagers": ["helm-requirements", "helm-values", "custom.regex"],
-        "matchUpdateTypes": ["minor"],
-        "postUpgradeTasks": {
-          "commands": [
-            "version=$(grep '^version:' charts/matrix/Chart.yaml | awk '{print $2}')\n                  major=$(echo $version | cut -d. -f1)\n                  minor=$(echo $version | cut -d. -f2)\n                  patch=$(echo $version | cut -d. -f3)\n                  minor=$(expr $minor + 1)\n                  echo \"Replacing $version with $major.$minor.$patch\"\n                  sed -i \"s/^version:.*/version: ${major}.${minor}.${patch}/g\" charts/matrix/Chart.yaml\n                  cat charts/matrix/Chart.yaml\n            sed -i \"s/${version}/${major}.${minor}.${patch}/g\" charts/matrix/README.md\n"
-          ],
-          "fileFilters": ["**/Chart.yaml"],
-          "executionMode": "branch"
-        }
-      },
-      {
-        "matchManagers": ["helm-requirements", "helm-values", "custom.regex"],
-        "matchUpdateTypes": ["major"],
-        "postUpgradeTasks": {
-          "commands": [
-            "version=$(grep '^version:' charts/matrix/Chart.yaml | awk '{print $2}')\n                  major=$(echo $version | cut -d. -f1)\n        major=$(expr $major + 1)\n           minor=$(echo $version | cut -d. -f2)\n                  patch=$(echo $version | cut -d. -f3)\n                                echo \"Replacing $version with $major.$minor.$patch\"\n                  sed -i \"s/^version:.*/version: ${major}.${minor}.${patch}/g\" charts/matrix/Chart.yaml\n                  cat charts/matrix/Chart.yaml\n            sed -i \"s/${version}/${major}.${minor}.${patch}/g\" charts/matrix/README.md\n"
-          ],
-          "fileFilters": ["**/Chart.yaml"],
-          "executionMode": "branch"
-        }
+  "packageRules": [
+    {
+      "description": "Bump helm chart versions by a patch when updating values files. Digests, pins, rollbacks, replacements and pinDigest updates are deliberately ignored since in our use case, these need a manual decision about the version bump for the chart. This can be removed when https://github.com/renovatebot/renovate/issues/8231 is implemented and enabled.",
+      "matchManagers": ["helm-values"],
+      "postUpgradeTasks": {
+        "commands": [
+          "bash scripts/bump-chart-version.sh '{{{parentDir}}}' '{{{isMajor}}}' '{{{isMinor}}}' '{{{isPatch}}}'"
+        ],
+        "fileFilters": ["**/Chart.yaml"],
+        "executionMode": "branch"
       }
-    ]
+    }
+  ]
 }
