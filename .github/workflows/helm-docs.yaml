@@ -23,6 +23,7 @@ jobs:
         run: helm-docs
 
       # commit the docs changes back up
+      # see: https://github.com/EndBug/add-and-commit/issues/389#issuecomment-1116589962
       - uses: EndBug/add-and-commit@v9
         name: commit helm docs changes
         with:
