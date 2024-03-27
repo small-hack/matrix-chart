@@ -30,3 +30,4 @@ jobs:
           author_name: jessebot
           committer_name: friend
           message: 'Automated GHA - Updating helm docs'
+          push: origin HEAD:${{ github.head_ref }}
