@@ -7,7 +7,7 @@ on:
       - 'charts/matrix/values.yaml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   update-docs:
