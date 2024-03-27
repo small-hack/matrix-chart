@@ -1,4 +1,5 @@
 {
+    "repositories": ["small-hack/matrix-chart"],
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "customManagers": [
       {
