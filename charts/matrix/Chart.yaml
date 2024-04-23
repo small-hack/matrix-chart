@@ -25,5 +25,5 @@ dependencies:
 
   - name: coturn
     version: 4.3.0
-    repository: https://jessebot.github.io/coturn-chart
+    repository: https://small-hack.github.io/coturn-chart
     condition: coturn.enabled
