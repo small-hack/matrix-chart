@@ -24,7 +24,7 @@ jobs:
       - name: Add dependency chart repos
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm repo add coturn https://jessebot.github.io/coturn-chart
+          helm repo add coturn https://small-hack.github.io/coturn-chart
 
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.6.1
