@@ -4,6 +4,6 @@ dependencies:
   version: 14.3.3
 - name: coturn
   repository: https://small-hack.github.io/coturn-chart
-  version: 4.3.0
-digest: sha256:f15f9a0724995192ac6aa06e079780021544a82733cf7d67a9051c625dc4f93a
-generated: "2024-04-23T13:49:56.040061+02:00"
+  version: 4.6.0
+digest: sha256:9198207adf54cc69bfaacf8fd560e512f51a270b718a75cea342f8fe5c215a72
+generated: "2024-04-23T12:03:38.680311043Z"
