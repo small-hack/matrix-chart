@@ -31,7 +31,7 @@ helm install my-release-name matrix/matrix --values values.yaml
 - Use (existing) Kubernetes Secrets for confidential data, such as passwords
 - Use OIDC configs for SSO (see synapse [docs](https://github.com/matrix-org/synapse/blob/747416e94cd8f137b9173c132f7c44ea1c59534d/docs/openid.md) for more info)
 - Latest version of [Element](https://element.io/)
-- [Coturn TURN server subchart](https://github.com/jessebot/coturn-chart) for VoIP calls
+- [Coturn TURN server subchart](https://github.com/small-hack/coturn-chart) for VoIP calls
 - Use [s3 to store stuff](https://github.com/matrix-org/synapse-s3-storage-provider/tree/main)
 - Use an existing Kubernetes Secret for an external mail server for email notifications
 
@@ -55,7 +55,7 @@ These features still need to be tested, but are technically baked into the chart
 
 ## About and Status
 
-This is a fork of [Arkaniad/matrix-chart](https://github.com/Arkaniad/matrix-chart), which is a fork of [typokign/matrix-chart](https://github.com/typokign/matrix-chart). We recently transferred this chart from [@jessebot](https://github.comc/jessebot) to the small-hack org to help with maintanence longterm :) Working on full stability, but always happy to receive GitHub Issues or PRs 💙 Please star the repo if you like our work <3
+This is a fork of [Arkaniad/matrix-chart](https://github.com/Arkaniad/matrix-chart), which is a fork of [typokign/matrix-chart](https://github.com/typokign/matrix-chart). We recently transferred this chart from [@jessebot](https://github.com/jessebot) to the small-hack org to help with maintanence longterm :) Working on full stability, but always happy to receive GitHub Issues or PRs 💙 Please star the repo if you like our work <3
 
 Our goal is to provide regular updates using renovatebot and provide some level of basic security from a k8s perspective. We're also trying to standardize the chart more by following predictable values.yaml patterns.
 
