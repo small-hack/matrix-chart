@@ -24,6 +24,6 @@ dependencies:
     condition: postgresql.enabled
 
   - name: coturn
-    version: 4.3.0
+    version: 5.2.0
     repository: https://small-hack.github.io/coturn-chart
     condition: coturn.enabled
