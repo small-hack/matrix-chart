@@ -499,12 +499,12 @@ postgresql:
       allowExternal: true
       allowExternalEgress: true
       extraIngress:
-        - ports:
-          - port: 5432
-          from:
-            - podSelector:
-              - matchLabels:
-                - component: synapse
+        - from:
+          - podSelector:
+            - matchLabels:
+              - component: synapse
+          ports:
+            - port: 5432
 
 # Synapse Kubernetes resource settings
 synapse:
