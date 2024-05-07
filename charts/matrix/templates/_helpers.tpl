@@ -138,7 +138,7 @@ Helper function to get postgres instance name
 {{- end }}
 
 {{/*
-Helper function to get the coturn secret containing the sharedSecret 
+Helper function to get the coturn secret containing the sharedSecret
 */}}
 {{- define "matrix.coturn.secretName" -}}
 {{- if and .Values.coturn.enabled .Values.coturn.existingSecret -}}

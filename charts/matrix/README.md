@@ -314,6 +314,11 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | postgresql.global.postgresql.auth.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix to connect to db |
 | postgresql.global.postgresql.auth.username | string | `"matrix"` | username of matrix postgres user |
 | postgresql.primary.initdb | object | `{"scriptsConfigMap":"{{ .Release.Name }}-postgresql-initdb"}` | run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/matrix-org/synapse/blob/master/docs/postgres.md |
+| postgresql.primary.networkPolicy.allowExternal | bool | `true` |  |
+| postgresql.primary.networkPolicy.allowExternalEgress | bool | `true` |  |
+| postgresql.primary.networkPolicy.enabled | bool | `true` |  |
+| postgresql.primary.networkPolicy.extraIngress[0].from[0].podSelector[0].matchLabels[0].component | string | `"synapse"` |  |
+| postgresql.primary.networkPolicy.extraIngress[0].ports[0].port | int | `5432` |  |
 | postgresql.primary.persistence | object | `{"enabled":false,"size":"8Gi"}` | persistent volume claim configuration for postgresql to persist data |
 | postgresql.primary.persistence.enabled | bool | `false` | Enable PostgreSQL Primary data persistence using PVC |
 | postgresql.primary.persistence.size | string | `"8Gi"` | size of postgresql volume claim |

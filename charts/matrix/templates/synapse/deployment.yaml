@@ -276,7 +276,7 @@ spec:
             - name: SYNAPSE_REPORT_STATS
               value: {{ .Values.matrix.telemetry | ternary "yes" "no" | quote }}
             - name: PYTHONUSERBASE
-              value: /data/extra_pip_packages 
+              value: /data/extra_pip_packages
             - name: PIP_CACHE_DIR
               value: /tmp
           command:

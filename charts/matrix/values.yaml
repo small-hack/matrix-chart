@@ -490,6 +490,22 @@ postgresql:
       runAsUser: 1000
       fsGroup: 1000
 
+    networkPolicy:
+      enabled: true
+      ## The Policy model to apply. When set to false, only pods with the correct
+      ## server label will have network access to the ports server is listening
+      ## on. When true, server will accept connections from any source
+      ## (with the correct destination port).
+      allowExternal: true
+      allowExternalEgress: true
+      extraIngress:
+        - ports:
+          - port: 5432
+          from:
+            - podSelector:
+              - matchLabels:
+                - component: synapse
+
 # Synapse Kubernetes resource settings
 synapse:
   image:
