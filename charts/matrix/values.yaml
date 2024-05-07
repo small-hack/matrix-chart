@@ -491,7 +491,7 @@ postgresql:
       fsGroup: 1000
 
     networkPolicy:
-      enabled: true
+      enabled: false
       ## The Policy model to apply. When set to false, only pods with the correct
       ## server label will have network access to the ports server is listening
       ## on. When true, server will accept connections from any source
