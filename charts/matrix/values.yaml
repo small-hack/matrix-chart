@@ -503,8 +503,6 @@ postgresql:
           - podSelector:
             - matchLabels:
               - component: synapse
-          ports:
-            - port: 5432
 
 # Synapse Kubernetes resource settings
 synapse:
