@@ -1140,7 +1140,9 @@ bridges:
       storageClass: ""
 
     image:
+      # -- docker image repo for discord bridge
       repository: "halfshot/matrix-appservice-discord"
+      # -- tag for discord brdige docker image
       tag: "latest"
       pullPolicy: Always
     replicaCount: 1

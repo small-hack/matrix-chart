@@ -36,8 +36,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord.defaultVisibility | string | `"public"` | Default visibility of bridged rooms (public/private) |
 | bridges.discord.enabled | bool | `false` | Set to true to enable the Discord bridge |
 | bridges.discord.image.pullPolicy | string | `"Always"` |  |
-| bridges.discord.image.repository | string | `"halfshot/matrix-appservice-discord"` |  |
-| bridges.discord.image.tag | string | `"latest"` |  |
+| bridges.discord.image.repository | string | `"halfshot/matrix-appservice-discord"` | docker image repo for discord bridge |
+| bridges.discord.image.tag | string | `"latest"` | tag for discord brdige docker image |
 | bridges.discord.joinLeaveEvents | bool | `true` | Discord notifications when a user joins/leaves the Matrix channel |
 | bridges.discord.presence | bool | `true` | Set to false to disable online/offline presence for Discord users |
 | bridges.discord.readReceipt | bool | `true` | Discord bot read receipt, which advances whenever the bot bridges a msg |
