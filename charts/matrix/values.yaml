@@ -500,9 +500,9 @@ postgresql:
       allowExternalEgress: true
       extraIngress:
         - from:
-          - podSelector:
-            - matchLabels:
-              - component: synapse
+            - podSelector:
+                matchLabels:
+                  component: synapse
 
 # Synapse Kubernetes resource settings
 synapse:
