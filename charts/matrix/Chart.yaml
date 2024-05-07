@@ -8,10 +8,10 @@ sources:
 
 type: application
 
-version: 7.1.4
+version: 8.0.0
 
 # renovate: image=matrixdotorg/synapse
-appVersion: v1.103.0
+appVersion: v1.106.0
 
 maintainers:
   - name: "jessebot"
@@ -19,11 +19,11 @@ maintainers:
 
 dependencies:
   - name: postgresql
-    version: 14.3.3
+    version: 15.1.4
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
 
   - name: coturn
-    version: 4.3.0
+    version: 5.2.0
     repository: https://small-hack.github.io/coturn-chart
     condition: coturn.enabled

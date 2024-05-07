@@ -1,9 +1,9 @@
 dependencies:
 - name: postgresql
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 14.3.3
+  version: 15.1.4
 - name: coturn
   repository: https://small-hack.github.io/coturn-chart
-  version: 4.3.0
-digest: sha256:f15f9a0724995192ac6aa06e079780021544a82733cf7d67a9051c625dc4f93a
-generated: "2024-04-23T13:49:56.040061+02:00"
+  version: 5.2.0
+digest: sha256:8a175b51faccae0bd188df5fcc17d482c9c5bb00a31734dd0e428b0f94d8cfda
+generated: "2024-05-07T08:07:44.24269523+02:00"
