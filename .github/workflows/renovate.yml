@@ -8,8 +8,9 @@ on:
     branches:
       - main
     paths:
-      - "renovate-config.json"
+      - ".github/renovate-config.json"
       - ".github/workflows/renovate.yml"
+      - "renovate.json"
       - "scripts/**"
 jobs:
   renovate:
@@ -29,4 +30,4 @@ jobs:
         uses: renovatebot/github-action@v40.1.11
         with:
           token: '${{ steps.get_token.outputs.token }}'
-          configurationFile: renovate-config.json
+          configurationFile: .github/renovate-config.json
