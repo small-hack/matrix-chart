@@ -8,9 +8,8 @@ on:
     branches:
       - main
     paths:
-      - ".github/renovate.json"
+      - "renovate-config.json"
       - ".github/workflows/renovate.yml"
-      - "renovate.json"
       - "scripts/**"
 jobs:
   renovate:
