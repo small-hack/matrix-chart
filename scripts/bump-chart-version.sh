@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-# thanks: https://github.com/renovatebot/renovate/issues/8231#issuecomment-1978929997
+# thanks to original comment: https://github.com/renovatebot/renovate/issues/8231#issuecomment-1978929997
+# converted to discussion: https://github.com/renovatebot/renovate/discussions/28861#discussioncomment-9326722
 
 set -euo pipefail
 
 parent_dir="$1"
-is_major="$2"
-is_minor="$3"
-is_patch="$4"
+update_type="$2"
 
 version=$(grep "^version:" "charts/${parent_dir}/Chart.yaml" | awk '{print $2}')
 if [[ ! $version ]]; then
@@ -18,21 +17,14 @@ major=$(echo "$version" | cut -d. -f1)
 minor=$(echo "$version" | cut -d. -f2)
 patch=$(echo "$version" | cut -d. -f3)
 
-# Bump major version
-if [[ "$is_major" = 'true' ]]; then
+if [[ "$update_type" =~ (major|replacement) ]]; then
   major=$(( major + 1 ))
   minor=0
   patch=0
-fi
-
-# Bump minor version
-if [[ "$is_minor" = 'true' ]]; then
+elif [[ "$update_type" =~ 'minor' ]]; then
   minor=$(( minor + 1 ))
   patch=0
-fi
-
-# Bump patch version
-if [[ "$is_patch" = 'true' ]]; then
+else
   patch=$(( patch + 1 ))
 fi
 
