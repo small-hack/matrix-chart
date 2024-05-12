@@ -1,9 +1,8 @@
 name: Renovate
 on:
   schedule:
-    # The "*" (#42, asterisk) character has special semantics in YAML, so this
-    # string has to be quoted. This should be every 15 minutes to start testing
-    - cron: '0/15 * * * *'
+    # string has to be quoted. This should be every hour.
+    - cron: '0 * * * *'
   push:
     branches:
       - main
