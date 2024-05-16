@@ -18,9 +18,9 @@
         "matchManagers": ["helm-values", "helmv3", "regex", "helm-requirements"],
         "postUpgradeTasks": {
           "commands": [
-            "bash scripts/bump-chart-version.sh '{{{parentDir}}}' '{{{updateType}}}'"
+            "bash scripts/bump-chart-version.sh '{{{updateType}}}'"
           ],
-          "fileFilters": ["**/Chart.yaml"]
+          "fileFilters": ["charts/matrix/Chart.yaml"]
         }
       }
     ]
