@@ -4,10 +4,10 @@
 
 set -euo pipefail
 
-parent_dir="$1"
-update_type="$2"
+update_type="$1"
 
-version=$(grep "^version:" "charts/${parent_dir}/Chart.yaml" | awk '{print $2}')
+version=$(grep "^version:" "charts/matrix/Chart.yaml" | awk '{print $2}')
+
 if [[ ! $version ]]; then
   echo "No valid version was found"
   exit 1
@@ -28,5 +28,5 @@ else
   patch=$(( patch + 1 ))
 fi
 
-echo "Bumping version for $parent_dir from $version to $major.$minor.$patch"
-sed -i "s/^version:.*/version: ${major}.${minor}.${patch}/g" "charts/${parent_dir}/Chart.yaml"
+echo "Bumping version for matrix chart from $version to $major.$minor.$patch"
+sed -i "s/^version:.*/version: ${major}.${minor}.${patch}/g" "charts/matrix/Chart.yaml"
