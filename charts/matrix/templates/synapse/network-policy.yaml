@@ -20,4 +20,6 @@ spec:
       ports:
         - port: http
           protocol: TCP
+        - port: 5432
+          protocol: TCP
 {{- end }}
