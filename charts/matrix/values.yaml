@@ -477,7 +477,7 @@ postgresql:
   # primary database node config
   primary:
     # -- persistent volume claim configuration for postgresql to persist data
-    #persistence:
+    # persistence:
     #  # -- Enable PostgreSQL Primary data persistence using PVC
     #  enabled: false
     #  # -- size of postgresql volume claim
