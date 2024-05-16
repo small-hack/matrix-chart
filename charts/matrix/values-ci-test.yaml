@@ -1,0 +1,1197 @@
+---
+# Runtime configuration for Synapse and settings related to the Matrix protocol
+matrix:
+  # Manual overrides for homeserver.yaml, the main config file for Synapse
+  # Its highly recommended that you take a look at the defaults in
+  # templates/synapse/_homeserver.yaml, to get a sense of the requirements and
+  # default config options to use other services in this chart.
+  # -- Replace homeserver.yaml will be replaced with these contents
+  homeserverOverride: {}
+  # -- Contents will be appended to the end of the default configuration
+  homeserverExtra: {}
+
+  # -- Domain name of the server: This is not necessarily the host name where
+  # the service is reachable. In fact, you may want to omit any subdomains from
+  # this value as the server name set here will be the name of your homeserver
+  # in the fediverse, & will be the domain name at the end of every username
+  serverName: "example.com"
+
+  # -- Enable anonymous telemetry to matrix.org
+  telemetry: false
+
+  # This is *optional* if an Ingress is configured below. If hostname is
+  # unspecified, the Synapse hostname of the Ingress will be used
+  # -- Hostname where Synapse can be reached.
+  # hostname: "matrix.example.com"
+
+  # -- Set to false to disable presence (online/offline indicators)
+  presence: true
+
+  # -- Set to true to block non-admins from inviting users to any rooms
+  blockNonAdminInvites: false
+
+  # -- Set to false to disable message searching
+  search: true
+
+  # Which types of rooms to enable end-to-end encryption on by default
+  # off:    none
+  # all:    all rooms
+  # invite: private msg/room created w/ private_chat or trusted_private_chat
+  #         room presets
+  encryptByDefault: invite
+
+  # -- Email address of the administrator
+  adminEmail: "admin@example.com"
+
+  # -- Settings related to image and multimedia uploads
+  uploads:
+    # -- Max upload size in bytes
+    maxSize: 10M
+
+    # -- Max image size in pixels
+    maxPixels: 32M
+
+  # Settings related to federation
+  federation:
+    # -- Set to false to disable federation and run an isolated homeserver
+    enabled: true
+
+    # -- Allow members of other homeservers to fetch *public* rooms
+    allowPublicRooms: true
+
+    # -- Allow list of domains to federate with (comment for all domains
+    #    except blacklisted)
+    whitelist: []
+
+    # -- IP addresses to blacklist federation requests to
+    blacklist:
+      - '127.0.0.0/8'
+      - '10.0.0.0/8'
+      - '172.16.0.0/12'
+      - '192.168.0.0/16'
+      - '100.64.0.0/10'
+      - '169.254.0.0/16'
+      - '::1/128'
+      - 'fe80::/64'
+      - 'fc00::/7'
+    ingress:
+      enabled: true
+      tls:
+        enabled: true
+      host: matrix-fed.chart-example.local
+      # -- ingressClassName for the k8s ingress
+      className: "nginx"
+      annotations:
+        # -- required for the Nginx ingress provider. You can remove it if you
+        # use a different ingress provider
+        nginx.ingress.kubernetes.io/configuration-snippet: |
+          proxy_intercept_errors off;
+        # -- required for TLS certs issued by cert-manager
+        cert-manager.io/cluster-issuer: letsencrypt-staging
+
+  # User registration settings
+  registration:
+    # -- Allow new users to register an account
+    enabled: false
+
+    # -- If set, allows registration of standard or admin accounts by anyone who
+    # has the shared secret, even if registration is otherwise disabled.
+    # ignored if existingSecret is passed in
+    sharedSecret: ""
+
+    # -- if set, allows user to generate a random shared secret in a k8s secret
+    # ignored if existingSecret is passed in
+    generateSharedSecret: false
+
+    # -- if set, pull sharedSecret from an existing k8s secret
+    existingSecret: ""
+
+    # -- key in existing k8s secret for registration shared secret
+    secretKey: "registrationSharedSecret"
+
+    # -- Allow users to join rooms as a guest
+    allowGuests: false
+
+    # Required "3PIDs" - third-party identifiers such as email or msisdn (SMS)
+    # required3Pids:
+    #   - email
+    #   - msisdn
+
+    # -- Rooms to automatically join all new users to
+    autoJoinRooms: []
+    # - "#welcome:example.com"
+
+    # -- Whether to allow token based registration
+    requiresToken: false
+
+  # OpenID Connect integration. The following settings can be used to make Synapse
+  # use an OpenID Connect Provider for authentication, instead of its internal
+  # password database.
+  # ref: https://github.com/matrix-org/synapse/blob/master/docs/openid.md.
+  oidc:
+    # -- set to true to enable authorization against an OpenID Connect server
+    enabled: false
+    # -- existing secret to use for the OIDC config
+    existingSecret: ""
+    # keys in an existing secret to use for oidc config
+    secretKeys:
+      # -- key in secret with the issuer
+      issuer: "issuer"
+      # -- key in secret with the client_id
+      client_id: "client_id"
+      # -- key in secret with the client_secret
+      client_secret: "client_secret"
+      # -- key in secret with the authorization_endpoint if discovery is disabled
+      authorization_endpoint: ""
+      # -- key in secret with the token_endpoint if discovery is disabled
+      token_endpoint: ""
+      # -- key in secret with the userinfo_endpoint if discovery is disabled
+      userinfo_endpoint: ""
+    # -- each of these will be templated under oidc_providers in homeserver.yaml
+    # ref: https://matrix-org.github.io/synapse/latest/openid.html?search=
+    providers:
+      # -- id of your identity provider, e.g. dex
+      - idp_id: ""
+        # -- human readable comment of your identity provider, e.g. "My Dex Server"
+        idp_name: ""
+        # -- optional styling hint for clients
+        idp_brand: ""
+        # -- turn off discovery by setting this to false
+        discover: true
+        # set to true to skip metadata verification. Defaults to false. Use this if
+        # you are connecting to a provider that is not OpenID Connect compliant.
+        # Avoid this in production.
+        skip_verification: false
+        # -- OIDC issuer. Used to validate tokens and (if discovery is enabled) to
+        # discover the provider's endpoints. Required if 'enabled' is true.
+        issuer: "https://accounts.example.com/"
+        # -- oauth2 client id to use. Required if 'enabled' is true.
+        client_id: "provided-by-your-issuer"
+        # -- oauth2 client secret to use. Required if 'enabled' is true.
+        client_secret: "provided-by-your-issuer"
+        # -- auth method to use when exchanging the token. Valid values are:
+        # 'client_secret_basic' (default), 'client_secret_post' and 'none'.
+        client_auth_method: client_secret_post
+        # -- list of scopes to request. should normally include the "openid" scope.
+        # Defaults to ["openid"].
+        scopes:
+          - "openid"
+          - "profile"
+        # -- oauth2 authorization endpoint. Required if provider discovery disabled.
+        authorization_endpoint: "https://accounts.example.com/oauth2/auth"
+        # -- the oauth2 token endpoint. Required if provider discovery is disabled.
+        token_endpoint: "https://accounts.example.com/oauth2/token"
+        # -- the OIDC userinfo endpoint. Required if discovery is disabled and the
+        # "openid" scope is not requested.
+        userinfo_endpoint: "https://accounts.example.com/userinfo"
+        # An external module can be provided here as a custom solution to mapping
+        # attributes returned from a OIDC provider onto a matrix user.
+        user_mapping_provider:
+          config:
+            # -- name of the claim containing a unique identifier for user. Defaults
+            # to `sub`, which OpenID Connect compliant providers should provide.
+            subject_claim: ""
+            # This must be configured if using the default mapping provider.
+            localpart_template: ""
+            # Jinja2 template for the display name to set on first login.
+            # If unset, no displayname will be set.
+            display_name_template: ""
+            # for twitter: https://matrix-org.github.io/synapse/latest/openid.html?search=#twitter
+            picture_template: "{{ user.data.profile_image_url }}"
+        # optional - maybe useful for keycloak
+        backchannel_logout_enabled: true
+
+  # Settings for the URL preview crawler
+  urlPreviews:
+    # -- Enable URL previews. WARN: Make sure to review default rules below to
+    # ensure that users cannot crawl sensitive internal endpoints on yr cluster
+    enabled: false
+
+    # Blacklists and whitelists for the URL preview crawler
+    rules:
+      # -- Max size of a crawlable page. Keep this low to prevent a DOS vector
+      maxSize: 10M
+
+      # Whitelist and blacklist for crawlable IP addresses
+      ip:
+        whitelist: []
+        blacklist:
+          - '127.0.0.0/8'
+          - '10.0.0.0/8'
+          - '172.16.0.0/12'
+          - '192.168.0.0/16'
+          - '100.64.0.0/10'
+          - '169.254.0.0/16'
+          - '::1/128'
+          - 'fe80::/64'
+          - 'fc00::/7'
+
+      # -- Whitelist and blacklist based on URL pattern matching
+      url: {}
+      # whitelist:
+      # blacklist:
+      #  # blacklist any URL with a username in its URI
+      #  - username: '*'
+      #
+      #  # blacklist all *.google.com URLs
+      #  - netloc: 'google.com'
+      #  - netloc: '*.google.com'
+      #
+      #  # blacklist all plain HTTP URLs
+      #  - scheme: 'http'
+      #
+      #  # blacklist http(s)://www.acme.com/foo
+      #  - netloc: 'www.acme.com'
+      #    path: '/foo'
+      #
+      #  # blacklist any URL with a literal IPv4 address
+      #  - netloc: '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
+
+  # -- How long to keep redacted events in unredacted form in the database
+  retentionPeriod: 7d
+
+  security:
+    # a secret which is used to sign access tokens. If none is specified,
+    # the registration_shared_secret is used, if one is given; otherwise,
+    # a secret key is derived from the signing key.
+    #
+    # macaroonSecretKey: <PRIVATE STRING>
+
+    # This disables the warning that is emitted when the
+    # trustedKeyServers include 'matrix.org'. See below.
+    # Set to false to re-enable the warning.
+    #
+    surpressKeyServerWarning: true
+
+    # The trusted servers to download signing keys from.
+    #
+    # When we need to fetch a signing key, each server is tried in parallel.
+    #
+    # Normally, the connection to the key server is validated via TLS certs.
+    # Additional security can be provided by configuring a `verify key`, which
+    # will make synapse check that the response is signed by that key.
+    #
+    # This setting supercedes an older setting named `perspectives`. Old format
+    # is still supported for backwards-compatibility, but it is deprecated.
+    #
+    # 'trustedKeyServers' defaults to matrix.org, but using it will generate a
+    # warning on start-up. To suppress this warning, set
+    # 'surpressKeyServerWarning' to true.
+    #
+    # Options for each entry in the list include:
+    #
+    #  serverName: the name of the server. required.
+    #
+    #  verifyKeys: an optional map from key id to base64-encoded public key.
+    #     If specified, we will check that the response is signed by at least
+    #     one of the given keys.
+    #
+    #  acceptKeysInsecurely: a boolean. Normally, if `verify_keys` is unset,
+    #    and federation_verify_certificates is not `true`, synapse will refuse
+    #    to start, because this would allow anyone who can spoof DNS responses
+    #    to masquerade as the trusted key server. If you know what you are doing
+    #    and are sure that your network environment provides a secure connection
+    #    to the key server, you can set this to `true` to override this
+    #    behaviour.
+    #
+    # An example configuration might look like:
+    #
+    # trustedKeyServers:
+    #   - serverName: my_trusted_server.example.com
+    #     verifyKeys:
+    #       - id: "ed25519:auto"
+    #         key: "abcdefghijklmnopqrstuvwxyzabcdefghijklmopqr"
+    #     acceptKeysInsecurely: false
+    #   - serverName: my_other_trusted_server.example.com
+
+  # -- Set to true to globally block access to the homeserver
+  disabled: false
+  # -- Human readable reason for why the homeserver is blocked
+  disabledMessage: ""
+
+  logging:
+    # -- Root log level is the default log level for log outputs that don't
+    # have more specific settings.
+    rootLogLevel: WARNING
+    # -- beware: increasing this to DEBUG will make synapse log sensitive
+    # information such as access tokens.
+    sqlLogLevel: WARNING
+    # -- The log level for the synapse server
+    synapseLogLevel: WARNING
+
+s3:
+  # -- enable s3 storage via https://github.com/matrix-org/synapse-s3-storage-provider
+  enabled: false
+  # -- your s3 endpoint
+  endpoint: ""
+  # -- name of the bucket to use
+  bucket: ""
+  # -- optional region to use for s3
+  region: ""
+  # -- optional Server Side Encryption for Customer-provided keys
+  sse_c_key: ""
+  # -- optional SSE-C algorithm - very likely AES256
+  sse_algorithm: "AES256"
+  # -- use credentials from an existing kubernetes secret
+  existingSecret: ""
+  # these are the keys within the existing k8s secret to use for s3 credentials
+  secretKeys:
+    # -- key in existing secret fo the S3 key
+    accessKey: "S3_ACCESS_KEY"
+    # -- key in existing secret fo the S3 secret
+    secretKey: "S3_SECRET_KEY"
+  cronjob:
+    # -- enable a regular cleanup k8s cronjob to automatically backup everything
+    # to your s3 bucket for you and delete it from local disk ref:
+    # https://github.com/matrix-org/synapse-s3-storage-provider/tree/main#regular-cleanup-job
+    enabled: false
+    # -- cron schedule to run the k8s cronjob. Defaults to every day at midnight
+    schedule: "0 0 * * *"
+    # -- this is the age of files you'd like to clean up, defaults files not used
+    # within two months (2m)
+    file_age: 2m
+
+# Persistent volumes configuration
+volumes:
+  # Uploaded attachments/multimedia
+  media:
+    # -- Capacity of the media PVC - ignored if using exsitingClaim
+    capacity: 10Gi
+    # -- Storage class of the media PVC - ignored if using exsitingClaim
+    storageClass: ""
+    # -- name of an existing PVC to use for uploaded attachments and multimedia
+    existingClaim: ""
+  signingKey:
+    # -- Capacity of the signing key PVC. Note: 1Mi is more than enough, but
+    # some cloud providers set a min PVC size of 1Mi or 1Gi, adjust as necessary
+    capacity: 1Mi
+    # -- Storage class (optional)
+    storageClass: ""
+    # -- name of an existing persistent volume claim to use for signing key
+    existingClaim: ""
+  synapseConfig:
+    # -- Capacity of the signing key PVC. Note: 1Mi is more than enough, but
+    # some cloud providers set a min PVC size of 1Mi or 1Gi, adjust as necessary
+    capacity: 1Mi
+    # -- Storage class (optional)
+    storageClass: ""
+    # -- name of an existing persistent volume claim for synapse config file
+    existingClaim: ""
+  # optional PVC used only when s3.enabled is set to true, to install synapse-s3-storage-provider
+  extraPipPackages:
+    # -- Capacity of the extra pip packages PVC. Note: 1Mi is more than enough, but
+    # some cloud providers set a min PVC size of 1Mi or 1Gi, adjust as necessary
+    capacity: 100Mi
+    # -- Storage class (optional)
+    storageClass: ""
+    # -- name of an existing persistent volume claim for the extra pip packages
+    existingClaim: ""
+
+
+externalDatabase:
+  # -- enable using an external database *instead of* the Bitnami PostgreSQL sub-chart
+  # if externalDatabase.enabled is set to true, postgresql.enabled must be set to false
+  enabled: false
+  # optional SSL parameters for postgresql, if using your own db instead of the subchart
+  # ref: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+  # -- sslmode to use, example: verify-full
+  sslmode: ""
+  # make sure any paths here are reflected in synapse.extraVolumes and synapse.extraVolumeMounts
+  # -- optional: tls/ssl root cert for postgresql connections
+  sslrootcert: ""
+  # -- optional: tls/ssl cert for postgresql connections
+  sslcert: ""
+  # -- optional: tls/ssl key for postgresql connections
+  sslkey: ""
+  # database credentials to use if you don't use an existingSecret
+  # -- username of matrix postgres user
+  username: matrix
+  # -- password of matrix postgres user - ignored using exsitingSecret
+  password: changeme
+  # -- which port to use to connect to your database server
+  port: 5432
+  # -- hostname of db server. Can be left blank if using postgres subchart
+  hostname: ""
+  # -- name of the database to try and connect to
+  database: "matrix"
+  # -- Name of existing secret to use for PostgreSQL credentials
+  existingSecret: ""
+  # if externalDatabase.existingSecret is provided, the following are ignored
+  # password, username, hostname, database
+  # secretKeys to grab from existingSecret
+  secretKeys:
+    # -- key in existingSecret with hostname of the database
+    databaseHostname: hostname
+    # -- key in existingSecret with name of the database
+    database: database
+    # -- key in existingSecret with username for matrix to connect to db
+    databaseUsername: username
+    # -- key in existingSecret with password for matrix to connect to db
+    userPasswordKey: password
+    # -- key in existingSecret with the admin postgresql password
+    adminPasswordKey: postgresPassword
+
+
+# PostgreSQL Database configuration for synapse, for more options:
+# https://github.com/bitnami/charts/tree/main/bitnami/postgresql
+postgresql:
+  # -- Whether to deploy the Bitnami Postgresql sub chart
+  # If postgresql.enabled is set to true, externalDatabase.enabled must be set to false
+  # else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false
+  enabled: true
+  persistence:
+    enabled: false
+  postgresqlDatabase: G2
+  postgresqlPassword: postgres
+  volumePermissions:
+    # -- Enable init container that changes the owner and group of the PVC
+    enabled: false
+  global:
+    postgresql:
+      # global.postgresql.auth overrides postgresql.auth
+      auth:
+        # database credentials to use if you don't use an existingSecret
+        # -- username of matrix postgres user
+        username: matrix
+        # -- password of matrix postgres user - ignored using exsitingSecret
+        password: changeme
+        # -- which port to use to connect to your database server
+        port: 5432
+        # -- Name of existing secret to use for PostgreSQL credentials
+        existingSecret: ""
+        # secretKeys to grab from existingSecret
+        # if postgresql.existingSecret is provided, the following are ignored
+        # postgresql.password/username/hostname/database
+        secretKeys:
+          # -- key in existingSecret with hostname of the database
+          databaseHostname: hostname
+          # -- key in existingSecret with name of the database
+          database: database
+          # -- key in existingSecret with username for matrix to connect to db
+          databaseUsername: username
+          # -- key in existingSecret with password for matrix to connect to db
+          userPasswordKey: password
+          # -- key in existingSecret with the admin postgresql password
+          adminPasswordKey: postgresPassword
+
+  # primary database node config
+  primary:
+    # -- persistent volume claim configuration for postgresql to persist data
+    # persistence:
+    #  # -- Enable PostgreSQL Primary data persistence using PVC
+    #  enabled: false
+    #  # -- size of postgresql volume claim
+    #  size: 8Gi
+
+    # -- run the scripts in templates/postgresql/initdb-configmap.yaml
+    # If using an external Postgres server, make sure to configure the database
+    # ref: https://github.com/matrix-org/synapse/blob/master/docs/postgres.md
+    initdb:
+      scriptsConfigMap: "{{ .Release.Name }}-postgresql-initdb"
+
+    podSecurityContext:
+      enabled: true
+      runAsUser: 1000
+      fsGroup: 1000
+
+    networkPolicy:
+      enabled: false
+      ## The Policy model to apply. When set to false, only pods with the correct
+      ## server label will have network access to the ports server is listening
+      ## on. When true, server will accept connections from any source
+      ## (with the correct destination port).
+      allowExternal: true
+      allowExternalEgress: true
+      extraIngress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  component: synapse
+
+# Synapse Kubernetes resource settings
+synapse:
+  image:
+    # -- image registry and repository to use for synapse
+    repository: "matrixdotorg/synapse"
+    # -- tag of synapse docker image to use. change this to latest to grab the
+    #    cutting-edge release of synapse
+    tag: ""
+    # -- pullPolicy for synapse image, Use Always if using image.tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    # -- service type for synpase
+    type: ClusterIP
+    # -- service port for synapse
+    port: 80
+    federation:
+      type: ClusterIP
+      port: 80
+
+  ingress:
+    enabled: true
+    host: matrix.chart-example.local
+    # -- ingressClassName for the k8s ingress
+    className: "nginx"
+    tls:
+      enabled: true
+      secretName: "matrix-tls"
+    annotations:
+      # -- This annotation is required for the Nginx ingress provider. You can
+      # remove it if you use a different ingress provider
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        proxy_intercept_errors off;
+      # -- required for TLS certs issued by cert-manager
+      cert-manager.io/cluster-issuer: letsencrypt-staging
+
+  replicaCount: 1
+  resources: {}
+  # Configure timings for readiness, startup, and liveness probes here
+  probes:
+    readiness:
+      # -- readiness probe seconds before timing out
+      timeoutSeconds: 5
+      # -- readiness probe seconds trying again
+      periodSeconds: 10
+    startup:
+      # -- startup probe seconds before timing out
+      timeoutSeconds: 5
+      # -- startup probe seconds trying again
+      periodSeconds: 5
+      # -- startup probe times to try and fail before giving up
+      failureThreshold: 6
+    liveness:
+      # -- liveness probe seconds before timing out
+      timeoutSeconds: 5
+      # -- liveness probe seconds trying again
+      periodSeconds: 10
+
+
+  # -- securityContext for the synapse CONTAINER ONLY
+  # Does not work by default in all cloud providers, disable by default
+  securityContext:
+    # -- user ID to run the synapse container as
+    runAsUser: 1000
+    # -- group ID to run the synapse container as
+    runAsGroup: 1000
+    # -- Indicates that the container must run as a non-root user. If true, the Kubelet will validate the image at runtime to ensure that it does not run as UID 0 (root) and fail to start the container if it does. If unset or false, no such validation will be performed.
+    runAsNonRoot: true
+    # -- Whether this container has a read-only root filesystem. Default is false. Note that this field cannot be set when spec.os.name is windows.
+    readOnlyRootFilesystem: false
+    # -- AllowPrivilegeEscalation controls whether a process can gain more privileges than its parent process. This bool directly controls if the no_new_privs flag will be set on the container process. AllowPrivilegeEscalation is true always when the container is: 1) run as Privileged 2) has CAP_SYS_ADMIN Note that this field cannot be set when spec.os.name is windows.
+    allowPrivilegeEscalation: false
+
+  # -- securityContext for the entire synapse pod, including the all containers
+  # Does not work by default in all cloud providers, disable by default
+  podSecurityContext:
+    # -- user ID to run the synapse POD as
+    runAsUser: 1000
+    # -- group ID to run the synapse POD as
+    runAsGroup: 1000
+    # -- A special supplemental group that applies to all containers in a pod. Some volume types allow the Kubelet to change the ownership of that volume to be owned by the pod: 1. The owning GID will be the FSGroup 2. The setgid bit is set (new files created in the volume will be owned by FSGroup) 3. The permission bits are OR'd with rw-rw---- If unset, the Kubelet will not modify the ownership and permissions of any volume. Note that this field cannot be set when spec.os.name is windows.
+    fsGroup: 1000
+    # -- Indicates that the pod's containers must run as a non-root user. If true, the Kubelet will validate the image at runtime to ensure that it does not run as UID 0 (root) and fail to start the container if it does. If unset or false, no such validation will be performed.
+    runAsNonRoot: true
+    # -- Enable if your k8s environment allows containers to chuser/setuid
+    # https://github.com/matrix-org/synapse/blob/96cf81e312407f0caba1b45ba9899906b1dcc098/docker/start.py#L196
+    env: false
+
+  # -- Labels to be appended to all Synapse resources
+  labels:
+    component: synapse
+
+  # Prometheus metrics for Synapse
+  # https://github.com/matrix-org/synapse/blob/master/docs/metrics-howto.md
+  metrics:
+    # -- Whether Synapse should capture metrics on an additional endpoint
+    enabled: true
+    # -- Port to listen on for metrics scraping
+    port: 9092
+    annotations: true
+
+  # -- optiona: extra env variables to pass to the matrix synapse deployment
+  extraEnv: []
+
+  # -- optional: extra volumes for the matrix synapse deployment
+  extraVolumes: []
+
+  # -- optional: extra volume mounts for the matrix synapse deployment
+  extraVolumeMounts: []
+
+# Element client configuration. see: https://element.io/
+element:
+  # -- Set to false to disable a deployment of Element. Users will still be able
+  # to connect via any other instances of Element e.g. https://app.element.io,
+  # Element Desktop, or any other Matrix clients
+  enabled: true
+
+  ingress:
+    # -- ingressClassName for the k8s ingress
+    className: "nginx"
+    # -- enable ingress for element
+    enabled: true
+    tls:
+      # -- enable a fairly stock ingress, open a github issue if you need more features
+      enabled: true
+      # -- name for the element tls secret for ingress
+      secretName: "element-tls"
+    # -- the hostname to use for element
+    host: element.chart-example.local
+    annotations:
+      # This annotation is required for the Nginx ingress provider. You can
+      # remove it if you use a different ingress provider
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        proxy_intercept_errors off;
+      # -- required for TLS certs issued by cert-manager
+      cert-manager.io/cluster-issuer: letsencrypt-staging
+
+  # Organization/enterprise branding
+  branding:
+    # -- brand shown in email notifications
+    brand: "Element"
+    # -- Background of login splash screen
+    welcomeBackgroundUrl: ""
+    # -- Logo shown at top of login screen
+    authHeaderLogoUrl: ""
+    # -- Array of links to show at the bottom of the login screen
+    authFooterLinks: []
+    #  - text:
+    #    url:
+
+  # Element integrations configuration
+  integrations:
+    # -- enables the Integrations menu, including:
+    #    widgets, bots, and other plugins to Element
+    enabled: true
+    # -- UI to load when a user selects the Integrations button at the top-right
+    #    of a room
+    ui: "https://scalar.vector.im/"
+    # -- API for the integration server
+    api: "https://scalar.vector.im/api"
+    # -- Array of API paths providing widgets
+    widgets:
+      - "https://scalar.vector.im/_matrix/integrations/v1"
+      - "https://scalar.vector.im/api"
+      - "https://scalar-staging.vector.im/_matrix/integrations/v1"
+      - "https://scalar-staging.vector.im/api"
+      - "https://scalar-staging.element.im/scalar/api"
+
+  # -- Experimental features in Element, see:
+  # https://github.com/vector-im/element-web/blob/develop/docs/labs.md
+  labs:
+    - feature_new_spinner
+    - feature_pinning
+    - feature_custom_status
+    - feature_custom_tags
+    - feature_state_counters
+    - feature_many_integration_managers
+    - feature_mjolnir
+    - feature_dm_verification
+    - feature_bridge_state
+    - feature_presence_in_room_list
+    - feature_custom_themes
+
+  # -- Servers to show in the Explore menu (the current server is always shown)
+  roomDirectoryServers:
+    - matrix.org
+
+  # -- Set to the user ID (@username:domain.tld) of a bot to invite all new
+  # users to a DM with the bot upon registration
+  welcomeUserId: ""
+
+  # -- Prefix before permalinks generated when users share links to rooms,
+  # users, or messages. If running an unfederated Synapse, set the below to the
+  # URL of your Element instance.
+  permalinkPrefix: "https://matrix.to"
+
+  # Element Kubernetes resource settings
+  image:
+    # -- registry and repository to use for element docker image
+    repository: "vectorim/element-web"
+    # -- tag to use for element docker image
+    tag: v1.11.66
+    # -- pullPolicy to use for element image, set to Always if using latest tag
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+  replicaCount: 1
+  resources: {}
+  probes:
+    readiness: {}
+    startup: {}
+    liveness: {}
+
+  # -- Element specific labels
+  labels:
+    component: element
+
+# Settings for Coturn TURN relay, used for routing voice calls
+coturn:
+  # -- Set to false to disable the included deployment of Coturn
+  enabled: false
+
+  certificate:
+    # -- set to true to generate a TLS certificate for encrypted comms
+    enabled: false
+    # -- hostname for TLS cert
+    host: turn.example.com
+    # -- cert-manager cert Issuer or ClusterIssuer to use
+    issuerName: "letsencrypt-staging"
+
+  # -- URIs of the Coturn servers. If deploying Coturn with this chart, include
+  # the public IPs of each node in your cluster (or a DNS round-robin hostname)
+  # You can also include an external Coturn instance if you'd prefer
+  uris: []
+  #  - "turn:turn.example.com?transport=udp"
+
+  # -- Whether to allow guests to use the TURN server
+  allowGuests: true
+
+  # -- shared secert for comms b/w Synapse/Coturn. autogenerated if not provided
+  sharedSecret: ""
+  # -- Optional: name of an existingSecret with key for sharedSecret
+  existingSecret: ""
+  # -- key in existing secret with sharedSecret value. Required if
+  # coturn.enabled=true and existingSecret not ""
+  secretKey: "coturnSharedSecret"
+
+  # -- UDP port range for TURN connections
+  ports:
+    from: 3478
+    to: 3478
+
+  service:
+    # The type of service to deploy for routing Coturn traffic. Options:
+    #   ClusterIP: Recommended for DaemonSet configurations. This will create a
+    #              standard Kubernetes service for Coturn within the cluster.
+    #              No external networking will be configured as the DaemonSet
+    #              will handle binding to each Node's host networking
+    #
+    #   NodePort:  Recommended for Deployment configurations. This will open
+    #              TURN ports on every node and route traffic on these ports to
+    #              the Coturn pods. You will need to make sure your cloud
+    #              provider supports the cluster config setting,
+    #              apiserver.service-node-port-range, as this range must contain
+    #              the ports defined above for the service to be created.
+    type: ClusterIP
+    # -- I don't actually know what this is 🤔 open a PR if you know
+    externalTrafficPolicy: Local
+
+  image:
+    # -- container registry and repo for coturn docker image
+    repository: "coturn/coturn"
+    # -- docker tag for coturn server
+    tag: ""
+    # -- image pull policy, set to Always if using image.tag: latest
+    pullPolicy: IfNotPresent
+
+  # -- ref: kubernetes.io/docs/concepts/configuration/manage-resources-containers
+  resources: {}
+
+  # -- Coturn specific labels
+  labels:
+    component: coturn
+
+  externalDatabase:
+    # -- enables the use of postgresql instead of the default sqlite for coturn
+    # to use the bundled subchart, enable this, and postgresql.enable
+    enabled: false
+    # -- Currently only postgresql is supported. mysql coming soon
+    type: "postgresql"
+    # -- required if externalDatabase.enabled: true and postgresql.enabled:false
+    hostname: ""
+    # -- username for database, ignored if existingSecret is passed in
+    username: ""
+    # -- password for database, ignored if existingSecret is passed in
+    password: ""
+    # -- database to create, ignored if existingSecret is passed in
+    database: ""
+    # -- name of existing Secret to use for postgresql credentials
+    existingSecret: ""
+    # Names of the keys in existing secret to use for PostgreSQL credentials
+    secretKeys:
+      # -- key in existing Secret to use for the db user
+      username: ""
+      # -- key in existing Secret to use for db user's password
+      password: ""
+      # -- key in existing Secret to use for the database name
+      database: ""
+      # -- key in existing Secret to use for the db's hostname
+      hostname: ""
+
+  # PostgreSQL chart configuration for coturn
+  # see: https://github.com/bitnami/charts/tree/main/bitnami/postgresql
+  postgresql:
+    # -- enables bitnami postgresql subchart, you can disable to use external db
+    enabled: false
+    global:
+      postgresql:
+        # -- global.postgresql.auth overrides postgresql.auth
+        auth:
+          # -- username for database, ignored if existingSecret is passed in
+          username: "coturn"
+          # -- password for db, autogenerated if empty & existingSecret empty
+          password: ""
+          # -- database to create, ignored if existingSecret is passed in
+          database: "coturn"
+          # -- name of existing Secret to use for postgresql credentials
+          existingSecret: ""
+          # Names of the keys in existing secret to use for PostgreSQL creds
+          # all of these are ignored if existingSecret is empty
+          secretKeys:
+            # -- key in existingSecret for database to create
+            hostname: "hostname"
+            # -- key in existingSecret for database to create
+            database: "database"
+            # -- key in exsiting Secret to use for the coturn user
+            username: "username"
+            # -- key in existing Secret to use for postgres admin user's password
+            adminPasswordKey: "postgresPassword"
+            # -- key in existing Secret to use for coturn user's password
+            userPasswordKey: "password"
+
+  persistence:
+    # -- existing PVC to use instead of creating one on the fly
+    existingClaim: ""
+    # -- annotations for the PVC, ignored if persistence.existingClaim passed in
+    annotations: {}
+    # -- access mode for the PVC, ignored if persistence.existingClaim passed in
+    accessMode: "ReadWriteOnce"
+    # -- size of the PVC, ignored if persistence.existingClaim passed in
+    size: "1Mi"
+    # -- storageClass for the PVC, ignored if persistence.existingClaim passed in
+    storageClass: ""
+
+  # most coturn config parameters that you really need
+  coturn:
+    # --  hostname for the coturn server realm
+    realm: "turn.example.com"
+
+    auth:
+      # -- username for the main user of the turn server
+      username: "coturn"
+      # -- password for the main user of the turn server
+      password: ""
+      # -- existing secret with keys username/password for coturn
+      existingSecret: ""
+      secretKeys:
+        # -- key in existing secret for turn server user
+        username: username
+        # -- key in existing secret for turn server user's password
+        password: password
+
+    # -- coturn's listening IP address
+    listeningIP: "0.0.0.0"
+
+    ports:
+      # -- minimum ephemeral port for coturn
+      min: 49152
+      # -- maximum ephemeral port for coturn
+      max: 65535
+      # -- insecure listening port
+      listening: 3478
+      # -- secure listening port
+      tlsListening: 5349
+
+    # -- set the logfile. Defaults to stdout for use with kubectl logs
+    logFile: "stdout"
+
+    # -- extra configuration for turnserver.conf
+    extraTurnserverConfiguration: |
+      verbose
+
+  # k8s pod security context:
+  # https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+  securityContext:
+    # -- for all Containers in the Pod, all processes run w/ this userID
+    runAsUser: 1000
+    # -- for all Containers in the Pod, all processes run w/ this GroupID
+    runAsGroup: 1000
+    # -- all processes of the container are also part of the supplementary groupID
+    fsGroup: 1000
+    # -- allow modificatin to root filesystem
+    readOnlyRootFilesystem: false
+    # -- allow priviledged access
+    allowPrivilegeEscalation: true
+    capabilities:
+      # -- linux cabilities to allow for the coturn k8s pod
+      add: ["NET_BIND_SERVICE"]
+      # -- linux cabilities to disallow for the coturn k8s pod
+      drop: ["ALL"]
+
+
+# Settings for email notifications
+mail:
+  # -- disabled all email notifications by default. NOTE: If enabled, either
+  # enable the Exim relay or configure an external mail server below
+  enabled: false
+  # -- Name and email address for outgoing mail
+  from: "Matrix <matrix@example.com>"
+  # -- Optional: Element instance URL.
+  # If ingress is enabled, this is unnecessary, else if this is empty, emails
+  # will contain a link to https://app.element.io
+  elementUrl: ""
+
+  # Exim relay
+  relay:
+    # -- whether to enable exim relay or not
+    enabled: true
+    image:
+      repository: "devture/exim-relay"
+      tag: "4.95-r0"
+      pullPolicy: IfNotPresent
+    service:
+      type: ClusterIP
+      port: 25
+    replicaCount: 1
+    resources: {}
+    probes:
+      readiness: {}
+      startup: {}
+      liveness: {}
+    # Mail relay specific labels
+    labels:
+      component: mail
+
+  # External SMTP (mail) server
+  external:
+    # -- External mail server hostname - ignored if existingSecret not ""
+    host: ""
+    # -- External mail server port INSECURE: 25, SSL: 465, STARTTLS: 587
+    port: 587
+    # -- External mail server username - ignored if existingSecret not ""
+    username: ""
+    # -- External mail server password - ignored if existingSecret not ""
+    password: ""
+    # -- require TLS, I think
+    requireTransportSecurity: true
+    # -- use an existing k8s Secret for your host, username, and password
+    existingSecret: ""
+    # -- secret keys to use for your existing SMTP server
+    secretKeys:
+      host: "host"
+      username: "username"
+      password: "password"
+
+bridges:
+  irc:
+    # -- Set to true to enable the IRC bridge
+    enabled: false
+    # -- Whether to enable presence (online/offline indicators). If presence is
+    # disabled for the homeserver (above), it should be disabled here too
+    presence: false
+    # -- Postgres database to store IRC bridge data in, this db will be created
+    # if postgresql.enabled: true, otherwise you must create it manually
+    database: "matrix_irc"
+    databaseSslVerify: true
+
+    # Object of IRC servers to connect to. Ref: https://tinyurl.com/mr2ee5ts
+    servers:
+      chat.freenode.net:
+        # -- A human-readable short name.
+        name: "Freenode"
+        # -- The port to connect to. Optional.
+        port: 6697
+        # -- Whether to use SSL or not. Default: false.
+        ssl: true
+
+    data:
+      # -- Size of the data PVC to allocate
+      capacity: 1Mi
+
+    image:
+      repository: "matrixdotorg/matrix-appservice-irc"
+      tag: "release-1.0.1"
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    resources: {}
+    service:
+      type: ClusterIP
+      port: 9006
+
+  whatsapp:
+    # -- Set to true to enable the WhatsApp bridge
+    enabled: false
+
+    bot:
+      # -- Username of the WhatsApp bridge bot
+      username: "whatsappbot"
+      # -- display name of the WhatsApp bridge bot
+      displayName: "WhatsApp bridge bot"
+      # -- avatar of the WhatsApp bridge bot
+      avatar: "mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
+
+    # -- Permissions for using the bridge.
+    # Permitted values:
+    # relaybot - Talk through the relaybot (if enabled), no access otherwise
+    #     user - Access to use the bridge to chat with a WhatsApp account.
+    #    admin - User level and some additional administration tools
+    # Permitted keys:
+    #        * - All Matrix users
+    #   domain - All users on that homeserver
+    #     mxid - Specific user
+    permissions:
+      "*": relaybot
+
+    # WhatsApp server connection settings
+    connection:
+      # -- WhatsApp server connection timeout (seconds)
+      timeout: 20
+      # -- Number of QR codes to store, which multiplies the connection timeout
+      qrRegenCount: 2
+      # -- Maximum number of connection attempts before failing
+      maxAttempts: 3
+      # -- Retry delay. Negative numbers are exponential backoff:
+      # -connection_retry_delay + 1 + 2^attempts
+      retryDelay: -1
+      # -- Whether or not to notify the user when attempting to reconnect. Set
+      # to false to only report when maxAttempts has been reached
+      reportRetry: true
+
+    # -- Send notifications for incoming calls
+    callNotices: true
+
+    users:
+      # -- Username for WhatsApp users. Evaluated as a template where {{.}} is
+      # replaced with the phone number of the WhatsApp user
+      username: "whatsapp_{{.}}"
+
+      # -- Display name for WhatsApp users
+      # Evaluated as a template, with variables:
+      # {{.Notify}} - nickname set by the WhatsApp user
+      # {{.Jid}}    - phone number (international format)
+      # following vars are available, but cause issue on multi-user instances:
+      # {{.Name}}   - display name from contact list
+      # {{.Short}}  - short display name from contact list
+      displayName: "{{if .Notify}}{{.Notify}}{{else}}{{.Jid}}{{end}} (WA)"
+
+    # -- Display name for communities. A community will be automatically
+    # generated for each user using the bridge, and can be used to group
+    # WhatsApp chats together. Evaluated as a template, with variables:
+    # {{.Localpart}} - MXID localpart
+    # {{.Server}}    - MXID server part of the user.
+    communityName: "whatsapp_{{.Localpart}}={{.Server}}"
+
+    relaybot:
+      # -- Set to true to enable the relaybot and management room
+      enabled: false
+
+      # -- Management room for the relay bot where status notifs are posted
+      management: "!foo:example.com"
+
+      # Users to invite to the management room automatically
+      invites: []
+
+    data:
+      # -- Size of the PVC to allocate for the SQLite database
+      capacity: 512Mi
+      # -- Storage class (optional)
+      storageClass: ""
+
+    image:
+      repository: "dock.mau.dev/tulir/mautrix-whatsapp"
+      tag: "latest"
+      pullPolicy: Always
+    replicaCount: 1
+    resources: {}
+    service:
+      type: ClusterIP
+      port: 29318
+
+  discord:
+    # -- Set to true to enable the Discord bridge
+    enabled: false
+
+    # Discord bot authentication.
+    # ref: github.com/Half-Shot/matrix-appservice-discord#setting-up-discord
+    auth:
+      # -- Discord bot clientID for authentication
+      clientId: ""
+      # -- Discord bot token for authentication
+      botToken: ""
+
+    # The name of bridged rooms
+    # Available vars:
+    #   :guild - guild/server name
+    #   :name  - channel name prefixed with #
+    channelName: "[Discord] :guild :name"
+
+    users:
+      # -- Nickname of bridged Discord users
+      # Available vars:
+      #   :nick     - user's Discord nickname
+      #   :username - user's Discord username
+      #   :tag      - user's 4 digit Discord tag
+      #   :id       - user's Discord developer ID (long)
+      nickname: ":nick"
+      # -- Username of bridged Discord users
+      # Available vars:
+      #   :username - user's Discord username
+      #   :tag      - user's 4 digit Discord tag
+      #   :id       - user's Discord developer ID (long)
+      username: ":username#:tag"
+
+    # -- Set to false to disable online/offline presence for Discord users
+    presence: true
+
+    # -- Set to false to disable typing notifications (only for Discord to Matrix)
+    typingNotifications: true
+
+    # -- Set to true to allow users to bridge rooms themselves using !discord cmds
+    # More info: https://t2bot.io/discord
+    selfService: false
+
+    # -- Discord bot read receipt, which advances whenever the bot bridges a msg
+    readReceipt: true
+
+    # -- Discord notifications when a user joins/leaves the Matrix channel
+    joinLeaveEvents: true
+
+    # -- Default visibility of bridged rooms (public/private)
+    defaultVisibility: public
+
+    data:
+      # -- Size of the PVC to allocate for the SQLite database
+      capacity: 512Mi
+      # -- Storage class (optional)
+      storageClass: ""
+
+    image:
+      # -- docker image repo for discord bridge
+      repository: "halfshot/matrix-appservice-discord"
+      # -- tag for discord brdige docker image
+      tag: "latest"
+      pullPolicy: Always
+    replicaCount: 1
+    resources: {}
+    service:
+      type: ClusterIP
+      port: 9005
+  # -- Recommended to leave this disabled to allow bridges to be scheduled on
+  # separate nodes. Set this to true to reduce latency between the homeserver
+  # and bridges, or if your cloud provider does not allow the ReadWriteMany
+  # access mode (see below)
+  affinity: false
+  volume:
+    # -- Capacity of the shared volume for storing bridge/appservice
+    # registration files. Note: 1Mi should be enough but some cloud providers
+    # may set a minimum PVC size of 1Gi, adjust as necessary
+    capacity: 1Mi
+    # -- Storage class (optional)
+    storageClass: ""
+    # -- Access mode of the shared volume. ReadWriteMany is recommended to allow
+    # bridges to be scheduled on separate nodes. Some cloud providers may not
+    # allow the ReadWriteMany access mode. In that case, change this to
+    # ReadWriteOnce AND set bridges.affinity (above) to true
+    accessMode: ReadWriteMany
+    # -- name of an existing persistent volume claim to use for bridges
+    existingClaim: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+networkPolicies:
+  # -- whether to enable kubernetes network policies or not
+  enabled: true
