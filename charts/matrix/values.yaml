@@ -439,9 +439,13 @@ postgresql:
   # If postgresql.enabled is set to true, externalDatabase.enabled must be set to false
   # else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false
   enabled: true
+  persistence:
+    enabled: false
+  postgresqlDatabase: G2
+  postgresqlPassword: postgres
   volumePermissions:
     # -- Enable init container that changes the owner and group of the PVC
-    enabled: true
+    enabled: false
   global:
     postgresql:
       # global.postgresql.auth overrides postgresql.auth
@@ -469,25 +473,15 @@ postgresql:
           userPasswordKey: password
           # -- key in existingSecret with the admin postgresql password
           adminPasswordKey: postgresPassword
-      persistence:
-        enabled: false
-        volumeName: "data"
-        existingClaim: ""
-        mountPath: /tmp/bitnami/postgresql
-        storageClass: "local-path"
-        accessModes:
-          - ReadWriteOnce
-        size: 8Gi
-        annotations: {}
 
   # primary database node config
   primary:
     # -- persistent volume claim configuration for postgresql to persist data
-    persistence:
-      # -- Enable PostgreSQL Primary data persistence using PVC
-      enabled: false
-      # -- size of postgresql volume claim
-      size: 8Gi
+    #persistence:
+    #  # -- Enable PostgreSQL Primary data persistence using PVC
+    #  enabled: false
+    #  # -- size of postgresql volume claim
+    #  size: 8Gi
 
     # -- run the scripts in templates/postgresql/initdb-configmap.yaml
     # If using an external Postgres server, make sure to configure the database
