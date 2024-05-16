@@ -314,8 +314,6 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | postgresql.global.postgresql.auth.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix to connect to db |
 | postgresql.global.postgresql.auth.username | string | `"matrix"` | username of matrix postgres user |
 | postgresql.persistence.enabled | bool | `false` |  |
-| postgresql.postgresqlDatabase | string | `"G2"` |  |
-| postgresql.postgresqlPassword | string | `"postgres"` |  |
 | postgresql.primary.initdb | object | `{"scriptsConfigMap":"{{ .Release.Name }}-postgresql-initdb"}` | run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/matrix-org/synapse/blob/master/docs/postgres.md |
 | postgresql.primary.podSecurityContext.enabled | bool | `true` |  |
 | postgresql.primary.podSecurityContext.fsGroup | int | `1000` |  |
