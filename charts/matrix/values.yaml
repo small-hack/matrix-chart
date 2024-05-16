@@ -478,10 +478,10 @@ postgresql:
   primary:
     # -- persistent volume claim configuration for postgresql to persist data
     persistence:
-     # -- Enable PostgreSQL Primary data persistence using PVC
-     enabled: false
-     # -- size of postgresql volume claim
-     size: 8Gi
+      # -- Enable PostgreSQL Primary data persistence using PVC
+      enabled: false
+      # -- size of postgresql volume claim
+      size: 8Gi
 
     # -- run the scripts in templates/postgresql/initdb-configmap.yaml
     # If using an external Postgres server, make sure to configure the database
