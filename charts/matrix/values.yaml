@@ -469,6 +469,16 @@ postgresql:
           userPasswordKey: password
           # -- key in existingSecret with the admin postgresql password
           adminPasswordKey: postgresPassword
+      persistence:
+        enabled: false
+        volumeName: "data"
+        existingClaim: ""
+        mountPath: /tmp/bitnami/postgresql
+        storageClass: "local-path"
+        accessModes:
+          - ReadWriteOnce
+        size: 8Gi
+        annotations: {}
 
   # primary database node config
   primary:
