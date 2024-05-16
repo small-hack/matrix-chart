@@ -47,6 +47,11 @@ jobs:
         with:
           version: 'latest'
 
+      - name: create bitnami storage dir
+        run: |
+            sudo mkdir -p /bitnami/postgresql/data
+        shell: bash
+
       - name: Run chart-testing (install)
         id: install
         if: steps.list-changed.outputs.changed == 'true'
