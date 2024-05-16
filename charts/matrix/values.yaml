@@ -441,8 +441,6 @@ postgresql:
   enabled: true
   persistence:
     enabled: false
-  postgresqlDatabase: G2
-  postgresqlPassword: postgres
   volumePermissions:
     # -- Enable init container that changes the owner and group of the PVC
     enabled: true
