@@ -445,7 +445,7 @@ postgresql:
   postgresqlPassword: postgres
   volumePermissions:
     # -- Enable init container that changes the owner and group of the PVC
-    enabled: false
+    enabled: true
   global:
     postgresql:
       # global.postgresql.auth overrides postgresql.auth
@@ -477,11 +477,11 @@ postgresql:
   # primary database node config
   primary:
     # -- persistent volume claim configuration for postgresql to persist data
-    # persistence:
-    #  # -- Enable PostgreSQL Primary data persistence using PVC
-    #  enabled: false
-    #  # -- size of postgresql volume claim
-    #  size: 8Gi
+    persistence:
+     # -- Enable PostgreSQL Primary data persistence using PVC
+     enabled: false
+     # -- size of postgresql volume claim
+     size: 8Gi
 
     # -- run the scripts in templates/postgresql/initdb-configmap.yaml
     # If using an external Postgres server, make sure to configure the database
@@ -493,20 +493,6 @@ postgresql:
       enabled: true
       runAsUser: 1000
       fsGroup: 1000
-
-    networkPolicy:
-      enabled: false
-      ## The Policy model to apply. When set to false, only pods with the correct
-      ## server label will have network access to the ports server is listening
-      ## on. When true, server will accept connections from any source
-      ## (with the correct destination port).
-      allowExternal: true
-      allowExternalEgress: true
-      extraIngress:
-        - from:
-            - podSelector:
-                matchLabels:
-                  component: synapse
 
 # Synapse Kubernetes resource settings
 synapse:
