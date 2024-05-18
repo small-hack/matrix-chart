@@ -5,5 +5,8 @@ dependencies:
 - name: coturn
   repository: https://small-hack.github.io/coturn-chart
   version: 5.2.0
-digest: sha256:8a175b51faccae0bd188df5fcc17d482c9c5bb00a31734dd0e428b0f94d8cfda
-generated: "2024-05-07T08:07:44.24269523+02:00"
+- name: matrix-sliding-sync
+  repository: https://small-hack.github.io/matrix-sliding-sync-chart
+  version: 0.2.1
+digest: sha256:5d422ac69274bd8346209a061b64fc9d5186d7c9f98e91265a9cefca35952a59
+generated: "2024-05-18T13:20:24.880307+02:00"
