@@ -31,4 +31,4 @@ dependencies:
   - name: matrix-sliding-sync
     version: 0.2.1
     repository: https://small-hack.github.io/matrix-sliding-sync-chart
-    condition: matrix-sliding-sync.enabled
+    condition: slidingSync.enabled

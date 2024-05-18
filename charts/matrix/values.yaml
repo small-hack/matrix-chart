@@ -595,7 +595,7 @@ synapse:
   extraVolumeMounts: []
 
 # values for https://github.com/small-hack/matrix-sliding-sync-chart
-matrix-sliding-sync:
+slidingSync:
   enabled: false
   postgresql:
     # -- Whether to deploy the Bitnami Postgresql sub chart
@@ -704,7 +704,7 @@ matrix-sliding-sync:
       username: ""
       # -- SYNCV3_OTLP_PASSWORD - Default: unset. The OTLP password for Basic auth. If unset, does not send an Authorization header.
       password: ""
-      existingSecret:
+      existingSecret: ""
 
     # -- SYNCV3_SENTRY_DSN - Default: unset. The Sentry DSN to report events to e.g https://sliding-sync@sentry.example.com/123 - if unset does not send sentry events.
     sentryDsn: ""
