@@ -9,9 +9,18 @@ data:
   config.json: |
     {
       "default_server_config": {
+        {{- if .Values.matrix-sliding-sync.enabled }}
+        "m.homeserver": {
+          "base_url": {{ include "matrix.baseUrl" . | quote }}
+        },
+        "org.matrix.msc3575.proxy": {
+          "url": "{{ .Values.matrix-sliding-sync.syncv3.server }}"
+        }
+        {{- else -}}
         "m.homeserver": {
           "base_url": {{ include "matrix.baseUrl" . | quote }}
         }
+        {{- end -}}
       },
       "brand": {{ .Values.element.branding.brand | quote }},
       "branding": {
