@@ -26,7 +26,7 @@ pid_file: /data/homeserver.pid
 #web_client_location: https://element.example.com/
 {{- if .Values.element.enabled }}
 web_client_location: "https://{{ .Values.element.ingress.host }}/"
-{{- end -}}
+{{- end }}
 
 # The public-facing base URL that clients use to access this HS
 # (not including _matrix/...). This is the same URL a user would
