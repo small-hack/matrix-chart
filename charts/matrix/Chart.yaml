@@ -8,7 +8,7 @@ sources:
 
 type: application
 
-version: 8.2.0
+version: 8.3.0
 
 # renovate: image=matrixdotorg/synapse
 appVersion: v1.107.0
@@ -27,3 +27,8 @@ dependencies:
     version: 5.2.0
     repository: https://small-hack.github.io/coturn-chart
     condition: coturn.enabled
+
+  - name: matrix-sliding-sync
+    version: 0.2.1
+    repository: https://small-hack.github.io/matrix-sliding-sync
+    condition: matrix-sliding-sync.enabled

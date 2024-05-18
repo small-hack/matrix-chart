@@ -34,6 +34,7 @@ helm install my-release-name matrix/matrix --values values.yaml
 - [Coturn TURN server subchart](https://github.com/small-hack/coturn-chart) for VoIP calls
 - Use [s3 to store stuff](https://github.com/matrix-org/synapse-s3-storage-provider/tree/main)
 - Use an existing Kubernetes Secret for an external mail server for email notifications
+- Recently added [matrix-sliding-sync-chart](https://github.com/small-hack/matrix-sliding-sync-chart) for using elementx (new element beta) which requires [matrix-org/sliding-sync](https://github.com/matrix-org/sliding-sync)
 
 #### Databases
 
