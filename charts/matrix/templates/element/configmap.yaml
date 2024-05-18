@@ -13,7 +13,7 @@ data:
           "base_url": {{ include "matrix.baseUrl" . | quote }}
         },
         "org.matrix.msc3575.proxy": {
-          "url": {{ .Values.slidingSync.syncv3.server }}
+          "url": {{ include "matrix.baseUrl" . | quote }}
         }
       },
       "brand": {{ .Values.element.branding.brand | quote }},
