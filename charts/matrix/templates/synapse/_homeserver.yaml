@@ -24,6 +24,9 @@ pid_file: /data/homeserver.pid
 # https://github.com/matrix-org/synapse#security-note
 #
 #web_client_location: https://element.example.com/
+{{- if .Values.element.enabled }}
+web_client_location: "https://{{ .Values.element.ingress.host }}/"
+{{- end -}}
 
 # The public-facing base URL that clients use to access this HS
 # (not including _matrix/...). This is the same URL a user would
@@ -48,14 +51,14 @@ use_presence: {{ .Values.matrix.presence }}
 # API, so this setting is of limited value if federation is enabled on
 # the server.
 #
-#require_auth_for_profile_requests: true
+require_auth_for_profile_requests: true
 
 # Uncomment to require a user to share a room with another user in order
 # to retrieve their profile information. Only checked on Client-Server
 # requests. Profile requests from other servers should be checked by the
 # requesting server. Defaults to 'false'.
 #
-#limit_profile_requests_to_users_who_share_rooms: true
+limit_profile_requests_to_users_who_share_rooms: true
 
 # If set to 'true', removes the need for authentication to access the server's
 # public rooms directory through the client API, meaning that anyone can
@@ -461,7 +464,7 @@ retention:
 # of the public Matrix network: only configure it to `1.3` if you have an
 # entirely private federation setup and you can ensure TLS 1.3 support.
 #
-#federation_client_minimum_tls_version: 1.2
+federation_client_minimum_tls_version: 1.2
 
 # Skip federation certificate verification on the following whitelist
 # of domains.
