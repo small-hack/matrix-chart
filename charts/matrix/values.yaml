@@ -496,7 +496,7 @@ postgresql:
       runAsUser: 1000
       fsGroup: 1000
 
-# Synapse Kubernetes resource settings
+# Synapse (home server that implements matrix) Kubernetes resource settings
 synapse:
   image:
     # -- image registry and repository to use for synapse
