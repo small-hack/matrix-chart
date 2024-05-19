@@ -29,6 +29,6 @@ dependencies:
     condition: coturn.enabled
 
   - name: matrix-sliding-sync
-    version: 0.2.1
+    version: 0.2.3
     repository: https://small-hack.github.io/matrix-sliding-sync-chart
     condition: slidingSync.enabled
