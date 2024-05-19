@@ -54,6 +54,67 @@ These features still need to be tested, but are technically baked into the chart
 - [matrix-org/matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) IRC bridge
 - [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge
 
+## Notes on using Matrix Sliding Sync
+
+To use [matrix sliding sync](https://github.com/matrix-org/sliding-sync), which is required for [element-x](https://element.io/labs/element-x), you'll need to ensure that requests to `.well-known/matrix/client` return the [correct json](https://github.com/matrix-org/sliding-sync/blob/main/README.md?plain=1#L51-L61). To do that, you'll want to pass in the following ingress annnotation show below:
+
+```yaml
+synapse:
+  enabled: true
+  ingress:
+    enabled: true
+    # -- hostname for your synapse server
+    host: matrix.example.com
+    # -- ingressClassName for the k8s ingress
+    className: "nginx"
+    tls:
+      enabled: true
+      secretName: "matrix-tls"
+    annotations:
+      # -- This annotation is required for the Nginx ingress provider. You can
+      # remove it if you use a different ingress provider
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        proxy_intercept_errors off;
+      # -- required for TLS certs issued by cert-manager
+      cert-manager.io/cluster-issuer: letsencrypt-staging
+      # an example for returning the correct json required for syncv3
+      # see more info here: https://github.com/matrix-org/sliding-sync/blob/693587ef7e1c47cd04a667332ef133146132a713/README.md?plain=1#L51-L61
+      nginx.ingress.kubernetes.io/server-snippet: |-
+        location = /.well-known/matrix/client {
+            return 200 '{"m.homeserver": {"base_url": "https://matrix.example.com"},"org.matrix.msc3575.proxy": {"url": "https://matrix.example.com"}}';
+        }
+
+# this enables https://github.com/matrix-org/sliding-sync
+slidingSync:
+  enabled: false
+  syncv3:
+    server: https://example.com
+
+  # note: you'll still have to actually fill out parameters
+  # under slidingSync.postgresql, but it is truncated here for brevity
+  # check out values.yaml for all possible slidingSync.postgresql values
+  postgresql:
+    enabled: true
+```
+
+After synapse is up, you should be able to verify it's returning correctly by doing:
+
+```console
+$ curl https://matrix.example.com/.well-known/matrix/client | jq
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   136  100   136    0     0   1818      0 --:--:-- --:--:-- --:--:--  1837
+{
+  "m.homeserver": {
+    "base_url": "https://matrix.example.com"
+  },
+  "org.matrix.msc3575.proxy": {
+    "url": "https://matrix.example.com"
+  }
+}
+
+```
+
 ## About and Status
 
 This is a fork of [Arkaniad/matrix-chart](https://github.com/Arkaniad/matrix-chart), which is a fork of [typokign/matrix-chart](https://github.com/typokign/matrix-chart). We recently transferred this chart from [@jessebot](https://github.com/jessebot) to the small-hack org to help with maintanence longterm :) Working on full stability, but always happy to receive GitHub Issues or PRs 💙 Please star the repo if you like our work <3
