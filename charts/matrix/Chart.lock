@@ -8,5 +8,5 @@ dependencies:
 - name: matrix-sliding-sync
   repository: https://small-hack.github.io/matrix-sliding-sync-chart
   version: 0.2.1
-digest: sha256:5d422ac69274bd8346209a061b64fc9d5186d7c9f98e91265a9cefca35952a59
-generated: "2024-05-18T13:20:24.880307+02:00"
+digest: sha256:72edd9bddf00b328215c83b942039acc269683f801d17389b91bb7f343d345b2
+generated: "2024-05-19T17:05:41.533823+02:00"
