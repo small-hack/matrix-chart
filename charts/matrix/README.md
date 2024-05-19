@@ -21,7 +21,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | Repository | Name | Version |
 |------------|------|---------|
 | https://small-hack.github.io/coturn-chart | coturn | 5.2.0 |
-| https://small-hack.github.io/matrix-sliding-sync-chart | matrix-sliding-sync | 0.2.1 |
+| https://small-hack.github.io/matrix-sliding-sync-chart | matrix-sliding-sync | 0.2.3 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql | 15.1.4 |
 
 ## Values
