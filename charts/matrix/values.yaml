@@ -518,6 +518,7 @@ synapse:
 
   ingress:
     enabled: true
+    # -- hostname for your synapse server
     host: matrix.chart-example.local
     # -- ingressClassName for the k8s ingress
     className: "nginx"
@@ -531,6 +532,14 @@ synapse:
         proxy_intercept_errors off;
       # -- required for TLS certs issued by cert-manager
       cert-manager.io/cluster-issuer: letsencrypt-staging
+      # an example for returning the correct json required for syncv3
+      # please change matrix.chart-example.local to your domain
+      # see more info here: https://github.com/matrix-org/sliding-sync/blob/693587ef7e1c47cd04a667332ef133146132a713/README.md?plain=1#L51-L61
+      #
+      # nginx.ingress.kubernetes.io/server-snippet: |-
+      #   location = /.well-known/matrix/client {
+      #       return 200 '{"m.homeserver": {"base_url": "https://matrix.chart-example.local"},"org.matrix.msc3575.proxy": {"url": "https://matrix.chart-example.local"}}';
+      #   }
 
   replicaCount: 1
   resources: {}
