@@ -1157,7 +1157,8 @@ element:
   integrations:
     # -- enables the Integrations menu, including:
     #    widgets, bots, and other plugins to Element
-    enabled: true
+    #    disabled by default as this is for enterprise users
+    enabled: false
     # -- UI to load when a user selects the Integrations button at the top-right
     #    of a room
     ui: "https://scalar.vector.im/"
