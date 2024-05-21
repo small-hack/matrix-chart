@@ -168,6 +168,32 @@ spec:
                   key: {{ .Values.matrix.oidc.secretKeys.userinfo_endpoint }}
             {{- end }}
             {{- end }}
+            {{- if and .Values.matrix.experimental_features.msc3861.enabled .Values.matrix.experimental_features.msc3861.existingSecret }}
+            {{- if .Values.matrix.experiemental_features.msc3861.secretKeys.issuer }}
+            - name: MSC3861_ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.matrix.experiemental_features.msc3861.existingSecret }}
+                  key: {{ .Values.matrix.experiemental_features.msc3861.secretKeys.issuer }}
+            {{- end }}
+            - name: MSC3861_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.matrix.experiemental_features.msc3861.existingSecret }}
+                  key: {{ .Values.matrix.experiemental_features.msc3861.secretKeys.client_id }}
+            - name: MSC3861_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.matrix.experiemental_features.msc3861.existingSecret }}
+                  key: {{ .Values.matrix.experiemental_features.msc3861.secretKeys.client_secret }}
+            {{- if .Values.matrix.experiemental_features.msc3861.secretKeys.account_management_url }}
+            - name: MSC3861_ACCOUNT_MANAGEMENT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.matrix.experiemental_features.msc3861.existingSecret }}
+                  key: {{ .Values.matrix.experimental_features.msc3861.secretKeys.account_management_url }}
+            {{- end }}
+            {{- end }}
             {{- if and .Values.mail.enabled .Values.mail.external.existingSecret }}
             - name: SMTP_HOST
               valueFrom:
@@ -222,6 +248,14 @@ spec:
               {{- end }}
               {{- if .Values.matrix.oidc.secretKeys.userinfo_endpoint }}
               yq eval -i '.oidc_providers[0].userinfo_endpoint = env(USERINFO_ENDPOINT)' /data/homeserver.yaml && \
+              {{- end }}
+              {{- end }}
+              {{- if and .Values.matrix.experiemental_features.msc3861.enabled .Values.matrix.experiemental_features.msc3861.existingSecret }}
+              yq eval -i '.experiemental_features.msc3861_providers[0].issuer = env(MSC3861_ISSUER)' /data/homeserver.yaml && \
+              yq eval -i '.experiemental_features.msc3861_providers[0].client_id = env(MSC3861_CLIENT_ID)' /data/homeserver.yaml && \
+              yq eval -i '.experiemental_features.msc3861_providers[0].client_secret = env(MSC3861_CLIENT_SECRET)' /data/homeserver.yaml && \
+              {{- if .Values.matrix.experimental_features.msc3861.secretKeys.account_management_url }}
+              yq eval -i '.experiemental_features.msc3861_providers[0].account_management_url = env(MSC3861_ACCOUNT_MANAGEMENT_URL)' /data/homeserver.yaml && \
               {{- end }}
               {{- end }}
               {{- if .Values.s3.enabled }}

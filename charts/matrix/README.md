@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 8.3.0](https://img.shields.io/badge/Version-8.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.107.0](https://img.shields.io/badge/AppVersion-v1.107.0-informational?style=flat-square)
+![Version: 8.4.0](https://img.shields.io/badge/Version-8.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.107.0](https://img.shields.io/badge/AppVersion-v1.107.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -176,7 +176,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | element.ingress.tls.enabled | bool | `true` | enable a fairly stock ingress, open a github issue if you need more features |
 | element.ingress.tls.secretName | string | `"element-tls"` | name for the element tls secret for ingress |
 | element.integrations.api | string | `"https://scalar.vector.im/api"` | API for the integration server |
-| element.integrations.enabled | bool | `true` | enables the Integrations menu, including:    widgets, bots, and other plugins to Element |
+| element.integrations.enabled | bool | `false` | enables the Integrations menu, including:    widgets, bots, and other plugins to Element    disabled by default as this is for enterprise users |
 | element.integrations.ui | string | `"https://scalar.vector.im/"` | UI to load when a user selects the Integrations button at the top-right    of a room |
 | element.integrations.widgets | list | `["https://scalar.vector.im/_matrix/integrations/v1","https://scalar.vector.im/api","https://scalar-staging.vector.im/_matrix/integrations/v1","https://scalar-staging.vector.im/api","https://scalar-staging.element.im/scalar/api"]` | Array of API paths providing widgets |
 | element.labels | object | `{"component":"element"}` | Element specific labels |
@@ -244,6 +244,10 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.experimental_features.msc3861.enabled | bool | `false` | experimental_feature msc3861 - enable this if you want to use the matrix authentication service Likely needed if using OIDC on synapse and you want to allow usage of Element-X (the beta of element) See: [Matrix authentication service home server docs](https://matrix-org.github.io/matrix-authentication-service/setup/homeserver.html#configure-the-homeserver-to-delegate-authentication-to-the-service), [full matrix authentication service docs](https://matrix-org.github.io/matrix-authentication-service/index.html), and [issue#1915](https://github.com/element-hq/element-meta/issues/1915#issuecomment-2119297748) where this is being discussed |
 | matrix.experimental_features.msc3861.existingSecret | string | `""` | use an existing secret for all msc3861 (matrix authentication service) related values if set, all other msc3861 values are ignored (issuer, client_id, client_auth_method, client_secret, admin_token, account_management_url) |
 | matrix.experimental_features.msc3861.issuer | string | `"http://localhost:8080/"` | Synapse will call `{issuer}/.well-known/openid-configuration` to get the OIDC configuration |
+| matrix.experimental_features.msc3861.secretKeys.account_management_url | string | `""` | secret key to use in existing secret for masc3861 account_management_url |
+| matrix.experimental_features.msc3861.secretKeys.client_id | string | `""` | secret key to use in existing secret for masc3861 client id |
+| matrix.experimental_features.msc3861.secretKeys.client_secret | string | `""` | secret key to use in existing secret for masc3861 client secret |
+| matrix.experimental_features.msc3861.secretKeys.issuer | string | `""` | secret key to use in existing secret for masc3861 issuer |
 | matrix.federation.allowPublicRooms | bool | `true` | Allow members of other homeservers to fetch *public* rooms |
 | matrix.federation.blacklist | list | `["127.0.0.0/8","10.0.0.0/8","172.16.0.0/12","192.168.0.0/16","100.64.0.0/10","169.254.0.0/16","::1/128","fe80::/64","fc00::/7"]` | IP addresses to blacklist federation requests to |
 | matrix.federation.enabled | bool | `true` | Set to false to disable federation and run an isolated homeserver |
