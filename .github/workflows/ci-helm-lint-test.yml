@@ -26,6 +26,7 @@ jobs:
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo add coturn https://small-hack.github.io/coturn-chart
           helm repo add matrix-sliding-sync https://small-hack.github.io/matrix-sliding-sync-chart
+          helm repo add matrix-authentication-service https://small-hack.github.io/matrix-authentication-service-chart
 
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.6.1
