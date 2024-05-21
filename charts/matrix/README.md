@@ -245,6 +245,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.experimental_features.msc3861.existingSecret | string | `""` | use an existing secret for all msc3861 (matrix authentication service) related values if set, all other msc3861 values are ignored (issuer, client_id, client_auth_method, client_secret, admin_token, account_management_url) |
 | matrix.experimental_features.msc3861.issuer | string | `"http://localhost:8080/"` | Synapse will call `{issuer}/.well-known/openid-configuration` to get the OIDC configuration |
 | matrix.experimental_features.msc3861.secretKeys.account_management_url | string | `""` | secret key to use in existing secret for masc3861 account_management_url |
+| matrix.experimental_features.msc3861.secretKeys.admin_token | string | `""` | secret key to use in existing secret for masc3861 admin_token |
 | matrix.experimental_features.msc3861.secretKeys.client_id | string | `""` | secret key to use in existing secret for masc3861 client id |
 | matrix.experimental_features.msc3861.secretKeys.client_secret | string | `""` | secret key to use in existing secret for masc3861 client secret |
 | matrix.experimental_features.msc3861.secretKeys.issuer | string | `""` | secret key to use in existing secret for masc3861 issuer |

@@ -186,6 +186,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.matrix.experiemental_features.msc3861.existingSecret }}
                   key: {{ .Values.matrix.experiemental_features.msc3861.secretKeys.client_secret }}
+            - name: MSC3861_ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.matrix.experiemental_features.msc3861.existingSecret }}
+                  key: {{ .Values.matrix.experiemental_features.msc3861.secretKeys.admin_token }}
             {{- if .Values.matrix.experiemental_features.msc3861.secretKeys.account_management_url }}
             - name: MSC3861_ACCOUNT_MANAGEMENT_URL
               valueFrom:
@@ -254,6 +259,7 @@ spec:
               yq eval -i '.experiemental_features.msc3861_providers[0].issuer = env(MSC3861_ISSUER)' /data/homeserver.yaml && \
               yq eval -i '.experiemental_features.msc3861_providers[0].client_id = env(MSC3861_CLIENT_ID)' /data/homeserver.yaml && \
               yq eval -i '.experiemental_features.msc3861_providers[0].client_secret = env(MSC3861_CLIENT_SECRET)' /data/homeserver.yaml && \
+              yq eval -i '.experiemental_features.msc3861_providers[0].admin_token = env(MSC3861_ADMIN_TOKEN)' /data/homeserver.yaml && \
               {{- if .Values.matrix.experimental_features.msc3861.secretKeys.account_management_url }}
               yq eval -i '.experiemental_features.msc3861_providers[0].account_management_url = env(MSC3861_ACCOUNT_MANAGEMENT_URL)' /data/homeserver.yaml && \
               {{- end }}
