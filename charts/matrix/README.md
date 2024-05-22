@@ -242,13 +242,13 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.experimental_features.msc3861.client_id | string | `"0000000000000000000SYNAPSE"` | Matches the `client_id` in the auth service config |
 | matrix.experimental_features.msc3861.client_secret | string | `"SomeRandomSecret"` | Matches the `client_secret` in the auth service config |
 | matrix.experimental_features.msc3861.enabled | bool | `false` | experimental_feature msc3861 - enable this if you want to use the matrix authentication service Likely needed if using OIDC on synapse and you want to allow usage of Element-X (the beta of element) See: [Matrix authentication service home server docs](https://matrix-org.github.io/matrix-authentication-service/setup/homeserver.html#configure-the-homeserver-to-delegate-authentication-to-the-service), [full matrix authentication service docs](https://matrix-org.github.io/matrix-authentication-service/index.html), and [issue#1915](https://github.com/element-hq/element-meta/issues/1915#issuecomment-2119297748) where this is being discussed |
-| matrix.experimental_features.msc3861.existingSecret | string | `""` | use an existing secret for all msc3861 (matrix authentication service) related values if set, all other msc3861 values are ignored (issuer, client_id, client_auth_method, client_secret, admin_token, account_management_url) |
 | matrix.experimental_features.msc3861.issuer | string | `"http://localhost:8080/"` | Synapse will call `{issuer}/.well-known/openid-configuration` to get the OIDC configuration |
-| matrix.experimental_features.msc3861.secretKeys.account_management_url | string | `""` | secret key to use in existing secret for masc3861 account_management_url |
-| matrix.experimental_features.msc3861.secretKeys.admin_token | string | `""` | secret key to use in existing secret for masc3861 admin_token |
-| matrix.experimental_features.msc3861.secretKeys.client_id | string | `""` | secret key to use in existing secret for masc3861 client id |
-| matrix.experimental_features.msc3861.secretKeys.client_secret | string | `""` | secret key to use in existing secret for masc3861 client secret |
-| matrix.experimental_features.msc3861.secretKeys.issuer | string | `""` | secret key to use in existing secret for masc3861 issuer |
+| matrix.experimental_features.msc3861ExistingSecret | string | `""` | use an existing secret for all msc3861 (matrix authentication service) related values if set, all other msc3861 values are ignored (issuer, client_id, client_auth_method, client_secret, admin_token, account_management_url) |
+| matrix.experimental_features.msc3861SecretKeys.account_management_url | string | `""` | secret key to use in existing secret for masc3861 account_management_url |
+| matrix.experimental_features.msc3861SecretKeys.admin_token | string | `""` | secret key to use in existing secret for masc3861 admin_token |
+| matrix.experimental_features.msc3861SecretKeys.client_id | string | `""` | secret key to use in existing secret for masc3861 client id |
+| matrix.experimental_features.msc3861SecretKeys.client_secret | string | `""` | secret key to use in existing secret for masc3861 client secret |
+| matrix.experimental_features.msc3861SecretKeys.issuer | string | `""` | secret key to use in existing secret for masc3861 issuer |
 | matrix.federation.allowPublicRooms | bool | `true` | Allow members of other homeservers to fetch *public* rooms |
 | matrix.federation.blacklist | list | `["127.0.0.0/8","10.0.0.0/8","172.16.0.0/12","192.168.0.0/16","100.64.0.0/10","169.254.0.0/16","::1/128","fe80::/64","fc00::/7"]` | IP addresses to blacklist federation requests to |
 | matrix.federation.enabled | bool | `true` | Set to false to disable federation and run an isolated homeserver |
@@ -374,12 +374,9 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrixAuthenticationService.mas.upstream_oauth2.providers[0].pkce_method | string | `"auto"` | Whether PKCE should be used during the authorization code flow. Possible values are:  - `auto`: use PKCE if the provider supports it (default)    Determined through discovery, and disabled if discovery is disabled  - `always`: always use PKCE (with the S256 method)  - `never`: never use PKCE |
 | matrixAuthenticationService.mas.upstream_oauth2.providers[0].scope | string | `"openid email profile"` | The scopes to request from the provider In most cases, it should always include `openid` scope |
 | matrixAuthenticationService.mas.upstream_oauth2.providers[0].token_endpoint_auth_method | string | `"client_secret_basic"` | Which authentication method to use to authenticate to the provider Supported methods are:   - `none`   - `client_secret_basic`   - `client_secret_post`   - `client_secret_jwt`   - `private_key_jwt` (using the keys defined in the `secrets.keys` section) |
-| matrixAuthenticationService.mas.upstream_oauth2.secretKeys.authorization_endpoint | string | `""` | key in secret with the authorization_endpoint if discovery is disabled |
 | matrixAuthenticationService.mas.upstream_oauth2.secretKeys.client_id | string | `"client_id"` | key in secret with the client_id |
 | matrixAuthenticationService.mas.upstream_oauth2.secretKeys.client_secret | string | `"client_secret"` | key in secret with the client_secret |
 | matrixAuthenticationService.mas.upstream_oauth2.secretKeys.issuer | string | `"issuer"` | key in secret with the issuer |
-| matrixAuthenticationService.mas.upstream_oauth2.secretKeys.token_endpoint | string | `""` | key in secret with the token_endpoint if discovery is disabled |
-| matrixAuthenticationService.mas.upstream_oauth2.secretKeys.userinfo_endpoint | string | `""` | key in secret with the userinfo_endpoint if discovery is disabled |
 | matrixAuthenticationService.networkPolicies.enabled | bool | `true` |  |
 | matrixAuthenticationService.postgresql.enabled | bool | `true` | Whether to deploy the Bitnami Postgresql sub chart If postgresql.enabled is set to true, externalDatabase.enabled must be set to false else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
 | matrixAuthenticationService.postgresql.global.postgresql.auth.database | string | `"mas"` | name of the database |
