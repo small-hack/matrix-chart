@@ -256,12 +256,16 @@ spec:
               {{- end }}
               {{- end }}
               {{- if and .Values.matrix.experimental_features.msc3861.enabled .Values.matrix.experimental_features.msc3861.existingSecret }}
-              yq eval -i '.experimental_features.msc3861_providers[0].issuer = env(MSC3861_ISSUER)' /data/homeserver.yaml && \
-              yq eval -i '.experimental_features.msc3861_providers[0].client_id = env(MSC3861_CLIENT_ID)' /data/homeserver.yaml && \
-              yq eval -i '.experimental_features.msc3861_providers[0].client_secret = env(MSC3861_CLIENT_SECRET)' /data/homeserver.yaml && \
-              yq eval -i '.experimental_features.msc3861_providers[0].admin_token = env(MSC3861_ADMIN_TOKEN)' /data/homeserver.yaml && \
+              {{- if .Values.matrix.experimental_features.msc3861.secretKeys.issuer }}
+              yq eval -i '.experimental_features.msc3861.issuer = env(MSC3861_ISSUER)' /data/homeserver.yaml && \
+              {{- end }}
+              {{- if .Values.matrix.experimental_features.msc3861.secretKeys.client_id }}
+              yq eval -i '.experimental_features.msc3861.client_id = env(MSC3861_CLIENT_ID)' /data/homeserver.yaml && \
+              {{- end }}
+              yq eval -i '.experimental_features.msc3861.client_secret = env(MSC3861_CLIENT_SECRET)' /data/homeserver.yaml && \
+              yq eval -i '.experimental_features.msc3861.admin_token = env(MSC3861_ADMIN_TOKEN)' /data/homeserver.yaml && \
               {{- if .Values.matrix.experimental_features.msc3861.secretKeys.account_management_url }}
-              yq eval -i '.experimental_features.msc3861_providers[0].account_management_url = env(MSC3861_ACCOUNT_MANAGEMENT_URL)' /data/homeserver.yaml && \
+              yq eval -i '.experimental_features.msc3861.account_management_url = env(MSC3861_ACCOUNT_MANAGEMENT_URL)' /data/homeserver.yaml && \
               {{- end }}
               {{- end }}
               {{- if .Values.s3.enabled }}
