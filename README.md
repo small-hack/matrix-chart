@@ -34,8 +34,8 @@ helm install my-release-name matrix/matrix --values values.yaml
 - [Coturn TURN server subchart](https://github.com/small-hack/coturn-chart) for VoIP calls
 - Use [s3 to store stuff](https://github.com/matrix-org/synapse-s3-storage-provider/tree/main)
 - Use an existing Kubernetes Secret for an external mail server for email notifications
-- Use [matrix-sliding-sync-chart](https://github.com/small-hack/matrix-sliding-sync-chart) as a sub chart for using [element-x] (new element beta) which requires [matrix-org/sliding-sync](https://github.com/matrix-org/sliding-sync)
-- Use [matrix-authentication-service-chart](https://github.com/small-hack/matrix-authentication-service-chart) as a sub chart for using [element-x] (new element beta) which recommends [matrix-org/matrix-authentication-service](https://github.com/matrix-org/matrix-authentication-service) for OIDC auth
+- Use [matrix-sliding-sync-chart](https://github.com/small-hack/matrix-sliding-sync-chart) as a sub chart for using [element-x] which requires [matrix-org/sliding-sync](https://github.com/matrix-org/sliding-sync)
+- Use [matrix-authentication-service-chart](https://github.com/small-hack/matrix-authentication-service-chart) as a sub chart for using [element-x] which recommends [matrix-org/matrix-authentication-service](https://github.com/matrix-org/matrix-authentication-service) for OIDC auth
 
 #### Databases
 
