@@ -22,8 +22,8 @@ helm install my-release-name matrix/matrix --values values.yaml
 
 ## Current Features ✨
 
-- Latest version of [Synapse](https://github.com/matrix-org/synapse) (the official homeserver edition of matrix)
-- Ingress definitions for federated Synapse (Matrix homeserver) and Element (frontend and CMS for matrix)
+- Latest version of [Synapse](https://github.com/matrix-org/synapse) (the official matrix homeserver)
+- Ingress definitions for federated Synapse (Matrix homeserver) and Element (client for matrix)
 - Use existing Kubernetes secrets and existing Persistent Volume Claims
 
 ### Optional Features
@@ -34,7 +34,8 @@ helm install my-release-name matrix/matrix --values values.yaml
 - [Coturn TURN server subchart](https://github.com/small-hack/coturn-chart) for VoIP calls
 - Use [s3 to store stuff](https://github.com/matrix-org/synapse-s3-storage-provider/tree/main)
 - Use an existing Kubernetes Secret for an external mail server for email notifications
-- Recently added [matrix-sliding-sync-chart](https://github.com/small-hack/matrix-sliding-sync-chart) for using elementx (new element beta) which requires [matrix-org/sliding-sync](https://github.com/matrix-org/sliding-sync)
+- Use [matrix-sliding-sync-chart](https://github.com/small-hack/matrix-sliding-sync-chart) as a sub chart for using [element-x] (new element beta) which requires [matrix-org/sliding-sync](https://github.com/matrix-org/sliding-sync)
+- Use [matrix-authentication-service-chart](https://github.com/small-hack/matrix-authentication-service-chart) as a sub chart for using [element-x] (new element beta) which recommends [matrix-org/matrix-authentication-service](https://github.com/matrix-org/matrix-authentication-service) for OIDC auth
 
 #### Databases
 
@@ -122,3 +123,7 @@ This is a fork of [Arkaniad/matrix-chart](https://github.com/Arkaniad/matrix-cha
 Our goal is to provide regular updates using renovatebot and provide some level of basic security from a k8s perspective. We're also trying to standardize the chart more by following predictable values.yaml patterns.
 
 Note: We may stop supporting this if a larger entity maintains a better quality matrix chart (e.g. Bitnami releases a matrix helm chart), as then we'll just write PRs directly to them. At that time we'll put in a note in this README before publicly archiving the repo. As of right now though, in October 2023, there are no other actively maintained matrix helm charts for matrix that meet all our needs or are regularly updated to justify creating PRs.
+
+
+/* links */
+[element-x]: https://element.io/labs/element-x "element x link"
