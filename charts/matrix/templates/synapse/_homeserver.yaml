@@ -2210,9 +2210,12 @@ opentracing:
     #
     #  logging:
     #    false
-
+{{ if .Values.matrix.experimental_features.msc3861.enabled }}
+experimental_features:
+{{- toYaml .Values.matrix.experimental_features | nindent 2 }}
+{{- end }}
 {{ if .Values.matrix.homeserverExtra }}
 {{- toYaml .Values.matrix.homeserverExtra }}
 {{- end }}
-{{- end }}
-{{- end }}
+{{- end }}{{/* end define "homeserver.yaml" */}}
+{{- end }}{{/* end if .Values.matrix.homeserverOverride */}}
