@@ -125,5 +125,5 @@ Our goal is to provide regular updates using renovatebot and provide some level 
 Note: We may stop supporting this if a larger entity maintains a better quality matrix chart (e.g. Bitnami releases a matrix helm chart), as then we'll just write PRs directly to them. At that time we'll put in a note in this README before publicly archiving the repo. As of right now though, in October 2023, there are no other actively maintained matrix helm charts for matrix that meet all our needs or are regularly updated to justify creating PRs.
 
 
-/* links */
+<!-- links -->
 [element-x]: https://element.io/labs/element-x "element x link"
