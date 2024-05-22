@@ -36,4 +36,4 @@ dependencies:
   - name: matrix-authentication-service
     version: 0.1.3
     repository: https://small-hack.github.io/matrix-authentication-service-chart
-    condition: matrixAuthenticationService.enabled
+    condition: matrix-authentication-service.enabled

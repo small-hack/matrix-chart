@@ -21,7 +21,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | Repository | Name | Version |
 |------------|------|---------|
 | https://small-hack.github.io/coturn-chart | coturn | 5.2.0 |
-| https://small-hack.github.io/matrix-authentication-service-chart | matrix-authentication-service | 0.1.2 |
+| https://small-hack.github.io/matrix-authentication-service-chart | matrix-authentication-service | 0.1.3 |
 | https://small-hack.github.io/matrix-sliding-sync-chart | matrix-sliding-sync | 0.3.0 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql | 15.1.4 |
 
@@ -231,6 +231,89 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | mail.relay.resources | object | `{}` |  |
 | mail.relay.service.port | int | `25` |  |
 | mail.relay.service.type | string | `"ClusterIP"` |  |
+| matrix-authentication-service.configVolume.existingClaim | string | `""` | name of an existing persistent volume claim to use for matrix-authentication-service config. If provided, ignores mas parameter map |
+| matrix-authentication-service.configVolume.storage | string | `"500Mi"` | storage capacity for creating a persistent volume |
+| matrix-authentication-service.configVolume.storageClassName | string | `"default"` | name of storage class for the persistent volume |
+| matrix-authentication-service.enabled | bool | `false` |  |
+| matrix-authentication-service.externalDatabase.database | string | `"mas"` | name of the database to try and connect to |
+| matrix-authentication-service.externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
+| matrix-authentication-service.externalDatabase.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
+| matrix-authentication-service.externalDatabase.hostname | string | `""` | hostname of db server. Can be left blank if using postgres subchart |
+| matrix-authentication-service.externalDatabase.password | string | `"changeme"` | password of matrix-authentication-service postgres user - ignored using exsitingSecret |
+| matrix-authentication-service.externalDatabase.port | int | `5432` | which port to use to connect to your database server |
+| matrix-authentication-service.externalDatabase.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existingSecret with the admin postgresql password |
+| matrix-authentication-service.externalDatabase.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
+| matrix-authentication-service.externalDatabase.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
+| matrix-authentication-service.externalDatabase.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix to connect to db |
+| matrix-authentication-service.externalDatabase.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix to connect to db |
+| matrix-authentication-service.externalDatabase.sslcert | string | `""` | optional: tls/ssl cert for postgresql connections |
+| matrix-authentication-service.externalDatabase.sslkey | string | `""` | optional: tls/ssl key for postgresql connections |
+| matrix-authentication-service.externalDatabase.sslmode | string | `""` | sslmode to use, example: verify-full |
+| matrix-authentication-service.externalDatabase.sslrootcert | string | `""` | optional: tls/ssl root cert for postgresql connections |
+| matrix-authentication-service.externalDatabase.username | string | `"mas"` | username of matrix-authentication-service postgres user |
+| matrix-authentication-service.mas.clients[0] | object | `{"client_auth_method":"client_secret_basic","client_id":"","client_secret":""}` | a unique identifier for the client. It must be a valid ULID, and it happens that 0000000000000000000SYNAPSE is a valid ULID. |
+| matrix-authentication-service.mas.clients[0].client_auth_method | string | `"client_secret_basic"` | set to client_secret_basic. Other methods are possible, such as client_secret_post, but this is the easiest to set up. |
+| matrix-authentication-service.mas.clients[0].client_secret | string | `""` | a shared secret used for the homeserver to authenticate |
+| matrix-authentication-service.mas.masClientSecret.existingSecret | string | `""` | use an existing secret for clients section of config.yaml for: mas.clients[0].client_id, mas.clients[0].client_secret if set, ignores mas.clients[0].client_id, mas.clients[0].client_secret |
+| matrix-authentication-service.mas.masClientSecret.secretKeys.client_id | string | `"client_id"` | key in secret with the client_id |
+| matrix-authentication-service.mas.masClientSecret.secretKeys.client_secret | string | `"client_secret"` | key in secret with the client_secret |
+| matrix-authentication-service.mas.matrix.endpoint | string | `"https://localhost:8008"` | endpoint of your matrix home server (synapse or dendrite) with port if needed |
+| matrix-authentication-service.mas.matrix.existingSecret | string | `""` | grab the above secret from an existing k8s secret. if set, ignores mas.matrix.secret |
+| matrix-authentication-service.mas.matrix.homeserver | string | `"localhost:8008"` | name of your matrix home server (synapse or dendrite) with port if needed |
+| matrix-authentication-service.mas.matrix.secret | string | `"test"` | a shared secret the service will use to call the homeserver admin API |
+| matrix-authentication-service.mas.matrix.secretKey | string | `"secret"` | name of the key in existing secret to grab matrix.secret from |
+| matrix-authentication-service.mas.policy.data.admin_clients | list | `[]` | Client IDs which are allowed to ask for admin access with a client_credentials grant |
+| matrix-authentication-service.mas.policy.data.admin_users | list | `[]` | Users which are allowed to ask for admin access. If possible, use the can_request_admin flag on users instead. |
+| matrix-authentication-service.mas.policy.data.client_registration.allow_host_mismatch | bool | `true` | don't require URIs to be on the same host. default: false |
+| matrix-authentication-service.mas.policy.data.client_registration.allow_insecure_uris | bool | `true` | allow non-SSL and localhost URIs. default: false |
+| matrix-authentication-service.mas.policy.data.passwords.min_length | int | `16` | minimum length of a password. default: 0 |
+| matrix-authentication-service.mas.policy.data.passwords.require_lowercase | bool | `true` | require at least one lowercase character in a password. default: false |
+| matrix-authentication-service.mas.policy.data.passwords.require_number | bool | `true` | require at least one number in a password. default: false |
+| matrix-authentication-service.mas.policy.data.passwords.require_uppercase | bool | `true` | require at least one uppercase character in a password. default: false |
+| matrix-authentication-service.mas.upstream_oauth2.existingSecret | string | `""` | use an existing k8s secret for upstream oauth2 client_id and client_secret |
+| matrix-authentication-service.mas.upstream_oauth2.providers[0] | object | `{"authorization_endpoint":"https://example.com/oauth2/authorize","brand_name":"zitadel","claims_imports":{"displayname":{"action":"suggest","template":"{{ user.name }}"},"email":{"action":"suggest","set_email_verification":"always","template":"{{ user.email }}"},"localpart":{"action":"require","template":"{{ user.preferred_username }}"},"subject":{"template":"{{ user.sub }}"}},"client_id":"","client_secret":"","human_name":"Example","id":"","issuer":"https://example.com/","pkce_method":"auto","scope":"openid email profile","token_endpoint_auth_method":"client_secret_basic"}` | A unique identifier for the provider Must be a valid ULID, and can be generated using online tools like: https://www.ulidtools.com |
+| matrix-authentication-service.mas.upstream_oauth2.providers[0].authorization_endpoint | string | `"https://example.com/oauth2/authorize"` | The provider authorization endpoint This takes precedence over the discovery mechanism |
+| matrix-authentication-service.mas.upstream_oauth2.providers[0].brand_name | string | `"zitadel"` | A brand identifier for the provider, which will be used to display a logo on the login page. Values supported by the default template are:  - `apple`  - `google`  - `facebook`  - `github`  - `gitlab`  - `twitter` |
+| matrix-authentication-service.mas.upstream_oauth2.providers[0].claims_imports.displayname | object | `{"action":"suggest","template":"{{ user.name }}"}` | The display name is the user's display name. |
+| matrix-authentication-service.mas.upstream_oauth2.providers[0].claims_imports.email | object | `{"action":"suggest","set_email_verification":"always","template":"{{ user.email }}"}` | An email address to import. |
+| matrix-authentication-service.mas.upstream_oauth2.providers[0].claims_imports.email.set_email_verification | string | `"always"` | Whether the email address must be marked as verified. Possible values are:  - `import`: mark the email address as verified if the upstream provider     has marked it as verified, using the `email_verified` claim.     This is the default.   - `always`: mark the email address as verified   - `never`: mark the email address as not verified |
+| matrix-authentication-service.mas.upstream_oauth2.providers[0].claims_imports.localpart | object | `{"action":"require","template":"{{ user.preferred_username }}"}` | The localpart is the local part of the user's Matrix ID. For example, on the `example.com` server, if the localpart is `alice`,  the user's Matrix ID will be `@alice:example.com`. |
+| matrix-authentication-service.mas.upstream_oauth2.providers[0].claims_imports.subject | object | `{"template":"{{ user.sub }}"}` | The subject is an internal identifier used to link the user's provider identity to local accounts. By default it uses the `sub` claim as per the OIDC spec, which should fit most use cases. |
+| matrix-authentication-service.mas.upstream_oauth2.providers[0].client_id | string | `""` | The client ID to use to authenticate to the provider |
+| matrix-authentication-service.mas.upstream_oauth2.providers[0].client_secret | string | `""` | The client secret to use to authenticate to the provider This is only used by the `client_secret_post`, `client_secret_basic` and `client_secret_jwk` authentication methods |
+| matrix-authentication-service.mas.upstream_oauth2.providers[0].human_name | string | `"Example"` | A human-readable name for the provider, which will be displayed on the login page |
+| matrix-authentication-service.mas.upstream_oauth2.providers[0].issuer | string | `"https://example.com/"` | The issuer URL, which will be used to discover the provider's configuration. If discovery is enabled, this *must* exactly match the `issuer` field advertised in `<issuer>/.well-known/openid-configuration`. |
+| matrix-authentication-service.mas.upstream_oauth2.providers[0].pkce_method | string | `"auto"` | Whether PKCE should be used during the authorization code flow. Possible values are:  - `auto`: use PKCE if the provider supports it (default)    Determined through discovery, and disabled if discovery is disabled  - `always`: always use PKCE (with the S256 method)  - `never`: never use PKCE |
+| matrix-authentication-service.mas.upstream_oauth2.providers[0].scope | string | `"openid email profile"` | The scopes to request from the provider In most cases, it should always include `openid` scope |
+| matrix-authentication-service.mas.upstream_oauth2.providers[0].token_endpoint_auth_method | string | `"client_secret_basic"` | Which authentication method to use to authenticate to the provider Supported methods are:   - `none`   - `client_secret_basic`   - `client_secret_post`   - `client_secret_jwt`   - `private_key_jwt` (using the keys defined in the `secrets.keys` section) |
+| matrix-authentication-service.mas.upstream_oauth2.secretKeys.client_id | string | `"client_id"` | key in secret with the client_id |
+| matrix-authentication-service.mas.upstream_oauth2.secretKeys.client_secret | string | `"client_secret"` | key in secret with the client_secret |
+| matrix-authentication-service.mas.upstream_oauth2.secretKeys.issuer | string | `"issuer"` | key in secret with the issuer |
+| matrix-authentication-service.networkPolicies.enabled | bool | `true` |  |
+| matrix-authentication-service.postgresql.enabled | bool | `false` | Whether to deploy the Bitnami Postgresql sub chart If postgresql.enabled is set to true, externalDatabase.enabled must be set to false else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
+| matrix-authentication-service.postgresql.global.postgresql.auth.database | string | `"mas"` | name of the database |
+| matrix-authentication-service.postgresql.global.postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
+| matrix-authentication-service.postgresql.global.postgresql.auth.password | string | `"changeme"` | password of matrix-authentication-service postgres user - ignored using exsitingSecret |
+| matrix-authentication-service.postgresql.global.postgresql.auth.port | int | `5432` | which port to use to connect to your database server |
+| matrix-authentication-service.postgresql.global.postgresql.auth.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existingSecret with the admin postgresql password |
+| matrix-authentication-service.postgresql.global.postgresql.auth.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
+| matrix-authentication-service.postgresql.global.postgresql.auth.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
+| matrix-authentication-service.postgresql.global.postgresql.auth.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix-authentication-service to connect to db |
+| matrix-authentication-service.postgresql.global.postgresql.auth.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix-authentication-service to connect to db |
+| matrix-authentication-service.postgresql.global.postgresql.auth.username | string | `"mas"` | username of matrix-authentication-service postgres user |
+| matrix-authentication-service.postgresql.primary.initdb | object | `{"scriptsConfigMap":"{{ .Release.Name }}-postgresql-initdb"}` | run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/matrix-org/synapse/blob/master/docs/postgres.md |
+| matrix-authentication-service.postgresql.primary.podSecurityContext.enabled | bool | `true` |  |
+| matrix-authentication-service.postgresql.primary.podSecurityContext.fsGroup | int | `1000` |  |
+| matrix-authentication-service.postgresql.primary.podSecurityContext.runAsUser | int | `1000` |  |
+| matrix-authentication-service.postgresql.tls.autoGenerated | bool | `false` | Generate automatically self-signed TLS certificates |
+| matrix-authentication-service.postgresql.tls.certCAFilename | string | `""` | CA Certificate filename |
+| matrix-authentication-service.postgresql.tls.certFilename | string | `""` | Certificate filename |
+| matrix-authentication-service.postgresql.tls.certKeyFilename | string | `""` | Certificate key filename |
+| matrix-authentication-service.postgresql.tls.certificatesSecret | string | `""` | Name of an existing secret that contains the certificates |
+| matrix-authentication-service.postgresql.tls.crlFilename | string | `""` | File containing a Certificate Revocation List |
+| matrix-authentication-service.postgresql.tls.enabled | bool | `false` | Enable TLS traffic support for postgresql, see [bitnami/charts/postgresql#securing-traffic-using-tls](https://github.com/bitnami/charts/tree/main/bitnami/postgresql#securing-traffic-using-tls) |
+| matrix-authentication-service.postgresql.tls.preferServerCiphers | bool | `true` | Whether to use the server's TLS cipher preferences rather than the client's |
+| matrix-authentication-service.postgresql.volumePermissions.enabled | bool | `true` | Enable init container that changes the owner and group of the PVC |
 | matrix.adminEmail | string | `"admin@example.com"` | Email address of the administrator |
 | matrix.blockNonAdminInvites | bool | `false` | Set to true to block non-admins from inviting users to any rooms |
 | matrix.disabled | bool | `false` | Set to true to globally block access to the homeserver |
@@ -319,89 +402,6 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.urlPreviews.rules.ip.whitelist | list | `[]` |  |
 | matrix.urlPreviews.rules.maxSize | string | `"10M"` | Max size of a crawlable page. Keep this low to prevent a DOS vector |
 | matrix.urlPreviews.rules.url | object | `{}` | Whitelist and blacklist based on URL pattern matching |
-| matrixAuthenticationService.configVolume.existingClaim | string | `""` | name of an existing persistent volume claim to use for matrix-authentication-service config. If provided, ignores mas parameter map |
-| matrixAuthenticationService.configVolume.storage | string | `"500Mi"` | storage capacity for creating a persistent volume |
-| matrixAuthenticationService.configVolume.storageClassName | string | `"default"` | name of storage class for the persistent volume |
-| matrixAuthenticationService.enabled | bool | `false` |  |
-| matrixAuthenticationService.externalDatabase.database | string | `"mas"` | name of the database to try and connect to |
-| matrixAuthenticationService.externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
-| matrixAuthenticationService.externalDatabase.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
-| matrixAuthenticationService.externalDatabase.hostname | string | `""` | hostname of db server. Can be left blank if using postgres subchart |
-| matrixAuthenticationService.externalDatabase.password | string | `"changeme"` | password of matrix-authentication-service postgres user - ignored using exsitingSecret |
-| matrixAuthenticationService.externalDatabase.port | int | `5432` | which port to use to connect to your database server |
-| matrixAuthenticationService.externalDatabase.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existingSecret with the admin postgresql password |
-| matrixAuthenticationService.externalDatabase.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
-| matrixAuthenticationService.externalDatabase.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
-| matrixAuthenticationService.externalDatabase.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix to connect to db |
-| matrixAuthenticationService.externalDatabase.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix to connect to db |
-| matrixAuthenticationService.externalDatabase.sslcert | string | `""` | optional: tls/ssl cert for postgresql connections |
-| matrixAuthenticationService.externalDatabase.sslkey | string | `""` | optional: tls/ssl key for postgresql connections |
-| matrixAuthenticationService.externalDatabase.sslmode | string | `""` | sslmode to use, example: verify-full |
-| matrixAuthenticationService.externalDatabase.sslrootcert | string | `""` | optional: tls/ssl root cert for postgresql connections |
-| matrixAuthenticationService.externalDatabase.username | string | `"mas"` | username of matrix-authentication-service postgres user |
-| matrixAuthenticationService.mas.clients[0] | object | `{"client_auth_method":"client_secret_basic","client_id":"","client_secret":""}` | a unique identifier for the client. It must be a valid ULID, and it happens that 0000000000000000000SYNAPSE is a valid ULID. |
-| matrixAuthenticationService.mas.clients[0].client_auth_method | string | `"client_secret_basic"` | set to client_secret_basic. Other methods are possible, such as client_secret_post, but this is the easiest to set up. |
-| matrixAuthenticationService.mas.clients[0].client_secret | string | `""` | a shared secret used for the homeserver to authenticate |
-| matrixAuthenticationService.mas.masClientSecret.existingSecret | string | `""` | use an existing secret for clients section of config.yaml for: mas.clients[0].client_id, mas.clients[0].client_secret if set, ignores mas.clients[0].client_id, mas.clients[0].client_secret |
-| matrixAuthenticationService.mas.masClientSecret.secretKeys.client_id | string | `"client_id"` | key in secret with the client_id |
-| matrixAuthenticationService.mas.masClientSecret.secretKeys.client_secret | string | `"client_secret"` | key in secret with the client_secret |
-| matrixAuthenticationService.mas.matrix.endpoint | string | `"https://localhost:8008"` | endpoint of your matrix home server (synapse or dendrite) with port if needed |
-| matrixAuthenticationService.mas.matrix.existingSecret | string | `""` | grab the above secret from an existing k8s secret. if set, ignores mas.matrix.secret |
-| matrixAuthenticationService.mas.matrix.homeserver | string | `"localhost:8008"` | name of your matrix home server (synapse or dendrite) with port if needed |
-| matrixAuthenticationService.mas.matrix.secret | string | `"test"` | a shared secret the service will use to call the homeserver admin API |
-| matrixAuthenticationService.mas.matrix.secretKey | string | `"secret"` | name of the key in existing secret to grab matrix.secret from |
-| matrixAuthenticationService.mas.policy.data.admin_clients | list | `[]` | Client IDs which are allowed to ask for admin access with a client_credentials grant |
-| matrixAuthenticationService.mas.policy.data.admin_users | list | `[]` | Users which are allowed to ask for admin access. If possible, use the can_request_admin flag on users instead. |
-| matrixAuthenticationService.mas.policy.data.client_registration.allow_host_mismatch | bool | `true` | don't require URIs to be on the same host. default: false |
-| matrixAuthenticationService.mas.policy.data.client_registration.allow_insecure_uris | bool | `true` | allow non-SSL and localhost URIs. default: false |
-| matrixAuthenticationService.mas.policy.data.passwords.min_length | int | `16` | minimum length of a password. default: 0 |
-| matrixAuthenticationService.mas.policy.data.passwords.require_lowercase | bool | `true` | require at least one lowercase character in a password. default: false |
-| matrixAuthenticationService.mas.policy.data.passwords.require_number | bool | `true` | require at least one number in a password. default: false |
-| matrixAuthenticationService.mas.policy.data.passwords.require_uppercase | bool | `true` | require at least one uppercase character in a password. default: false |
-| matrixAuthenticationService.mas.upstream_oauth2.existingSecret | string | `""` | use an existing k8s secret for upstream oauth2 client_id and client_secret |
-| matrixAuthenticationService.mas.upstream_oauth2.providers[0] | object | `{"authorization_endpoint":"https://example.com/oauth2/authorize","brand_name":"zitadel","claims_imports":{"displayname":{"action":"suggest","template":"{{ user.name }}"},"email":{"action":"suggest","set_email_verification":"always","template":"{{ user.email }}"},"localpart":{"action":"require","template":"{{ user.preferred_username }}"},"subject":{"template":"{{ user.sub }}"}},"client_id":"","client_secret":"","human_name":"Example","id":"","issuer":"https://example.com/","pkce_method":"auto","scope":"openid email profile","token_endpoint_auth_method":"client_secret_basic"}` | A unique identifier for the provider Must be a valid ULID, and can be generated using online tools like: https://www.ulidtools.com |
-| matrixAuthenticationService.mas.upstream_oauth2.providers[0].authorization_endpoint | string | `"https://example.com/oauth2/authorize"` | The provider authorization endpoint This takes precedence over the discovery mechanism |
-| matrixAuthenticationService.mas.upstream_oauth2.providers[0].brand_name | string | `"zitadel"` | A brand identifier for the provider, which will be used to display a logo on the login page. Values supported by the default template are:  - `apple`  - `google`  - `facebook`  - `github`  - `gitlab`  - `twitter` |
-| matrixAuthenticationService.mas.upstream_oauth2.providers[0].claims_imports.displayname | object | `{"action":"suggest","template":"{{ user.name }}"}` | The display name is the user's display name. |
-| matrixAuthenticationService.mas.upstream_oauth2.providers[0].claims_imports.email | object | `{"action":"suggest","set_email_verification":"always","template":"{{ user.email }}"}` | An email address to import. |
-| matrixAuthenticationService.mas.upstream_oauth2.providers[0].claims_imports.email.set_email_verification | string | `"always"` | Whether the email address must be marked as verified. Possible values are:  - `import`: mark the email address as verified if the upstream provider     has marked it as verified, using the `email_verified` claim.     This is the default.   - `always`: mark the email address as verified   - `never`: mark the email address as not verified |
-| matrixAuthenticationService.mas.upstream_oauth2.providers[0].claims_imports.localpart | object | `{"action":"require","template":"{{ user.preferred_username }}"}` | The localpart is the local part of the user's Matrix ID. For example, on the `example.com` server, if the localpart is `alice`,  the user's Matrix ID will be `@alice:example.com`. |
-| matrixAuthenticationService.mas.upstream_oauth2.providers[0].claims_imports.subject | object | `{"template":"{{ user.sub }}"}` | The subject is an internal identifier used to link the user's provider identity to local accounts. By default it uses the `sub` claim as per the OIDC spec, which should fit most use cases. |
-| matrixAuthenticationService.mas.upstream_oauth2.providers[0].client_id | string | `""` | The client ID to use to authenticate to the provider |
-| matrixAuthenticationService.mas.upstream_oauth2.providers[0].client_secret | string | `""` | The client secret to use to authenticate to the provider This is only used by the `client_secret_post`, `client_secret_basic` and `client_secret_jwk` authentication methods |
-| matrixAuthenticationService.mas.upstream_oauth2.providers[0].human_name | string | `"Example"` | A human-readable name for the provider, which will be displayed on the login page |
-| matrixAuthenticationService.mas.upstream_oauth2.providers[0].issuer | string | `"https://example.com/"` | The issuer URL, which will be used to discover the provider's configuration. If discovery is enabled, this *must* exactly match the `issuer` field advertised in `<issuer>/.well-known/openid-configuration`. |
-| matrixAuthenticationService.mas.upstream_oauth2.providers[0].pkce_method | string | `"auto"` | Whether PKCE should be used during the authorization code flow. Possible values are:  - `auto`: use PKCE if the provider supports it (default)    Determined through discovery, and disabled if discovery is disabled  - `always`: always use PKCE (with the S256 method)  - `never`: never use PKCE |
-| matrixAuthenticationService.mas.upstream_oauth2.providers[0].scope | string | `"openid email profile"` | The scopes to request from the provider In most cases, it should always include `openid` scope |
-| matrixAuthenticationService.mas.upstream_oauth2.providers[0].token_endpoint_auth_method | string | `"client_secret_basic"` | Which authentication method to use to authenticate to the provider Supported methods are:   - `none`   - `client_secret_basic`   - `client_secret_post`   - `client_secret_jwt`   - `private_key_jwt` (using the keys defined in the `secrets.keys` section) |
-| matrixAuthenticationService.mas.upstream_oauth2.secretKeys.client_id | string | `"client_id"` | key in secret with the client_id |
-| matrixAuthenticationService.mas.upstream_oauth2.secretKeys.client_secret | string | `"client_secret"` | key in secret with the client_secret |
-| matrixAuthenticationService.mas.upstream_oauth2.secretKeys.issuer | string | `"issuer"` | key in secret with the issuer |
-| matrixAuthenticationService.networkPolicies.enabled | bool | `true` |  |
-| matrixAuthenticationService.postgresql.enabled | bool | `true` | Whether to deploy the Bitnami Postgresql sub chart If postgresql.enabled is set to true, externalDatabase.enabled must be set to false else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
-| matrixAuthenticationService.postgresql.global.postgresql.auth.database | string | `"mas"` | name of the database |
-| matrixAuthenticationService.postgresql.global.postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
-| matrixAuthenticationService.postgresql.global.postgresql.auth.password | string | `"changeme"` | password of matrix-authentication-service postgres user - ignored using exsitingSecret |
-| matrixAuthenticationService.postgresql.global.postgresql.auth.port | int | `5432` | which port to use to connect to your database server |
-| matrixAuthenticationService.postgresql.global.postgresql.auth.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existingSecret with the admin postgresql password |
-| matrixAuthenticationService.postgresql.global.postgresql.auth.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
-| matrixAuthenticationService.postgresql.global.postgresql.auth.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
-| matrixAuthenticationService.postgresql.global.postgresql.auth.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix-authentication-service to connect to db |
-| matrixAuthenticationService.postgresql.global.postgresql.auth.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix-authentication-service to connect to db |
-| matrixAuthenticationService.postgresql.global.postgresql.auth.username | string | `"mas"` | username of matrix-authentication-service postgres user |
-| matrixAuthenticationService.postgresql.primary.initdb | object | `{"scriptsConfigMap":"{{ .Release.Name }}-postgresql-initdb"}` | run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/matrix-org/synapse/blob/master/docs/postgres.md |
-| matrixAuthenticationService.postgresql.primary.podSecurityContext.enabled | bool | `true` |  |
-| matrixAuthenticationService.postgresql.primary.podSecurityContext.fsGroup | int | `1000` |  |
-| matrixAuthenticationService.postgresql.primary.podSecurityContext.runAsUser | int | `1000` |  |
-| matrixAuthenticationService.postgresql.tls.autoGenerated | bool | `false` | Generate automatically self-signed TLS certificates |
-| matrixAuthenticationService.postgresql.tls.certCAFilename | string | `""` | CA Certificate filename |
-| matrixAuthenticationService.postgresql.tls.certFilename | string | `""` | Certificate filename |
-| matrixAuthenticationService.postgresql.tls.certKeyFilename | string | `""` | Certificate key filename |
-| matrixAuthenticationService.postgresql.tls.certificatesSecret | string | `""` | Name of an existing secret that contains the certificates |
-| matrixAuthenticationService.postgresql.tls.crlFilename | string | `""` | File containing a Certificate Revocation List |
-| matrixAuthenticationService.postgresql.tls.enabled | bool | `false` | Enable TLS traffic support for postgresql, see [bitnami/charts/postgresql#securing-traffic-using-tls](https://github.com/bitnami/charts/tree/main/bitnami/postgresql#securing-traffic-using-tls) |
-| matrixAuthenticationService.postgresql.tls.preferServerCiphers | bool | `true` | Whether to use the server's TLS cipher preferences rather than the client's |
-| matrixAuthenticationService.postgresql.volumePermissions.enabled | bool | `true` | Enable init container that changes the owner and group of the PVC |
 | nameOverride | string | `""` |  |
 | networkPolicies.enabled | bool | `true` | whether to enable kubernetes network policies or not |
 | postgresql.enabled | bool | `true` | Whether to deploy the Bitnami Postgresql sub chart If postgresql.enabled is set to true, externalDatabase.enabled must be set to false else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
