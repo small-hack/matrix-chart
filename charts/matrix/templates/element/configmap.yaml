@@ -11,10 +11,10 @@ data:
       "default_server_config": {
         "m.homeserver": {
           "base_url": {{ include "matrix.baseUrl" . | quote }}
-        },
+        }{{- if .Values.slidingSync.enabled }},
         "org.matrix.msc3575.proxy": {
           "url": {{ include "matrix.baseUrl" . | quote }}
-        }
+        }{{- end }}
       },
       "brand": {{ .Values.element.branding.brand | quote }},
       "branding": {
