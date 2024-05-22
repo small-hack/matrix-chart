@@ -167,7 +167,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | element.enabled | bool | `true` | Set to false to disable a deployment of Element. Users will still be able to connect via any other instances of Element e.g. https://app.element.io, Element Desktop, or any other Matrix clients |
 | element.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy to use for element image, set to Always if using latest tag |
 | element.image.repository | string | `"vectorim/element-web"` | registry and repository to use for element docker image |
-| element.image.tag | string | `"v1.11.66"` | tag to use for element docker image |
+| element.image.tag | string | `"v1.11.67"` | tag to use for element docker image |
 | element.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | element.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` |  |
 | element.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
@@ -185,11 +185,11 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | element.probes.liveness | object | `{}` |  |
 | element.probes.readiness | object | `{}` |  |
 | element.probes.startup | object | `{}` |  |
-| element.replicaCount | int | `1` |  |
+| element.replicaCount | int | `1` | replicas for element pods |
 | element.resources | object | `{}` |  |
 | element.roomDirectoryServers | list | `["matrix.org"]` | Servers to show in the Explore menu (the current server is always shown) |
-| element.service.port | int | `80` |  |
-| element.service.type | string | `"ClusterIP"` |  |
+| element.service.port | int | `80` | service port for element |
+| element.service.type | string | `"ClusterIP"` | service type for element |
 | element.welcomeUserId | string | `""` | Set to the user ID (@username:domain.tld) of a bot to invite all new users to a DM with the bot upon registration |
 | externalDatabase.database | string | `"matrix"` | name of the database to try and connect to |
 | externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
