@@ -29,11 +29,11 @@ dependencies:
     condition: coturn.enabled
 
   - name: matrix-sliding-sync
-    version: 0.2.3
+    version: 0.3.0
     repository: https://small-hack.github.io/matrix-sliding-sync-chart
     condition: slidingSync.enabled
 
   - name: matrix-authentication-service
-    version: 0.1.0
+    version: 0.1.2
     repository: https://small-hack.github.io/matrix-authentication-service-chart
     condition: matrixAuthenticationService.enabled
