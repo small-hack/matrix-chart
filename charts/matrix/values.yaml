@@ -1218,12 +1218,16 @@ element:
     # -- registry and repository to use for element docker image
     repository: "vectorim/element-web"
     # -- tag to use for element docker image
-    tag: v1.11.66
+    tag: v1.11.67
     # -- pullPolicy to use for element image, set to Always if using latest tag
     pullPolicy: IfNotPresent
   service:
+    # -- service type for element
     type: ClusterIP
+    # -- service port for element
     port: 80
+
+  # -- replicas for element pods
   replicaCount: 1
   resources: {}
   probes:
