@@ -36,6 +36,6 @@ dependencies:
 
   - name: matrix-authentication-service
     alias: mas
-    version: 0.3.0
+    version: 0.4.0
     repository: https://small-hack.github.io/matrix-authentication-service-chart
     condition: mas.enabled
