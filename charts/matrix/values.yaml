@@ -1,4 +1,14 @@
----
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
 # Runtime configuration for Synapse and settings related to the Matrix protocol
 matrix:
   # Manual overrides for homeserver.yaml, the main config file for Synapse
@@ -781,8 +791,51 @@ slidingSync:
     maxDbConn: ""
 
 
-matrix-authentication-service:
+matrixAuthenticationService:
   enabled: false
+
+  image:
+    repository: ghcr.io/matrix-org/matrix-authentication-service
+    # -- image pull policy. if image.tag is set to "latest", set to "Always"
+    pullPolicy: IfNotPresent
+    # -- Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+
+  imagePullSecrets: []
+
+  replicaCount: 1
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+  service:
+    # -- annotations for your service
+    annotations: {}
+    # -- type of service
+    type: ClusterIP
+    # -- targetPort of service. should be the same as port for bindaddr
+    targetPort: 8080
+    # -- Port of service
+    port: 80
+
+  livenessProbe:
+    # -- enable a liveness probe on the deployment
+    enabled: false
+    httpGet:
+      path: /
+      port: http
+
+  readinessProbe:
+    # -- enable a readiness probe on the deployment
+    enabled: false
+    httpGet:
+      path: /
+      port: http
+
   # PostgreSQL Database configuration for matrix Authentication Service, for more options:
   # https://github.com/bitnami/charts/tree/main/bitnami/postgresql
   postgresql:

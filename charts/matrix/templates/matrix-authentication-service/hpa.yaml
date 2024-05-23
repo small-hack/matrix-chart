@@ -1,0 +1,32 @@
+{{- if .Values.matrixAuthenticationService.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "matrixAuthenticationService.fullname" . }}
+  labels:
+    {{- include "matrix.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "matrixAuthenticationService.fullname" . }}
+  minReplicas: {{ .Values.matrixAuthenticationService.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.matrixAuthenticationService.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.matrixAuthenticationService.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.matrixAuthenticationService.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.matrixAuthenticationService.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.matrixAuthenticationService.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

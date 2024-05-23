@@ -1,0 +1,15 @@
+{{- if not .Values.matrixAuthenticationService.configVolume.existingClaim }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "matrixAuthenticationService.fullname" . }}-config
+  labels:
+{{ include "matrix.labels" . | indent 4}}
+spec:
+  storageClassName: {{ .Values.matrixAuthenticationService.configVolume.storageClass }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.matrixAuthenticationService.configVolume.storage }}
+{{- end }}

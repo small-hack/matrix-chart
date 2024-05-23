@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "matrixAuthenticationService.fullname" . }}
+  labels:
+    {{- include "matrix.labels" . | nindent 4 }}
+  {{- with .Values.matrixAuthenticationService.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.matrixAuthenticationService.service.type }}
+  ports:
+    - port: {{ .Values.matrixAuthenticationService.service.port }}
+      targetPort: {{ .Values.matrixAuthenticationService.service.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "matrixAuthenticationService.selectorLabels" . | nindent 4 }}

@@ -42,6 +42,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/name: "matrix"
 {{- end -}}
 
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "matrix.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "matrix.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
 # TODO: Include labels from values
 {{/*
 Synapse specific labels
