@@ -781,7 +781,7 @@ slidingSync:
     maxDbConn: ""
 
 
-matrixAuthenticationService:
+mas:
   enabled: false
   # PostgreSQL Database configuration for matrix Authentication Service, for more options:
   # https://github.com/bitnami/charts/tree/main/bitnami/postgresql

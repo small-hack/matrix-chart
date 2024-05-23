@@ -34,7 +34,7 @@ dependencies:
     condition: slidingSync.enabled
 
   - name: matrix-authentication-service
-    alias: matrixAuthenticationService
+    alias: mas
     version: 0.1.5
     repository: https://small-hack.github.io/matrix-authentication-service-chart
-    condition: matrixAuthenticationService.enabled
+    condition: mas.enabled
