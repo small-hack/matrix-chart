@@ -668,9 +668,10 @@ slidingSync:
     # -- Whether to deploy the Bitnami Postgresql sub chart
     # If postgresql.enabled is set to true, externalDatabase.enabled must be set to false
     # else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false
-    enabled: true
+    enabled: false
     persistence:
       enabled: false
+
     volumePermissions:
       # -- Enable init container that changes the owner and group of the PVC
       enabled: true

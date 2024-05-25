@@ -526,7 +526,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | slidingSync.externalDatabase.sslrootcert | string | `""` | optional: tls/ssl root cert for postgresql connections |
 | slidingSync.externalDatabase.username | string | `"syncv3"` | username of matrix-sliding-sync postgres user |
 | slidingSync.networkPolicies.enabled | bool | `true` | whether to enable kubernetes network policies or not |
-| slidingSync.postgresql.enabled | bool | `true` | Whether to deploy the Bitnami Postgresql sub chart If postgresql.enabled is set to true, externalDatabase.enabled must be set to false else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
+| slidingSync.postgresql.enabled | bool | `false` | Whether to deploy the Bitnami Postgresql sub chart If postgresql.enabled is set to true, externalDatabase.enabled must be set to false else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
 | slidingSync.postgresql.global.postgresql.auth.database | string | `"syncv3"` | name of the database |
 | slidingSync.postgresql.global.postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
 | slidingSync.postgresql.global.postgresql.auth.password | string | `"changeme"` | password of matrix-sliding-sync postgres user - ignored using exsitingSecret |
