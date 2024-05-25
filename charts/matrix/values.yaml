@@ -1071,7 +1071,7 @@ mas:
 
     http:
       # -- Public URL base used when building absolute public URLs
-      public_base: "http://chart-example.local"
+      public_base: ""
       # -- OIDC issuer advertised by the service. Defaults to `public_base`
       issuer: ""
       # List of HTTP listeners, see below
