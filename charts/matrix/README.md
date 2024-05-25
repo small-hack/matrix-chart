@@ -21,7 +21,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | Repository | Name | Version |
 |------------|------|---------|
 | https://small-hack.github.io/coturn-chart | coturn | 5.2.0 |
-| https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 0.6.0 |
+| https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 0.6.1 |
 | https://small-hack.github.io/matrix-sliding-sync-chart | syncv3(matrix-sliding-sync) | 0.4.1 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql | 15.1.4 |
 
@@ -306,7 +306,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | mas.mas.http.listeners[0].resources[4].playground | bool | `true` |  |
 | mas.mas.http.listeners[0].resources[5].name | string | `"assets"` |  |
 | mas.mas.http.listeners[0].tls | object | `{}` | If set, makes the listener use TLS with the provided certificate and key. more info: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#httplisteners |
-| mas.mas.http.public_base | string | `"http://chart-example.local"` | Public URL base used when building absolute public URLs |
+| mas.mas.http.public_base | string | `""` | Public URL base used when building absolute public URLs |
 | mas.mas.masClientSecret.existingSecret | string | `""` | use an existing secret for clients section of config.yaml for: mas.clients[0].client_id, mas.clients[0].client_secret if set, ignores mas.clients[0].client_id, mas.clients[0].client_secret |
 | mas.mas.masClientSecret.secretKeys.client_id | string | `"client_id"` | key in secret with the client_id |
 | mas.mas.masClientSecret.secretKeys.client_secret | string | `"client_secret"` | key in secret with the client_secret |
