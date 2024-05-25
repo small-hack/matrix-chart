@@ -1176,26 +1176,13 @@ mas:
           allow_insecure_uris: true
 
         # Registration using passwords
-        passwords:
-          # -- minimum length of a password. default: 0
-          min_length: 16
-          # -- require at least one lowercase character in a password. default: false
-          require_lowercase: true
-          # -- require at least one uppercase character in a password. default: false
-          require_uppercase: true
-          # -- require at least one number in a password. default: false
-          require_number: true
+        passwords: {}
 
     # see: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#passwords
     passwords:
       # -- Whether to enable the password database.
       # If disabled, users will only be able to log in using upstream OIDC providers
       enabled: false
-
-      # -- List of password hashing schemes being used ⚠️ Only change this if you know what you're doing. ignored if passwords.enabled is set to false
-      schemes:
-        - version: 1
-          algorithm: argon2id
 
     # see: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#email
     email:
