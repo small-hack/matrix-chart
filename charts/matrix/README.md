@@ -21,8 +21,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | Repository | Name | Version |
 |------------|------|---------|
 | https://small-hack.github.io/coturn-chart | coturn | 5.2.0 |
-| https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 0.5.2 |
-| https://small-hack.github.io/matrix-sliding-sync-chart | slidingSync(matrix-sliding-sync) | 0.3.0 |
+| https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 0.5.3 |
+| https://small-hack.github.io/matrix-sliding-sync-chart | slidingSync(matrix-sliding-sync) | 0.4.0 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql | 15.1.4 |
 
 ## Values
@@ -514,22 +514,18 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | s3.sse_algorithm | string | `"AES256"` | optional SSE-C algorithm - very likely AES256 |
 | s3.sse_c_key | string | `""` | optional Server Side Encryption for Customer-provided keys |
 | slidingSync.enabled | bool | `false` |  |
+| slidingSync.existingEnvSecret | string | `""` | existing kubernetes secret for ALL syncv3 env vars listed below. if set, ignores all values under syncv3 including syncv3.db and syncv3.otlp. |
 | slidingSync.externalDatabase.database | string | `"syncv3"` | name of the database to try and connect to |
 | slidingSync.externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
-| slidingSync.externalDatabase.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
 | slidingSync.externalDatabase.hostname | string | `""` | hostname of db server. Can be left blank if using postgres subchart |
 | slidingSync.externalDatabase.password | string | `"changeme"` | password of matrix-sliding-sync postgres user - ignored using exsitingSecret |
 | slidingSync.externalDatabase.port | int | `5432` | which port to use to connect to your database server |
-| slidingSync.externalDatabase.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existingSecret with the admin postgresql password |
-| slidingSync.externalDatabase.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
-| slidingSync.externalDatabase.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
-| slidingSync.externalDatabase.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix to connect to db |
-| slidingSync.externalDatabase.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix to connect to db |
 | slidingSync.externalDatabase.sslcert | string | `""` | optional: tls/ssl cert for postgresql connections |
 | slidingSync.externalDatabase.sslkey | string | `""` | optional: tls/ssl key for postgresql connections |
 | slidingSync.externalDatabase.sslmode | string | `""` | sslmode to use, example: verify-full |
 | slidingSync.externalDatabase.sslrootcert | string | `""` | optional: tls/ssl root cert for postgresql connections |
 | slidingSync.externalDatabase.username | string | `"syncv3"` | username of matrix-sliding-sync postgres user |
+| slidingSync.networkPolicies.enabled | bool | `true` | whether to enable kubernetes network policies or not |
 | slidingSync.postgresql.enabled | bool | `true` | Whether to deploy the Bitnami Postgresql sub chart If postgresql.enabled is set to true, externalDatabase.enabled must be set to false else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
 | slidingSync.postgresql.global.postgresql.auth.database | string | `"syncv3"` | name of the database |
 | slidingSync.postgresql.global.postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
@@ -544,7 +540,10 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | slidingSync.postgresql.persistence.enabled | bool | `false` |  |
 | slidingSync.postgresql.volumePermissions.enabled | bool | `true` | Enable init container that changes the owner and group of the PVC |
 | slidingSync.syncv3.bindaddr | string | `"0.0.0.0:8008"` | SYNCV3_BINDADDR - The interface and port to listen on. (Supports unix socket: /path/to/socket) |
-| slidingSync.syncv3.existingSecret | string | `""` | existing kubernetes secret for ALL syncv3 env vars listed below. if set, ignores all values below, everything under syncv3 including syncvc.otlp. |
+| slidingSync.syncv3.db | string | `""` | SYNCV3_DB - db connection string: https://www.postgresql.org/docs/current/libpq-connect.html if db is empty, you must either provide postgresql or externalDatabase parameters, OR set syncv3.existingDbSecret and syncv3.dbSecretKey |
+| slidingSync.syncv3.dbSecretKey | string | `"SYNCV3_DB"` | db key in existing Db Secret for |
+| slidingSync.syncv3.existingDbSecret | string | `""` | use an existing kubernetes secret for the db connection connection string. if set, ignores syncv3.db |
+| slidingSync.syncv3.existingSyncv3Secret | string | `""` | if set, we'll grab your SYNCV3_SECRET from an existing kubernetes secret and ignore syncv3.secret |
 | slidingSync.syncv3.logLevel | string | `"info"` | SYNCV3_LOG_LEVEL - The level of verbosity for messages logged. Available values are trace, debug, info, warn, error and fatal |
 | slidingSync.syncv3.maxDbConn | string | `""` | SYNCV3_MAX_DB_CONN - Default: unset. Max database connections to use when communicating with postgres. Unset or 0 means no limit. |
 | slidingSync.syncv3.otlp.existingSecret | string | `""` |  |
@@ -556,6 +555,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | slidingSync.syncv3.secret | string | `""` | SYNCV3_SECRET - Required. A secret to use to encrypt access tokens. Must remain the same for the lifetime of the database. If both syncv3.secret and syncv3.existingSecret are not set, we will autogenerate this value |
 | slidingSync.syncv3.sentryDsn | string | `""` | SYNCV3_SENTRY_DSN - Default: unset. The Sentry DSN to report events to e.g https://sliding-sync@sentry.example.com/123 - if unset does not send sentry events. |
 | slidingSync.syncv3.server | string | `""` | SYNCV3_SERVER - Required. The destination homeserver to talk to (CS API HTTPS URL) e.g 'https://matrix-client.matrix.org' (Supports unix socket: /path/to/socket) |
+| slidingSync.syncv3.syncv3SecretKey | string | `"SYNCV3_SECRET"` | secret key to get synvcv3 secret from in existing kubernetes secret. |
 | slidingSync.syncv3.tlsCert | string | `""` | SYNCV3_TLS_CERT - Default: unset. Path to a certificate file to serve to HTTPS clients. Specifying this enables TLS on the bound address. |
 | slidingSync.syncv3.tlsKey | string | `""` | SYNCV3_TLS_KEY - Default: unset. Path to a key file for the certificate. Must be provided along with the certificate file. |
 | synapse.extraEnv | list | `[]` | optiona: extra env variables to pass to the matrix synapse deployment |
