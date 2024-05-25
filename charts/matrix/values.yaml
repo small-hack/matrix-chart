@@ -662,7 +662,7 @@ synapse:
   extraVolumeMounts: []
 
 # values for https://github.com/small-hack/matrix-sliding-sync-chart
-slidingSync:
+syncv3:
   enabled: false
   postgresql:
     # -- Whether to deploy the Bitnami Postgresql sub chart
@@ -675,6 +675,7 @@ slidingSync:
     volumePermissions:
       # -- Enable init container that changes the owner and group of the PVC
       enabled: true
+
     global:
       postgresql:
         # global.postgresql.auth overrides postgresql.auth
@@ -785,6 +786,22 @@ slidingSync:
     # -- whether to enable kubernetes network policies or not
     enabled: true
 
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
 mas:
   # Default values for matrix-authentication-service.
   # This is a YAML-formatted file.
@@ -839,6 +856,7 @@ mas:
     port: 80
 
   ingress:
+    # -- enable ingress for matrix authentication service
     enabled: false
     className: ""
     annotations: {}
