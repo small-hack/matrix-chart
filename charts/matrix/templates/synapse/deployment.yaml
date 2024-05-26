@@ -168,35 +168,35 @@ spec:
                   key: {{ .Values.matrix.oidc.secretKeys.userinfo_endpoint }}
             {{- end }}
             {{- end }}
-            {{- if and .Values.matrix.experimental_features.msc3861.enabled .Values.matrix.experimental_features.msc3861ExistingSecret }}
-            {{- if .Values.matrix.experimental_features.msc3861SecretKeys.issuer }}
+            {{- if and .Values.matrix.experimental_features.msc3861.enabled .Values.matrix.msc3861ExistingSecret }}
+            {{- if .Values.matrix.msc3861SecretKeys.issuer }}
             - name: MSC3861_ISSUER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.matrix.experimental_features.msc3861ExistingSecret }}
-                  key: {{ .Values.matrix.experimental_features.msc3861SecretKeys.issuer }}
+                  name: {{ .Values.matrix.msc3861ExistingSecret }}
+                  key: {{ .Values.matrix.msc3861SecretKeys.issuer }}
             {{- end }}
             - name: MSC3861_CLIENT_ID
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.matrix.experimental_features.msc3861ExistingSecret }}
-                  key: {{ .Values.matrix.experimental_features.msc3861SecretKeys.client_id }}
+                  name: {{ .Values.matrix.msc3861ExistingSecret }}
+                  key: {{ .Values.matrix.msc3861SecretKeys.client_id }}
             - name: MSC3861_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.matrix.experimental_features.msc3861ExistingSecret }}
-                  key: {{ .Values.matrix.experimental_features.msc3861SecretKeys.client_secret }}
+                  name: {{ .Values.matrix.msc3861ExistingSecret }}
+                  key: {{ .Values.matrix.msc3861SecretKeys.client_secret }}
             - name: MSC3861_ADMIN_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.matrix.experimental_features.msc3861ExistingSecret }}
-                  key: {{ .Values.matrix.experimental_features.msc3861SecretKeys.admin_token }}
-            {{- if .Values.matrix.experimental_features.msc3861SecretKeys.account_management_url }}
+                  name: {{ .Values.matrix.msc3861ExistingSecret }}
+                  key: {{ .Values.matrix.msc3861SecretKeys.admin_token }}
+            {{- if .Values.matrix.msc3861SecretKeys.account_management_url }}
             - name: MSC3861_ACCOUNT_MANAGEMENT_URL
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.matrix.experimental_features.msc3861ExistingSecret }}
-                  key: {{ .Values.matrix.experimental_features.msc3861SecretKeys.account_management_url }}
+                  name: {{ .Values.matrix.msc3861ExistingSecret }}
+                  key: {{ .Values.matrix.msc3861SecretKeys.account_management_url }}
             {{- end }}
             {{- end }}
             {{- if and .Values.mail.enabled .Values.mail.external.existingSecret }}

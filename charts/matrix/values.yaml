@@ -335,24 +335,24 @@ matrix:
     # -- The log level for the synapse server
     synapseLogLevel: WARNING
 
+  # -- use an existing secret for all msc3861 (matrix authentication service) related values
+  # if set, all other msc3861 values are ignored (issuer, client_id,
+  # client_auth_method, client_secret, admin_token, account_management_url)
+  msc3861ExistingSecret: ""
+
+  msc3861SecretKeys:
+    # -- secret key to use in existing secret for masc3861 issuer
+    issuer: ""
+    # -- secret key to use in existing secret for masc3861 client id
+    client_id: ""
+    # -- secret key to use in existing secret for masc3861 client secret
+    client_secret: ""
+    # -- secret key to use in existing secret for masc3861 admin_token
+    admin_token: ""
+    # -- secret key to use in existing secret for masc3861 account_management_url
+    account_management_url: ""
+
   experimental_features:
-    # -- use an existing secret for all msc3861 (matrix authentication service) related values
-    # if set, all other msc3861 values are ignored (issuer, client_id,
-    # client_auth_method, client_secret, admin_token, account_management_url)
-    msc3861ExistingSecret: ""
-
-    msc3861SecretKeys:
-      # -- secret key to use in existing secret for masc3861 issuer
-      issuer: ""
-      # -- secret key to use in existing secret for masc3861 client id
-      client_id: ""
-      # -- secret key to use in existing secret for masc3861 client secret
-      client_secret: ""
-      # -- secret key to use in existing secret for masc3861 admin_token
-      admin_token: ""
-      # -- secret key to use in existing secret for masc3861 account_management_url
-      account_management_url: ""
-
     msc3861:
       # -- experimental_feature msc3861 - enable this if you want to use the matrix authentication service
       # Likely needed if using OIDC on synapse and you want to allow usage of Element-X (the beta of element)

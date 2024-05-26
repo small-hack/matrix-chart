@@ -316,15 +316,11 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | mas.mas.matrix.secret | string | `"test"` | a shared secret the service will use to call the homeserver admin API |
 | mas.mas.matrix.secretKey | string | `"secret"` | name of the key in existing secret to grab matrix.secret from |
 | mas.mas.passwords.enabled | bool | `false` | Whether to enable the password database. If disabled, users will only be able to log in using upstream OIDC providers |
-| mas.mas.passwords.schemes | list | `[{"algorithm":"argon2id","version":1}]` | List of password hashing schemes being used ⚠️ Only change this if you know what you're doing. ignored if passwords.enabled is set to false |
 | mas.mas.policy.data.admin_clients | list | `[]` | Client IDs which are allowed to ask for admin access with a client_credentials grant |
 | mas.mas.policy.data.admin_users | list | `[]` | Users which are allowed to ask for admin access. If possible, use the can_request_admin flag on users instead. |
 | mas.mas.policy.data.client_registration.allow_host_mismatch | bool | `true` | don't require URIs to be on the same host. default: false |
 | mas.mas.policy.data.client_registration.allow_insecure_uris | bool | `true` | allow non-SSL and localhost URIs. default: false |
-| mas.mas.policy.data.passwords.min_length | int | `16` | minimum length of a password. default: 0 |
-| mas.mas.policy.data.passwords.require_lowercase | bool | `true` | require at least one lowercase character in a password. default: false |
-| mas.mas.policy.data.passwords.require_number | bool | `true` | require at least one number in a password. default: false |
-| mas.mas.policy.data.passwords.require_uppercase | bool | `true` | require at least one uppercase character in a password. default: false |
+| mas.mas.policy.data.passwords | object | `{}` |  |
 | mas.mas.upstream_oauth2.existingSecret | string | `""` | use an existing k8s secret for upstream oauth2 client_id and client_secret |
 | mas.mas.upstream_oauth2.providers[0] | object | `{"authorization_endpoint":"","brand_name":"zitadel","claims_imports":{"displayname":{"action":"suggest","template":"{{ user.name }}"},"email":{"action":"suggest","set_email_verification":"always","template":"{{ user.email }}"},"localpart":{"action":"require","template":"{{ user.preferred_username }}"},"subject":{"template":"{{ user.sub }}"}},"client_id":"","client_secret":"","discovery_mode":"oidc","human_name":"Example","id":"","issuer":"https://example.com/","jwks_uri":"","pkce_method":"auto","scope":"openid email profile","token_endpoint":"","token_endpoint_auth_method":"client_secret_basic"}` | A unique identifier for the provider Must be a valid ULID, and can be generated using online tools like: https://www.ulidtools.com |
 | mas.mas.upstream_oauth2.providers[0].authorization_endpoint | string | `""` | The provider authorization endpoint, takes precedence over the discovery mechanism |
@@ -407,12 +403,6 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.experimental_features.msc3861.client_secret | string | `"SomeRandomSecret"` | Matches the `client_secret` in the auth service config |
 | matrix.experimental_features.msc3861.enabled | bool | `false` | experimental_feature msc3861 - enable this if you want to use the matrix authentication service Likely needed if using OIDC on synapse and you want to allow usage of Element-X (the beta of element) See: [Matrix authentication service home server docs](https://matrix-org.github.io/matrix-authentication-service/setup/homeserver.html#configure-the-homeserver-to-delegate-authentication-to-the-service), [full matrix authentication service docs](https://matrix-org.github.io/matrix-authentication-service/index.html), and [issue#1915](https://github.com/element-hq/element-meta/issues/1915#issuecomment-2119297748) where this is being discussed |
 | matrix.experimental_features.msc3861.issuer | string | `"http://localhost:8080/"` | Synapse will call `{issuer}/.well-known/openid-configuration` to get the OIDC configuration |
-| matrix.experimental_features.msc3861ExistingSecret | string | `""` | use an existing secret for all msc3861 (matrix authentication service) related values if set, all other msc3861 values are ignored (issuer, client_id, client_auth_method, client_secret, admin_token, account_management_url) |
-| matrix.experimental_features.msc3861SecretKeys.account_management_url | string | `""` | secret key to use in existing secret for masc3861 account_management_url |
-| matrix.experimental_features.msc3861SecretKeys.admin_token | string | `""` | secret key to use in existing secret for masc3861 admin_token |
-| matrix.experimental_features.msc3861SecretKeys.client_id | string | `""` | secret key to use in existing secret for masc3861 client id |
-| matrix.experimental_features.msc3861SecretKeys.client_secret | string | `""` | secret key to use in existing secret for masc3861 client secret |
-| matrix.experimental_features.msc3861SecretKeys.issuer | string | `""` | secret key to use in existing secret for masc3861 issuer |
 | matrix.federation.allowPublicRooms | bool | `true` | Allow members of other homeservers to fetch *public* rooms |
 | matrix.federation.blacklist | list | `["127.0.0.0/8","10.0.0.0/8","172.16.0.0/12","192.168.0.0/16","100.64.0.0/10","169.254.0.0/16","::1/128","fe80::/64","fc00::/7"]` | IP addresses to blacklist federation requests to |
 | matrix.federation.enabled | bool | `true` | Set to false to disable federation and run an isolated homeserver |
@@ -430,6 +420,12 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.logging.rootLogLevel | string | `"WARNING"` | Root log level is the default log level for log outputs that don't have more specific settings. |
 | matrix.logging.sqlLogLevel | string | `"WARNING"` | beware: increasing this to DEBUG will make synapse log sensitive information such as access tokens. |
 | matrix.logging.synapseLogLevel | string | `"WARNING"` | The log level for the synapse server |
+| matrix.msc3861ExistingSecret | string | `""` | use an existing secret for all msc3861 (matrix authentication service) related values if set, all other msc3861 values are ignored (issuer, client_id, client_auth_method, client_secret, admin_token, account_management_url) |
+| matrix.msc3861SecretKeys.account_management_url | string | `""` | secret key to use in existing secret for masc3861 account_management_url |
+| matrix.msc3861SecretKeys.admin_token | string | `""` | secret key to use in existing secret for masc3861 admin_token |
+| matrix.msc3861SecretKeys.client_id | string | `""` | secret key to use in existing secret for masc3861 client id |
+| matrix.msc3861SecretKeys.client_secret | string | `""` | secret key to use in existing secret for masc3861 client secret |
+| matrix.msc3861SecretKeys.issuer | string | `""` | secret key to use in existing secret for masc3861 issuer |
 | matrix.oidc.enabled | bool | `false` | set to true to enable authorization against an OpenID Connect server unless using OIDC on synapse AND you want to allow usage of Element-X (the beta of element), then you must set experimental_feature.msc3861.enabled to True to use the MAS (Matrix Authentication Service) and fill out the values there. |
 | matrix.oidc.existingSecret | string | `""` | existing secret to use for the OIDC config |
 | matrix.oidc.providers | list | `[{"authorization_endpoint":"https://accounts.example.com/oauth2/auth","backchannel_logout_enabled":true,"client_auth_method":"client_secret_post","client_id":"provided-by-your-issuer","client_secret":"provided-by-your-issuer","discover":true,"idp_brand":"","idp_id":"","idp_name":"","issuer":"https://accounts.example.com/","scopes":["openid","profile"],"skip_verification":false,"token_endpoint":"https://accounts.example.com/oauth2/token","user_mapping_provider":{"config":{"display_name_template":"","localpart_template":"","picture_template":"{{ user.data.profile_image_url }}","subject_claim":""}},"userinfo_endpoint":"https://accounts.example.com/userinfo"}]` | each of these will be templated under oidc_providers in homeserver.yaml ref: https://matrix-org.github.io/synapse/latest/openid.html?search= |
