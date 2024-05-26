@@ -21,7 +21,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | Repository | Name | Version |
 |------------|------|---------|
 | https://small-hack.github.io/coturn-chart | coturn | 5.2.0 |
-| https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 0.6.1 |
+| https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 0.6.2 |
 | https://small-hack.github.io/matrix-sliding-sync-chart | syncv3(matrix-sliding-sync) | 0.4.1 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql | 15.1.4 |
 
@@ -322,9 +322,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | mas.mas.policy.data.client_registration.allow_insecure_uris | bool | `true` | allow non-SSL and localhost URIs. default: false |
 | mas.mas.policy.data.passwords | object | `{}` |  |
 | mas.mas.upstream_oauth2.existingSecret | string | `""` | use an existing k8s secret for upstream oauth2 client_id and client_secret |
-| mas.mas.upstream_oauth2.providers[0] | object | `{"authorization_endpoint":"","brand_name":"zitadel","claims_imports":{"displayname":{"action":"suggest","template":"{{ user.name }}"},"email":{"action":"suggest","set_email_verification":"always","template":"{{ user.email }}"},"localpart":{"action":"require","template":"{{ user.preferred_username }}"},"subject":{"template":"{{ user.sub }}"}},"client_id":"","client_secret":"","discovery_mode":"oidc","human_name":"Example","id":"","issuer":"https://example.com/","jwks_uri":"","pkce_method":"auto","scope":"openid email profile","token_endpoint":"","token_endpoint_auth_method":"client_secret_basic"}` | A unique identifier for the provider Must be a valid ULID, and can be generated using online tools like: https://www.ulidtools.com |
+| mas.mas.upstream_oauth2.providers[0] | object | `{"authorization_endpoint":"","claims_imports":{"displayname":{"action":"suggest","template":"{{ user.name }}"},"email":{"action":"suggest","set_email_verification":"always","template":"{{ user.email }}"},"localpart":{"action":"require","template":"{{ user.preferred_username }}"},"subject":{"template":"{{ user.sub }}"}},"client_id":"","client_secret":"","discovery_mode":"oidc","id":"","issuer":"https://example.com/","jwks_uri":"","pkce_method":"auto","scope":"openid email profile","token_endpoint":"","token_endpoint_auth_method":"client_secret_basic"}` | A unique identifier for the provider Must be a valid ULID, and can be generated using online tools like: https://www.ulidtools.com |
 | mas.mas.upstream_oauth2.providers[0].authorization_endpoint | string | `""` | The provider authorization endpoint, takes precedence over the discovery mechanism |
-| mas.mas.upstream_oauth2.providers[0].brand_name | string | `"zitadel"` | A brand identifier for the provider, which will be used to display a logo on the login page. Values supported by the default template are:  - `apple`  - `google`  - `facebook`  - `github`  - `gitlab`  - `twitter` |
 | mas.mas.upstream_oauth2.providers[0].claims_imports.displayname | object | `{"action":"suggest","template":"{{ user.name }}"}` | The display name is the user's display name. |
 | mas.mas.upstream_oauth2.providers[0].claims_imports.email | object | `{"action":"suggest","set_email_verification":"always","template":"{{ user.email }}"}` | An email address to import. |
 | mas.mas.upstream_oauth2.providers[0].claims_imports.email.set_email_verification | string | `"always"` | Whether the email address must be marked as verified. Possible values are:  - `import`: mark the email address as verified if the upstream provider     has marked it as verified, using the `email_verified` claim.     This is the default.   - `always`: mark the email address as verified   - `never`: mark the email address as not verified |
@@ -333,7 +332,6 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | mas.mas.upstream_oauth2.providers[0].client_id | string | `""` | The client ID to use to authenticate to the provider |
 | mas.mas.upstream_oauth2.providers[0].client_secret | string | `""` | The client secret to use to authenticate to the provider This is only used by the `client_secret_post`, `client_secret_basic` and `client_secret_jwk` authentication methods |
 | mas.mas.upstream_oauth2.providers[0].discovery_mode | string | `"oidc"` | How the provider configuration and endpoints should be discovered |
-| mas.mas.upstream_oauth2.providers[0].human_name | string | `"Example"` | A human-readable name for the provider, which will be displayed on the login page |
 | mas.mas.upstream_oauth2.providers[0].issuer | string | `"https://example.com/"` | The issuer URL, which will be used to discover the provider's configuration. If discovery is enabled, this *must* exactly match the `issuer` field advertised in `<issuer>/.well-known/openid-configuration`. |
 | mas.mas.upstream_oauth2.providers[0].jwks_uri | string | `""` | The provider JWKS URI. takes precedence over the discovery mechanism |
 | mas.mas.upstream_oauth2.providers[0].pkce_method | string | `"auto"` | Whether PKCE should be used during the authorization code flow. Possible values are:  - `auto`: use PKCE if the provider supports it (default)    Determined through discovery, and disabled if discovery is disabled  - `always`: always use PKCE (with the S256 method)  - `never`: never use PKCE |
