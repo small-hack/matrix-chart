@@ -808,11 +808,12 @@ syncv3:
     #    hosts:
     #      - chart-example.local
 
-mas:
-  # Default values for matrix-authentication-service.
-  # This is a YAML-formatted file.
-  # Declare variables to be passed into your templates.
 
+mas:
+  # -- enable the matrix authentication service sub chart to use OIDC
+  # This is the only way that's tested to use with element-x beta right now
+  # You must also fill out matrix.experimental_feature.masc3861 if you use this method
+  enabled: false
   replicaCount: 1
 
   image:
@@ -863,7 +864,7 @@ mas:
 
   ingress:
     # -- enable ingress for matrix authentication service
-    enabled: false
+    enabled: true
     className: ""
     annotations: {}
       # kubernetes.io/ingress.class: nginx

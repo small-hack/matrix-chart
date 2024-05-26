@@ -30,7 +30,7 @@ spec:
             pathType: ImplementationSpecific
             backend:
               service:
-                name: {{ template "mas.fullname" .Subcharts.mas }}
+                name: {{ template "matrix-authentication-service.fullname" .Subcharts.mas }}
                 port:
                   number: {{ .Values.mas.service.port }}
           {{- end }}

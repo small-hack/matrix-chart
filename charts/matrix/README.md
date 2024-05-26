@@ -239,6 +239,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | mas.configVolume.existingClaim | string | `""` | name of an existing persistent volume claim to use for matrix-authentication-service config. If provided, ignores mas parameter map |
 | mas.configVolume.storage | string | `"500Mi"` | storage capacity for creating a persistent volume |
 | mas.configVolume.storageClassName | string | `"default"` | name of storage class for the persistent volume |
+| mas.enabled | bool | `false` | enable the matrix authentication service sub chart to use OIDC This is the only way that's tested to use with element-x beta right now You must also fill out matrix.experimental_feature.masc3861 if you use this method |
 | mas.existingMasConfigSecret | string | `""` | Existing Kubernetes Secret for entire matrix authentication service `config.yaml` file. If set, everything under the mas section of the values.yaml is ignored. |
 | mas.externalDatabase.database | string | `"mas"` | name of the database to try and connect to |
 | mas.externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
@@ -265,7 +266,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | mas.imagePullSecrets | list | `[]` |  |
 | mas.ingress.annotations | object | `{}` |  |
 | mas.ingress.className | string | `""` |  |
-| mas.ingress.enabled | bool | `false` | enable ingress for matrix authentication service |
+| mas.ingress.enabled | bool | `true` | enable ingress for matrix authentication service |
 | mas.ingress.hosts[0].host | string | `"chart-example.local"` |  |
 | mas.ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | mas.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
@@ -394,7 +395,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.disabled | bool | `false` | Set to true to globally block access to the homeserver |
 | matrix.disabledMessage | string | `""` | Human readable reason for why the homeserver is blocked |
 | matrix.encryptByDefault | string | `"invite"` |  |
-| matrix.experimental_features.msc3861.account_management_url | string | `"http://localhost:8080/account"` | URL to advertise to clients where users can self-manage their account |
+| matrix.experimental_features.msc3861.account_management_url | string | `""` | URL to advertise to clients where users can self-manage their account |
 | matrix.experimental_features.msc3861.admin_token | string | `"AnotherRandomSecret"` | Matches the `matrix.secret` in the auth service config |
 | matrix.experimental_features.msc3861.client_auth_method | string | `"client_secret_basic"` | Matches the `client_auth_method` in the auth service config |
 | matrix.experimental_features.msc3861.client_id | string | `"0000000000000000000SYNAPSE"` | Matches the `client_id` in the auth service config |
