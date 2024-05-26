@@ -1,4 +1,5 @@
 {{- if .Values.synapse.ingress.enabled }}
+{{- $svcPort := .Values.synapse.service.port -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -17,22 +18,20 @@ spec:
     - host: {{ .Values.synapse.ingress.host }}
       http:
         paths:
-          - path: "/"
-            pathType: Prefix
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
             backend:
               service:
-                name: "{{ include "matrix.fullname" . }}-synapse"
+                {{- if hasKey . "backend" }}
+                name: {{ .backend.service.name }}
                 port:
-                  number: {{ .Values.synapse.service.port }}
-
-          {{- if .Values.mas.enabled }}
-          - path: "/_matrix/client/(r0|v3)/(refresh|login|logout).*"
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: {{ template "matrix-authentication-service.fullname" .Subcharts.mas }}
+                  number: {{ .backend.service.port.number }}
+                {{- else -}}
+                name: {{ include "matrix.fullname" . }}-synapse
                 port:
-                  number: {{ .Values.mas.service.port }}
+                  number: {{ $svcPort }}
+                {{- end }}
           {{- end }}
 {{- if .Values.synapse.ingress.tls.enabled }}
   tls:
