@@ -24,6 +24,16 @@ spec:
                 name: "{{ include "matrix.fullname" . }}-synapse"
                 port:
                   number: {{ .Values.synapse.service.port }}
+
+          {{- if .Values.mas.enabled }}
+          - path: "/_matrix/client/(r0|v3)/(refresh|login|logout).*"
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ template "mas.fullname" .Subcharts.mas }}
+                port:
+                  number: {{ .Values.mas.service.port }}
+          {{- end }}
 {{- if .Values.synapse.ingress.tls.enabled }}
   tls:
     - secretName: {{ .Values.synapse.ingress.tls.secretName }}
