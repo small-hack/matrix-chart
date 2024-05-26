@@ -1250,7 +1250,7 @@ mas:
           issuer: https://example.com/
 
           # -- A human-readable name for the provider, which will be displayed on the login page
-          human_name: Example
+          # human_name: Example
 
           # -- A brand identifier for the provider, which will be used to display a logo
           # on the login page. Values supported by the default template are:
@@ -1260,7 +1260,7 @@ mas:
           #  - `github`
           #  - `gitlab`
           #  - `twitter`
-          brand_name: zitadel
+          # brand_name: zitadel
 
           # -- The client ID to use to authenticate to the provider
           client_id: ""
