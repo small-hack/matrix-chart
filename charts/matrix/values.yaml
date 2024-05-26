@@ -381,7 +381,7 @@ matrix:
       admin_token: "AnotherRandomSecret"
 
       # -- URL to advertise to clients where users can self-manage their account
-      account_management_url: "http://localhost:8080/account"
+      account_management_url: ""
 
 s3:
   # -- enable s3 storage via https://github.com/matrix-org/synapse-s3-storage-provider
