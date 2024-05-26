@@ -446,8 +446,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.oidc.secretKeys.issuer | string | `"issuer"` | key in secret with the issuer |
 | matrix.oidc.secretKeys.token_endpoint | string | `""` | key in secret with the token_endpoint if discovery is disabled |
 | matrix.oidc.secretKeys.userinfo_endpoint | string | `""` | key in secret with the userinfo_endpoint if discovery is disabled |
-| matrix.password_config.enabled | bool | `false` | set to true to enable password authentication |
-| matrix.password_config.localdb_enabled | bool | `false` |  |
+| matrix.password_config | object | `{}` |  |
 | matrix.presence | bool | `true` | Set to false to disable presence (online/offline indicators) |
 | matrix.registration.allowGuests | bool | `false` | Allow users to join rooms as a guest |
 | matrix.registration.autoJoinRooms | list | `[]` | Rooms to automatically join all new users to |

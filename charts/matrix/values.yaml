@@ -125,10 +125,10 @@ matrix:
     requiresToken: false
 
   # see: https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html?highlight=password%20disable#password_config
-  password_config:
+  password_config: {}
     # -- set to true to enable password authentication
-    enabled: false
-    localdb_enabled: false
+    # enabled: false
+    # localdb_enabled: false
 
   # OpenID Connect integration. The following settings can be used to make Synapse
   # use an OpenID Connect Provider for authentication, instead of its internal
