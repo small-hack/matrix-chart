@@ -1,9 +1,10 @@
 {{- if .Values.synapse.ingress.enabled }}
 {{- $svcPort := .Values.synapse.service.port -}}
+{{- $fullname := printf "%s-synapse" (include "matrix.fullname" .) -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "matrix.fullname" . }}-synapse
+  name: {{ $fullname }}
   labels:
     {{- include "matrix.labels" . | nindent 4 }}
   {{- with .Values.synapse.ingress.annotations }}
@@ -15,7 +16,7 @@ spec:
   ingressClassName: {{ .Values.synapse.ingress.className }}
   {{- end }}
   rules:
-    {{- if .Values.synapse.ingress.host }}
+    {{- if .Values.synapse.ingress.host }}{{/* this method will be deprecated in the future */}}
     - host: {{ .Values.synapse.ingress.host }}
       http:
         paths:
@@ -23,7 +24,7 @@ spec:
             pathType: ImplementationSpecific
             backend:
               service:
-                name: {{ include "matrix.fullname" . }}-synapse
+                name: {{ $fullname }}
                 port:
                   number: {{ $svcPort }}
     {{- else -}}
@@ -41,7 +42,7 @@ spec:
               {{- end }}
               {{- else -}}{{/* else we template out a service backend */}}
               service:
-                name: {{ include "matrix.fullname" . }}-synapse
+                name: {{ $fullname }}
                 port:
                   number: {{ $svcPort }}
               {{- end }}{{/* end checking for backend key */}}

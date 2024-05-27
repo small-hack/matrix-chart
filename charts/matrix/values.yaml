@@ -1,4 +1,16 @@
 ---
+# -- override the full name of the chart
+fullnameOverride: ""
+
+# -- override the name of the chart
+nameOverride: ""
+
+imagePullSecrets: []
+
+networkPolicies:
+  # -- whether to enable kubernetes network policies or not
+  enabled: true
+
 # Runtime configuration for Synapse and settings related to the Matrix protocol
 matrix:
   # Manual overrides for homeserver.yaml, the main config file for Synapse
@@ -569,14 +581,13 @@ synapse:
       port: 80
 
   ingress:
+    # -- enable ingress for synapse, so the server is reachable outside the cluster
     enabled: true
-    # -- hostname for your synapse server
-    host: matrix.chart-example.local
+    # -- @DEPRECATION: hostname for your synapse server, please use
+    # synapse.ingress.hosts instead. This will be removed in a future release
+    host: ""
     # -- ingressClassName for the k8s ingress
     className: "nginx"
-    tls:
-      enabled: true
-      secretName: "matrix-tls"
     annotations:
       # -- This annotation is required for the Nginx ingress provider. You can
       # remove it if you use a different ingress provider
@@ -584,14 +595,20 @@ synapse:
         proxy_intercept_errors off;
       # -- required for TLS certs issued by cert-manager
       cert-manager.io/cluster-issuer: letsencrypt-staging
-      # an example for returning the correct json required for syncv3
+      # an example for returning the correct json required for syncv3 and MAS
       # please change matrix.chart-example.local to your domain
-      # see more info here: https://github.com/matrix-org/sliding-sync/blob/693587ef7e1c47cd04a667332ef133146132a713/README.md?plain=1#L51-L61
-      #
       # nginx.ingress.kubernetes.io/server-snippet: |-
       #   location = /.well-known/matrix/client {
       #       return 200 '{"m.homeserver": {"base_url": "https://matrix.chart-example.local"},"org.matrix.msc3575.proxy": {"url": "https://matrix.chart-example.local"},"org.matrix.msc2965.authentication": {"issuer": "https://example.com/", "account": "https://auth.example.com/account"}}';
       #   }
+    hosts:
+      - host: "matrix.chart-example.local"
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      enabled: true
+      secretName: "matrix-tls"
 
   replicaCount: 1
   resources: {}
@@ -1938,11 +1955,3 @@ bridges:
     accessMode: ReadWriteMany
     # -- name of an existing persistent volume claim to use for bridges
     existingClaim: ""
-
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-
-networkPolicies:
-  # -- whether to enable kubernetes network policies or not
-  enabled: true

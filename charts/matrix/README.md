@@ -207,7 +207,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | externalDatabase.sslmode | string | `""` | sslmode to use, example: verify-full |
 | externalDatabase.sslrootcert | string | `""` | optional: tls/ssl root cert for postgresql connections |
 | externalDatabase.username | string | `"matrix"` | username of matrix postgres user |
-| fullnameOverride | string | `""` |  |
+| fullnameOverride | string | `""` | override the full name of the chart |
 | imagePullSecrets | list | `[]` |  |
 | mail.elementUrl | string | `""` | Optional: Element instance URL. If ingress is enabled, this is unnecessary, else if this is empty, emails will contain a link to https://app.element.io |
 | mail.enabled | bool | `false` | disabled all email notifications by default. NOTE: If enabled, either enable the Exim relay or configure an external mail server below |
@@ -479,7 +479,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.urlPreviews.rules.ip.whitelist | list | `[]` |  |
 | matrix.urlPreviews.rules.maxSize | string | `"10M"` | Max size of a crawlable page. Keep this low to prevent a DOS vector |
 | matrix.urlPreviews.rules.url | object | `{}` | Whitelist and blacklist based on URL pattern matching |
-| nameOverride | string | `""` |  |
+| nameOverride | string | `""` | override the name of the chart |
 | networkPolicies.enabled | bool | `true` | whether to enable kubernetes network policies or not |
 | postgresql.enabled | bool | `true` | Whether to deploy the Bitnami Postgresql sub chart If postgresql.enabled is set to true, externalDatabase.enabled must be set to false else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
 | postgresql.global.postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
@@ -518,8 +518,11 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | synapse.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | This annotation is required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
 | synapse.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
-| synapse.ingress.enabled | bool | `true` |  |
-| synapse.ingress.host | string | `"matrix.chart-example.local"` | hostname for your synapse server |
+| synapse.ingress.enabled | bool | `true` | enable ingress for synapse, so the server is reachable outside the cluster |
+| synapse.ingress.host | string | `""` | @DEPRECATION: hostname for your synapse server, please use synapse.ingress.hosts instead. This will be removed in a future release |
+| synapse.ingress.hosts[0].host | string | `"matrix.chart-example.local"` |  |
+| synapse.ingress.hosts[0].paths[0].path | string | `"/"` |  |
+| synapse.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
 | synapse.ingress.tls.enabled | bool | `true` |  |
 | synapse.ingress.tls.secretName | string | `"matrix-tls"` |  |
 | synapse.labels | object | `{"component":"synapse"}` | Labels to be appended to all Synapse resources |
