@@ -22,16 +22,16 @@ spec:
           - path: {{ .path }}
             pathType: {{ .pathType }}
             backend:
+              {{- if hasKey . "backend" }}{{/* if user has provided a backend for path */}}
+              {{- with .backend }}
+              {{- toYaml . | nindent 15 }}
+              {{- end }}
+              {{- else -}}{{/* else we template out a service backend */}}
               service:
-                {{- if hasKey . "backend" }}
-                name: {{ .backend.service.name }}
-                port:
-                  number: {{ .backend.service.port.number }}
-                {{- else -}}
                 name: {{ include "matrix.fullname" . }}-synapse
                 port:
                   number: {{ $svcPort }}
-                {{- end }}
+              {{- end }}
           {{- end }}
 {{- if .Values.synapse.ingress.tls.enabled }}
   tls:
