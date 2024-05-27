@@ -8,16 +8,12 @@ metadata:
 data:
   config.json: |
     {
-      {{/*"default_server_config": {
+      "default_server_config": {
         "m.homeserver": {
           "base_url": {{ include "matrix.baseUrl" . | quote }}
-        } if .Values.syncv3.enabled }},
-        "org.matrix.msc3575.proxy": {
-          "url": {{ .Values.syncv3.syncv3.server }}
-        }{{- end
+        }
       },
-        */}}
-      "default_server_name": {{ include "matrix.baseUrl" . | quote }},
+      {{/*"default_server_name": {{ include "matrix.baseUrl" . | quote }},*/}}
       "brand": {{ .Values.element.branding.brand | quote }},
       "branding": {
         {{- if .Values.element.branding.welcomeBackgroundUrl }}
