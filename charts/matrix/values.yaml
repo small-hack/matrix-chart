@@ -11,6 +11,7 @@ networkPolicies:
   # -- whether to enable kubernetes network policies or not
   enabled: true
 
+
 # Runtime configuration for Synapse and settings related to the Matrix protocol
 matrix:
   # Manual overrides for homeserver.yaml, the main config file for Synapse
@@ -61,6 +62,12 @@ matrix:
 
     # -- Max image size in pixels
     maxPixels: 32M
+
+  # -- extra sections for the examples-synapse-server.com/.well-known/matrix/client
+  # json returned
+  extra_well_known_client_content: {}
+  #  "org.matrix.msc3575.proxy":
+  #    "url": "https://wherever-your-sliding-sync-proxy-is"
 
   # Settings related to federation
   federation:
