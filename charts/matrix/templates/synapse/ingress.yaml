@@ -15,7 +15,20 @@ spec:
   ingressClassName: {{ .Values.synapse.ingress.className }}
   {{- end }}
   rules:
+    {{- if .Values.synapse.ingress.host }}
     - host: {{ .Values.synapse.ingress.host }}
+      http:
+        paths:
+          - path: "/"
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ include "matrix.fullname" . }}-synapse
+                port:
+                  number: {{ $svcPort }}
+    {{- else -}}
+    {{- range .Values.synapse.ingress.hosts }}
+    - host: {{ .host | quote }}
       http:
         paths:
           {{- range .paths }}
@@ -31,8 +44,10 @@ spec:
                 name: {{ include "matrix.fullname" . }}-synapse
                 port:
                   number: {{ $svcPort }}
-              {{- end }}
-          {{- end }}
+              {{- end }}{{/* end checking for backend key */}}
+          {{- end }}{{/* end range paths */}}
+    {{- end }}{{/* end range hosts */}}
+    {{- end }}{{/* end if old host method of ingress from old chart */}}
 {{- if .Values.synapse.ingress.tls.enabled }}
   tls:
     - secretName: {{ .Values.synapse.ingress.tls.secretName }}
