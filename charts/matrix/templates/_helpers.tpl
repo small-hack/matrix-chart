@@ -98,8 +98,9 @@ Synapse hostname prepended with https:// to form a complete URL
 {{- define "matrix.baseUrl" -}}
 {{- if .Values.matrix.hostname }}
 {{- printf "https://%s" .Values.matrix.hostname -}}
-{{- else }}
-{{- printf "https://%s" .Values.synapse.ingress.host -}}
+{{- else -}}
+{{- range .Values.synapse.ingress.hosts }}
+{{- printf "https://%s" .host -}}
 {{- end }}
 {{- end }}
 
