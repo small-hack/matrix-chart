@@ -515,7 +515,6 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy for synapse image, Use Always if using image.tag: latest |
 | synapse.image.repository | string | `"matrixdotorg/synapse"` | image registry and repository to use for synapse |
 | synapse.image.tag | string | `""` | tag of synapse docker image to use. change this to latest to grab the    cutting-edge release of synapse |
-| synapse.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | synapse.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | This annotation is required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
 | synapse.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
 | synapse.ingress.enabled | bool | `true` | enable ingress for synapse, so the server is reachable outside the cluster |
@@ -523,8 +522,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.ingress.hosts[0].host | string | `"matrix.chart-example.local"` |  |
 | synapse.ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | synapse.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
-| synapse.ingress.tls.enabled | bool | `true` |  |
-| synapse.ingress.tls.secretName | string | `"matrix-tls"` |  |
+| synapse.ingress.tls | list | `[]` | enable tls for matrix |
 | synapse.labels | object | `{"component":"synapse"}` | Labels to be appended to all Synapse resources |
 | synapse.metrics.annotations | bool | `true` |  |
 | synapse.metrics.enabled | bool | `true` | Whether Synapse should capture metrics on an additional endpoint |

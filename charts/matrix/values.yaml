@@ -589,12 +589,14 @@ synapse:
     # -- ingressClassName for the k8s ingress
     className: "nginx"
     annotations:
+      # required for TLS certs issued by cert-manager
+      # cert-manager.io/cluster-issuer: letsencrypt-staging
+
       # -- This annotation is required for the Nginx ingress provider. You can
       # remove it if you use a different ingress provider
       nginx.ingress.kubernetes.io/configuration-snippet: |
         proxy_intercept_errors off;
-      # -- required for TLS certs issued by cert-manager
-      cert-manager.io/cluster-issuer: letsencrypt-staging
+
       # an example for returning the correct json required for syncv3 and MAS
       # please change matrix.chart-example.local to your domain
       # nginx.ingress.kubernetes.io/server-snippet: |-
@@ -606,9 +608,12 @@ synapse:
         paths:
           - path: /
             pathType: ImplementationSpecific
-    tls:
-      enabled: true
-      secretName: "matrix-tls"
+
+    # -- enable tls for matrix
+    tls: []
+    #  - secretName: "matrix-tls"
+    #    hosts:
+    #      - matrix.chart-example.local
 
   replicaCount: 1
   resources: {}

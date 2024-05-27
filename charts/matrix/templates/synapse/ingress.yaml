@@ -16,7 +16,7 @@ spec:
   ingressClassName: {{ .Values.synapse.ingress.className }}
   {{- end }}
   rules:
-    {{- if .Values.synapse.ingress.host }}{{/* this method will be deprecated in the future */}}
+  {{- if .Values.synapse.ingress.host }}{{/* this method will be deprecated in the future */}}
     - host: {{ .Values.synapse.ingress.host }}
       http:
         paths:
@@ -27,7 +27,11 @@ spec:
                 name: {{ $fullname }}
                 port:
                   number: {{ $svcPort }}
-    {{- else -}}
+  tls:
+   - secretName: {{ .Values.synapse.tls.secretName }}
+     hosts:
+       - {{ .Values.synapse.ingress.host }}
+  {{- else -}}
     {{- range .Values.synapse.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
@@ -48,11 +52,16 @@ spec:
               {{- end }}{{/* end checking for backend key */}}
           {{- end }}{{/* end range paths */}}
     {{- end }}{{/* end range hosts */}}
-    {{- end }}{{/* end if old host method of ingress from old chart */}}
-{{- if .Values.synapse.ingress.tls.enabled }}
+  {{- with .Values.synapse.tls }}
   tls:
-    - secretName: {{ .Values.synapse.ingress.tls.secretName }}
+  {{- range . }}
+    - secretName: {{ .secretName }}
       hosts:
-        - {{ .Values.synapse.ingress.host }}
-{{- end }}
-{{- end }}
+        {{- range .hosts }}
+        - {{ . }}
+        {{- end }}
+  {{- end }}{{/* end range of tls list items */}}
+  {{- end }}{{/* end with .Values.synapse.tls */}}
+  {{- end }}{{/* end if old host method of ingress from old chart */}}
+
+{{- end }}{{/* end if synapse.ingress.enabled */}}
