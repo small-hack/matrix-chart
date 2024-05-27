@@ -52,7 +52,7 @@ spec:
               {{- end }}{{/* end checking for backend key */}}
           {{- end }}{{/* end range paths */}}
     {{- end }}{{/* end range hosts */}}
-  {{- with .Values.synapse.tls }}
+  {{- with .Values.synapse.ingress.tls }}
   tls:
   {{- range . }}
     - secretName: {{ .secretName }}
