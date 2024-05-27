@@ -415,6 +415,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.federation_client_minimum_tls_version | float | `1.2` | minimum required tls version support. set to 1.3 if you know all clients implement this. may break public servers |
 | matrix.homeserverExtra | object | `{}` | Contents will be appended to the end of the default configuration |
 | matrix.homeserverOverride | object | `{}` | Replace homeserver.yaml will be replaced with these contents |
+| matrix.hostname | string | `""` | Hostname where Synapse can be reached, e.g. matrix.mydomain.com |
 | matrix.limit_profile_requests_to_users_who_share_rooms | bool | `true` | require a user to share a room with another user in order to retrieve their profile information. Only checked on Client-Server requests. Profile requests from other servers should be checked by the requesting server. |
 | matrix.logging.rootLogLevel | string | `"WARNING"` | Root log level is the default log level for log outputs that don't have more specific settings. |
 | matrix.logging.sqlLogLevel | string | `"WARNING"` | beware: increasing this to DEBUG will make synapse log sensitive information such as access tokens. |
