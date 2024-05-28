@@ -5,6 +5,7 @@ fullnameOverride: ""
 # -- override the name of the chart
 nameOverride: ""
 
+# -- imagePullSecrets to use for all below images
 imagePullSecrets: []
 
 networkPolicies:
@@ -14,12 +15,12 @@ networkPolicies:
 
 # Runtime configuration for Synapse and settings related to the Matrix protocol
 matrix:
-  # Manual overrides for homeserver.yaml, the main config file for Synapse
+  # -- Manual overrides for homeserver.yaml, the main config file for Synapse
   # Its highly recommended that you take a look at the defaults in
   # templates/synapse/_homeserver.yaml, to get a sense of the requirements and
   # default config options to use other services in this chart.
-  # -- Replace homeserver.yaml will be replaced with these contents
   homeserverOverride: {}
+
   # -- Contents will be appended to the end of the default configuration
   homeserverExtra: {}
 
@@ -45,11 +46,9 @@ matrix:
   # -- Set to false to disable message searching
   search: true
 
-  # Which types of rooms to enable end-to-end encryption on by default
-  # off:    none
-  # all:    all rooms
-  # invite: private msg/room created w/ private_chat or trusted_private_chat
-  #         room presets
+  # -- Which types of rooms to enable end-to-end encryption on by default.
+  # options: off (none), all (all rooms), or invite (private msg/room created
+  # w/ private_chat or trusted_private_chat room presets)
   encryptByDefault: invite
 
   # -- Email address of the administrator
@@ -63,16 +62,17 @@ matrix:
     # -- Max image size in pixels
     maxPixels: 32M
 
-  # -- extra sections for the examples-synapse-server.com/.well-known/matrix/client
-  # json returned
+  # -- extra sections for the your /.well-known/matrix/client which returns json
+  # used by clients to know where your matrix sliding sync server is
   extra_well_known_client_content: {}
+  # uncomment for using sliding sync. url must be your sliding sync hostname
   #  "org.matrix.msc3575.proxy":
-  #    "url": "https://wherever-your-sliding-sync-proxy-is"
+  #    "url": "https://wherever-your-sliding-sync-proxy-is.com"
 
   # Settings related to federation
   federation:
     # -- Set to false to disable federation and run an isolated homeserver
-    enabled: true
+    enabled: false
 
     # -- Allow members of other homeservers to fetch *public* rooms
     allowPublicRooms: true
@@ -92,9 +92,12 @@ matrix:
       - '::1/128'
       - 'fe80::/64'
       - 'fc00::/7'
+
     ingress:
-      enabled: true
+      # -- enable ingress for federation
+      enabled: false
       tls:
+        # -- enable a TLS cert
         enabled: true
       host: matrix-fed.chart-example.local
       # -- ingressClassName for the k8s ingress
@@ -152,7 +155,8 @@ matrix:
   # use an OpenID Connect Provider for authentication, instead of its internal
   # password database. will be considered legacy way of doing things after
   # element-x comes out of beta ref:
-  # https://github.com/matrix-org/synapse/blob/master/docs/openid.md
+  # https://github.com/element-hq/synapse/blob/develop/docs/openid.md
+  # https://github.com/element-hq/synapse/blob/develop/docs/openid.md
   oidc:
     # -- set to true to enable authorization against an OpenID Connect server
     # unless using OIDC on synapse AND you want to allow usage of Element-X (the
@@ -176,7 +180,7 @@ matrix:
       # -- key in secret with the userinfo_endpoint if discovery is disabled
       userinfo_endpoint: ""
     # -- each of these will be templated under oidc_providers in homeserver.yaml
-    # ref: https://matrix-org.github.io/synapse/latest/openid.html?search=
+    # ref: https://element-hq.github.io/synapse/latest/openid.html?search=
     providers:
       # -- id of your identity provider, e.g. dex
       - idp_id: ""
@@ -219,14 +223,15 @@ matrix:
             # -- name of the claim containing a unique identifier for user. Defaults
             # to `sub`, which OpenID Connect compliant providers should provide.
             subject_claim: ""
-            # This must be configured if using the default mapping provider.
+            # -- This must be configured if using the default mapping provider.
             localpart_template: ""
-            # Jinja2 template for the display name to set on first login.
+            # -- Jinja2 template for the display name to set on first login.
             # If unset, no displayname will be set.
             display_name_template: ""
-            # for twitter: https://matrix-org.github.io/synapse/latest/openid.html?search=#twitter
+            # for X (formally twitter):
+            # https://element-hq.github.io/synapse/latest/openid.html?highlight=twitter#twitter
             picture_template: "{{ user.data.profile_image_url }}"
-        # optional - maybe useful for keycloak
+        # -- optional - maybe useful for keycloak
         backchannel_logout_enabled: true
 
   # -- require auth for profile requests, not useful if federation is enable
@@ -386,19 +391,20 @@ matrix:
       # -- Synapse will call `{issuer}/.well-known/openid-configuration` to get the OIDC configuration
       issuer: http://localhost:8080/
 
-      # -- Matches the `client_id` in the auth service config
+      # -- Matches the `mas.mas.clients[0].client_id` in the auth service config
       client_id: 0000000000000000000SYNAPSE
 
       # -- Matches the `client_auth_method` in the auth service config
       client_auth_method: client_secret_basic
 
-      # -- Matches the `client_secret` in the auth service config
+      # -- Matches the `mas.mas.clients[0].client_secret` in the auth service config
       client_secret: "SomeRandomSecret"
 
-      # -- Matches the `matrix.secret` in the auth service config
+      # -- Matches the `mas.mas.matrix.secret` in the auth service config
       admin_token: "AnotherRandomSecret"
 
       # -- URL to advertise to clients where users can self-manage their account
+      # this is typically https://your-mas-domain.com/account
       account_management_url: ""
 
 s3:
@@ -557,7 +563,7 @@ postgresql:
   primary:
     # -- run the scripts in templates/postgresql/initdb-configmap.yaml
     # If using an external Postgres server, make sure to configure the database
-    # ref: https://github.com/matrix-org/synapse/blob/master/docs/postgres.md
+    # ref: https://github.com/element-hq/synapse/blob/develop/docs/postgres.md
     initdb:
       scriptsConfigMap: "{{ .Release.Name }}-postgresql-initdb"
 
@@ -603,26 +609,39 @@ synapse:
       nginx.ingress.kubernetes.io/configuration-snippet: |
         proxy_intercept_errors off;
 
-      # an example for returning the correct json required for syncv3 and MAS
-      # please change matrix.chart-example.local to your domain
-      # nginx.ingress.kubernetes.io/server-snippet: |-
-      #   location = /.well-known/matrix/client {
-      #       return 200 '{"m.homeserver": {"base_url": "https://matrix.chart-example.local"},"org.matrix.msc3575.proxy": {"url": "https://matrix.chart-example.local"},"org.matrix.msc2965.authentication": {"issuer": "https://example.com/", "account": "https://auth.example.com/account"}}';
-      #   }
+    # NOTE: you cannot use synapse.ingress.host AND synapse.ingress.hosts. You
+    # must pick one or the other. synapse.ingress.host will be deprecated in the future
     hosts:
       - host: "matrix.chart-example.local"
         paths:
           - path: /
             pathType: ImplementationSpecific
+            # if mas.enabled is set to true, you want pathType for / to be Prefix
+            # pathType: Prefix
 
-    # -- enable tls for matrix
+          # if mas.enabled is set to true, you want to uncomment the following:
+          # - path: "/_matrix/client/(r0|v3)/(refresh|login|logout).*"
+          #   pathType: ImplementationSpecific
+          #   backend:
+          #     service:
+          #       value: release-name-mas
+          #       port:
+          #         name: http
+
+    # -- enable tls for synapse ingress
     tls: []
+    # to enable tls for synapse remove the [] on the line above and uncomment the
+    # following lines, replacing matrix.chart-example.local with your synapse domain
     #  - secretName: "matrix-tls"
     #    hosts:
     #      - matrix.chart-example.local
 
+  # -- replica count of the synapse pods
   replicaCount: 1
+
+  # -- resource requests and limits for synapse
   resources: {}
+
   # Configure timings for readiness, startup, and liveness probes here
   probes:
     readiness:
@@ -678,7 +697,7 @@ synapse:
     component: synapse
 
   # Prometheus metrics for Synapse
-  # https://github.com/matrix-org/synapse/blob/master/docs/metrics-howto.md
+  # https://github.com/element-hq/synapse/blob/develop/docs/metrics-howto.md
   metrics:
     # -- Whether Synapse should capture metrics on an additional endpoint
     enabled: true
@@ -697,6 +716,9 @@ synapse:
 
 # values for https://github.com/small-hack/matrix-sliding-sync-chart
 syncv3:
+  # -- enable sliding sync (required for using element-x). You can see all possible
+  # values [here](https://github.com/small-hack/matrix-sliding-sync-chart). If enabled,
+  # you must also provide `matrix.extra_well_known_client_content`
   enabled: false
   postgresql:
     # -- Whether to deploy the Bitnami Postgresql sub chart
@@ -838,7 +860,7 @@ syncv3:
 
 
 mas:
-  # -- enable the matrix authentication service sub chart to use OIDC
+  # -- enable the MAS (Matrix Authentication Service) sub chart to use OIDC
   # This is the only way that's tested to use with element-x beta right now
   # You must also fill out matrix.experimental_feature.masc3861 if you use this method
   enabled: false
@@ -1024,7 +1046,7 @@ mas:
     primary:
       # -- run the scripts in templates/postgresql/initdb-configmap.yaml
       # If using an external Postgres server, make sure to configure the database
-      # ref: https://github.com/matrix-org/synapse/blob/master/docs/postgres.md
+      # ref: https://github.com/element-hq/synapse/blob/develop/docs/postgres.md
       initdb:
         scriptsConfigMap: "{{ .Release.Name }}-postgresql-initdb"
 
@@ -1796,8 +1818,10 @@ bridges:
     bot:
       # -- Username of the WhatsApp bridge bot
       username: "whatsappbot"
+
       # -- display name of the WhatsApp bridge bot
       displayName: "WhatsApp bridge bot"
+
       # -- avatar of the WhatsApp bridge bot
       avatar: "mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
 
@@ -1942,11 +1966,13 @@ bridges:
       # -- tag for discord brdige docker image
       tag: "latest"
       pullPolicy: Always
+
     replicaCount: 1
     resources: {}
     service:
       type: ClusterIP
       port: 9005
+
   # -- Recommended to leave this disabled to allow bridges to be scheduled on
   # separate nodes. Set this to true to reduce latency between the homeserver
   # and bridges, or if your cloud provider does not allow the ReadWriteMany

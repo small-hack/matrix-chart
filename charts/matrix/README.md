@@ -208,7 +208,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | externalDatabase.sslrootcert | string | `""` | optional: tls/ssl root cert for postgresql connections |
 | externalDatabase.username | string | `"matrix"` | username of matrix postgres user |
 | fullnameOverride | string | `""` | override the full name of the chart |
-| imagePullSecrets | list | `[]` |  |
+| imagePullSecrets | list | `[]` | imagePullSecrets to use for all below images |
 | mail.elementUrl | string | `""` | Optional: Element instance URL. If ingress is enabled, this is unnecessary, else if this is empty, emails will contain a link to https://app.element.io |
 | mail.enabled | bool | `false` | disabled all email notifications by default. NOTE: If enabled, either enable the Exim relay or configure an external mail server below |
 | mail.external.existingSecret | string | `""` | use an existing k8s Secret for your host, username, and password |
@@ -239,7 +239,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | mas.configVolume.existingClaim | string | `""` | name of an existing persistent volume claim to use for matrix-authentication-service config. If provided, ignores mas parameter map |
 | mas.configVolume.storage | string | `"500Mi"` | storage capacity for creating a persistent volume |
 | mas.configVolume.storageClassName | string | `"default"` | name of storage class for the persistent volume |
-| mas.enabled | bool | `false` | enable the matrix authentication service sub chart to use OIDC This is the only way that's tested to use with element-x beta right now You must also fill out matrix.experimental_feature.masc3861 if you use this method |
+| mas.enabled | bool | `false` | enable the MAS (Matrix Authentication Service) sub chart to use OIDC This is the only way that's tested to use with element-x beta right now You must also fill out matrix.experimental_feature.masc3861 if you use this method |
 | mas.existingMasConfigSecret | string | `""` | Existing Kubernetes Secret for entire matrix authentication service `config.yaml` file. If set, everything under the mas section of the values.yaml is ignored. |
 | mas.externalDatabase.database | string | `"mas"` | name of the database to try and connect to |
 | mas.externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
@@ -362,7 +362,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | mas.postgresql.global.postgresql.auth.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix-authentication-service to connect to db |
 | mas.postgresql.global.postgresql.auth.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix-authentication-service to connect to db |
 | mas.postgresql.global.postgresql.auth.username | string | `"mas"` | username of matrix-authentication-service postgres user |
-| mas.postgresql.primary.initdb | object | `{"scriptsConfigMap":"{{ .Release.Name }}-postgresql-initdb"}` | run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/matrix-org/synapse/blob/master/docs/postgres.md |
+| mas.postgresql.primary.initdb | object | `{"scriptsConfigMap":"{{ .Release.Name }}-postgresql-initdb"}` | run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/element-hq/synapse/blob/develop/docs/postgres.md |
 | mas.postgresql.primary.podSecurityContext.enabled | bool | `true` |  |
 | mas.postgresql.primary.podSecurityContext.fsGroup | int | `1000` |  |
 | mas.postgresql.primary.podSecurityContext.runAsUser | int | `1000` |  |
@@ -394,28 +394,28 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.blockNonAdminInvites | bool | `false` | Set to true to block non-admins from inviting users to any rooms |
 | matrix.disabled | bool | `false` | Set to true to globally block access to the homeserver |
 | matrix.disabledMessage | string | `""` | Human readable reason for why the homeserver is blocked |
-| matrix.encryptByDefault | string | `"invite"` |  |
-| matrix.experimental_features.msc3861.account_management_url | string | `""` | URL to advertise to clients where users can self-manage their account |
-| matrix.experimental_features.msc3861.admin_token | string | `"AnotherRandomSecret"` | Matches the `matrix.secret` in the auth service config |
+| matrix.encryptByDefault | string | `"invite"` | Which types of rooms to enable end-to-end encryption on by default. options: off (none), all (all rooms), or invite (private msg/room created w/ private_chat or trusted_private_chat room presets) |
+| matrix.experimental_features.msc3861.account_management_url | string | `""` | URL to advertise to clients where users can self-manage their account this is typically https://your-mas-domain.com/account |
+| matrix.experimental_features.msc3861.admin_token | string | `"AnotherRandomSecret"` | Matches the `mas.mas.matrix.secret` in the auth service config |
 | matrix.experimental_features.msc3861.client_auth_method | string | `"client_secret_basic"` | Matches the `client_auth_method` in the auth service config |
-| matrix.experimental_features.msc3861.client_id | string | `"0000000000000000000SYNAPSE"` | Matches the `client_id` in the auth service config |
-| matrix.experimental_features.msc3861.client_secret | string | `"SomeRandomSecret"` | Matches the `client_secret` in the auth service config |
+| matrix.experimental_features.msc3861.client_id | string | `"0000000000000000000SYNAPSE"` | Matches the `mas.mas.clients[0].client_id` in the auth service config |
+| matrix.experimental_features.msc3861.client_secret | string | `"SomeRandomSecret"` | Matches the `mas.mas.clients[0].client_secret` in the auth service config |
 | matrix.experimental_features.msc3861.enabled | bool | `false` | experimental_feature msc3861 - enable this if you want to use the matrix authentication service Likely needed if using OIDC on synapse and you want to allow usage of Element-X (the beta of element) See: [Matrix authentication service home server docs](https://matrix-org.github.io/matrix-authentication-service/setup/homeserver.html#configure-the-homeserver-to-delegate-authentication-to-the-service), [full matrix authentication service docs](https://matrix-org.github.io/matrix-authentication-service/index.html), and [issue#1915](https://github.com/element-hq/element-meta/issues/1915#issuecomment-2119297748) where this is being discussed |
 | matrix.experimental_features.msc3861.issuer | string | `"http://localhost:8080/"` | Synapse will call `{issuer}/.well-known/openid-configuration` to get the OIDC configuration |
-| matrix.extra_well_known_client_content | object | `{}` | extra sections for the examples-synapse-server.com/.well-known/matrix/client json returned |
+| matrix.extra_well_known_client_content | object | `{}` | extra sections for the your /.well-known/matrix/client which returns json used by clients to know where your matrix sliding sync server is |
 | matrix.federation.allowPublicRooms | bool | `true` | Allow members of other homeservers to fetch *public* rooms |
 | matrix.federation.blacklist | list | `["127.0.0.0/8","10.0.0.0/8","172.16.0.0/12","192.168.0.0/16","100.64.0.0/10","169.254.0.0/16","::1/128","fe80::/64","fc00::/7"]` | IP addresses to blacklist federation requests to |
-| matrix.federation.enabled | bool | `true` | Set to false to disable federation and run an isolated homeserver |
+| matrix.federation.enabled | bool | `false` | Set to false to disable federation and run an isolated homeserver |
 | matrix.federation.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | matrix.federation.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
 | matrix.federation.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
-| matrix.federation.ingress.enabled | bool | `true` |  |
+| matrix.federation.ingress.enabled | bool | `false` | enable ingress for federation |
 | matrix.federation.ingress.host | string | `"matrix-fed.chart-example.local"` |  |
-| matrix.federation.ingress.tls.enabled | bool | `true` |  |
+| matrix.federation.ingress.tls.enabled | bool | `true` | enable a TLS cert |
 | matrix.federation.whitelist | list | `[]` | Allow list of domains to federate with (comment for all domains    except blacklisted) |
 | matrix.federation_client_minimum_tls_version | float | `1.2` | minimum required tls version support. set to 1.3 if you know all clients implement this. may break public servers |
 | matrix.homeserverExtra | object | `{}` | Contents will be appended to the end of the default configuration |
-| matrix.homeserverOverride | object | `{}` | Replace homeserver.yaml will be replaced with these contents |
+| matrix.homeserverOverride | object | `{}` | Manual overrides for homeserver.yaml, the main config file for Synapse Its highly recommended that you take a look at the defaults in templates/synapse/_homeserver.yaml, to get a sense of the requirements and default config options to use other services in this chart. |
 | matrix.hostname | string | `""` | Hostname where Synapse can be reached, e.g. matrix.mydomain.com |
 | matrix.limit_profile_requests_to_users_who_share_rooms | bool | `true` | require a user to share a room with another user in order to retrieve their profile information. Only checked on Client-Server requests. Profile requests from other servers should be checked by the requesting server. |
 | matrix.logging.rootLogLevel | string | `"WARNING"` | Root log level is the default log level for log outputs that don't have more specific settings. |
@@ -429,9 +429,10 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.msc3861SecretKeys.issuer | string | `""` | secret key to use in existing secret for masc3861 issuer |
 | matrix.oidc.enabled | bool | `false` | set to true to enable authorization against an OpenID Connect server unless using OIDC on synapse AND you want to allow usage of Element-X (the beta of element), then you must set experimental_feature.msc3861.enabled to True to use the MAS (Matrix Authentication Service) and fill out the values there. |
 | matrix.oidc.existingSecret | string | `""` | existing secret to use for the OIDC config |
-| matrix.oidc.providers | list | `[{"authorization_endpoint":"https://accounts.example.com/oauth2/auth","backchannel_logout_enabled":true,"client_auth_method":"client_secret_post","client_id":"provided-by-your-issuer","client_secret":"provided-by-your-issuer","discover":true,"idp_brand":"","idp_id":"","idp_name":"","issuer":"https://accounts.example.com/","scopes":["openid","profile"],"skip_verification":false,"token_endpoint":"https://accounts.example.com/oauth2/token","user_mapping_provider":{"config":{"display_name_template":"","localpart_template":"","picture_template":"{{ user.data.profile_image_url }}","subject_claim":""}},"userinfo_endpoint":"https://accounts.example.com/userinfo"}]` | each of these will be templated under oidc_providers in homeserver.yaml ref: https://matrix-org.github.io/synapse/latest/openid.html?search= |
+| matrix.oidc.providers | list | `[{"authorization_endpoint":"https://accounts.example.com/oauth2/auth","backchannel_logout_enabled":true,"client_auth_method":"client_secret_post","client_id":"provided-by-your-issuer","client_secret":"provided-by-your-issuer","discover":true,"idp_brand":"","idp_id":"","idp_name":"","issuer":"https://accounts.example.com/","scopes":["openid","profile"],"skip_verification":false,"token_endpoint":"https://accounts.example.com/oauth2/token","user_mapping_provider":{"config":{"display_name_template":"","localpart_template":"","picture_template":"{{ user.data.profile_image_url }}","subject_claim":""}},"userinfo_endpoint":"https://accounts.example.com/userinfo"}]` | each of these will be templated under oidc_providers in homeserver.yaml ref: https://element-hq.github.io/synapse/latest/openid.html?search= |
 | matrix.oidc.providers[0] | object | `{"authorization_endpoint":"https://accounts.example.com/oauth2/auth","backchannel_logout_enabled":true,"client_auth_method":"client_secret_post","client_id":"provided-by-your-issuer","client_secret":"provided-by-your-issuer","discover":true,"idp_brand":"","idp_id":"","idp_name":"","issuer":"https://accounts.example.com/","scopes":["openid","profile"],"skip_verification":false,"token_endpoint":"https://accounts.example.com/oauth2/token","user_mapping_provider":{"config":{"display_name_template":"","localpart_template":"","picture_template":"{{ user.data.profile_image_url }}","subject_claim":""}},"userinfo_endpoint":"https://accounts.example.com/userinfo"}` | id of your identity provider, e.g. dex |
 | matrix.oidc.providers[0].authorization_endpoint | string | `"https://accounts.example.com/oauth2/auth"` | oauth2 authorization endpoint. Required if provider discovery disabled. |
+| matrix.oidc.providers[0].backchannel_logout_enabled | bool | `true` | optional - maybe useful for keycloak |
 | matrix.oidc.providers[0].client_auth_method | string | `"client_secret_post"` | auth method to use when exchanging the token. Valid values are: 'client_secret_basic' (default), 'client_secret_post' and 'none'. |
 | matrix.oidc.providers[0].client_id | string | `"provided-by-your-issuer"` | oauth2 client id to use. Required if 'enabled' is true. |
 | matrix.oidc.providers[0].client_secret | string | `"provided-by-your-issuer"` | oauth2 client secret to use. Required if 'enabled' is true. |
@@ -441,6 +442,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.oidc.providers[0].issuer | string | `"https://accounts.example.com/"` | OIDC issuer. Used to validate tokens and (if discovery is enabled) to discover the provider's endpoints. Required if 'enabled' is true. |
 | matrix.oidc.providers[0].scopes | list | `["openid","profile"]` | list of scopes to request. should normally include the "openid" scope. Defaults to ["openid"]. |
 | matrix.oidc.providers[0].token_endpoint | string | `"https://accounts.example.com/oauth2/token"` | the oauth2 token endpoint. Required if provider discovery is disabled. |
+| matrix.oidc.providers[0].user_mapping_provider.config.display_name_template | string | `""` | Jinja2 template for the display name to set on first login. If unset, no displayname will be set. |
+| matrix.oidc.providers[0].user_mapping_provider.config.localpart_template | string | `""` | This must be configured if using the default mapping provider. |
 | matrix.oidc.providers[0].user_mapping_provider.config.subject_claim | string | `""` | name of the claim containing a unique identifier for user. Defaults to `sub`, which OpenID Connect compliant providers should provide. |
 | matrix.oidc.providers[0].userinfo_endpoint | string | `"https://accounts.example.com/userinfo"` | the OIDC userinfo endpoint. Required if discovery is disabled and the "openid" scope is not requested. |
 | matrix.oidc.secretKeys.authorization_endpoint | string | `""` | key in secret with the authorization_endpoint if discovery is disabled |
@@ -494,7 +497,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | postgresql.global.postgresql.auth.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix to connect to db |
 | postgresql.global.postgresql.auth.username | string | `"matrix"` | username of matrix postgres user |
 | postgresql.persistence.enabled | bool | `false` |  |
-| postgresql.primary.initdb | object | `{"scriptsConfigMap":"{{ .Release.Name }}-postgresql-initdb"}` | run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/matrix-org/synapse/blob/master/docs/postgres.md |
+| postgresql.primary.initdb | object | `{"scriptsConfigMap":"{{ .Release.Name }}-postgresql-initdb"}` | run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/element-hq/synapse/blob/develop/docs/postgres.md |
 | postgresql.primary.podSecurityContext.enabled | bool | `true` |  |
 | postgresql.primary.podSecurityContext.fsGroup | int | `1000` |  |
 | postgresql.primary.podSecurityContext.runAsUser | int | `1000` |  |
@@ -524,7 +527,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.ingress.hosts[0].host | string | `"matrix.chart-example.local"` |  |
 | synapse.ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | synapse.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
-| synapse.ingress.tls | list | `[]` | enable tls for matrix |
+| synapse.ingress.tls | list | `[]` | enable tls for synapse ingress |
 | synapse.labels | object | `{"component":"synapse"}` | Labels to be appended to all Synapse resources |
 | synapse.metrics.annotations | bool | `true` |  |
 | synapse.metrics.enabled | bool | `true` | Whether Synapse should capture metrics on an additional endpoint |
@@ -542,8 +545,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.probes.startup.failureThreshold | int | `6` | startup probe times to try and fail before giving up |
 | synapse.probes.startup.periodSeconds | int | `5` | startup probe seconds trying again |
 | synapse.probes.startup.timeoutSeconds | int | `5` | startup probe seconds before timing out |
-| synapse.replicaCount | int | `1` |  |
-| synapse.resources | object | `{}` |  |
+| synapse.replicaCount | int | `1` | replica count of the synapse pods |
+| synapse.resources | object | `{}` | resource requests and limits for synapse |
 | synapse.securityContext | object | `{"allowPrivilegeEscalation":false,"readOnlyRootFilesystem":false,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | securityContext for the synapse CONTAINER ONLY Does not work by default in all cloud providers, disable by default |
 | synapse.securityContext.allowPrivilegeEscalation | bool | `false` | AllowPrivilegeEscalation controls whether a process can gain more privileges than its parent process. This bool directly controls if the no_new_privs flag will be set on the container process. AllowPrivilegeEscalation is true always when the container is: 1) run as Privileged 2) has CAP_SYS_ADMIN Note that this field cannot be set when spec.os.name is windows. |
 | synapse.securityContext.readOnlyRootFilesystem | bool | `false` | Whether this container has a read-only root filesystem. Default is false. Note that this field cannot be set when spec.os.name is windows. |
@@ -554,7 +557,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.service.federation.type | string | `"ClusterIP"` |  |
 | synapse.service.port | int | `80` | service port for synapse |
 | synapse.service.type | string | `"ClusterIP"` | service type for synpase |
-| syncv3.enabled | bool | `false` |  |
+| syncv3.enabled | bool | `false` | enable sliding sync (required for using element-x). You can see all possible values [here](https://github.com/small-hack/matrix-sliding-sync-chart). If enabled, you must also provide `matrix.extra_well_known_client_content` |
 | syncv3.existingEnvSecret | string | `""` | existing kubernetes secret for ALL syncv3 env vars listed below. if set, ignores all values under syncv3 including syncv3.db and syncv3.otlp. |
 | syncv3.externalDatabase.database | string | `"syncv3"` | name of the database to try and connect to |
 | syncv3.externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
