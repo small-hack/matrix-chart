@@ -52,4 +52,6 @@ jobs:
       - name: Run chart-testing (install)
         id: install
         if: steps.list-changed.outputs.changed == 'true'
-        run: ct install --target-branch ${{ github.event.repository.default_branch }} --helm-extra-set-args '--set=postgresql.volumePermissions.enabled=false --set=postgresql.primary.networkPolicy.enabled=false'
+        run: |
+            ct install --target-branch ${{ github.event.repository.default_branch }} \
+            --helm-extra-set-args '--set=postgresql.volumePermissions.enabled=false --set=postgresql.primary.networkPolicy.enabled=false --set=matrix.hostname=matrix-test.com'
