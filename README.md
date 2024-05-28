@@ -22,28 +22,19 @@ helm install my-release-name matrix/matrix --values values.yaml
 
 ## Current Features ✨
 
-- Latest version of [Synapse](https://github.com/matrix-org/synapse) (the official matrix homeserver)
+- Latest version of [Synapse](https://github.com/element-hq/synapse) (the official matrix homeserver)
 - Ingress definitions for federated Synapse (Matrix homeserver) and Element (client for matrix)
 
 ### Optional Features
 
 - Use (existing) Kubernetes Secrets for confidential data, such as passwords
-- Use OIDC configs for SSO either directly via synapse (see [docs](https://github.com/matrix-org/synapse/blob/747416e94cd8f137b9173c132f7c44ea1c59534d/docs/openid.md) for more info) or via MAS
+- Use OIDC configs for SSO either directly via synapse (see [docs](https://github.com/element-hq/synapse/blob/develop/docs/openid.md) for more info) or via MAS
   - Use MAS ([matrix-org/matrix-authentication-service](https://github.com/matrix-org/matrix-authentication-service)) via [matrix-authentication-service-chart](https://github.com/small-hack/matrix-authentication-service-chart) as a sub chart for using [element-x] which recommends  for OIDC auth
 - Latest version of the [Element web app](https://element.io/) to provide a web interface for chat (you can disable this and still use element apps)
 - [Coturn TURN server subchart](https://github.com/small-hack/coturn-chart) for VoIP calls
-- Use s3 to store media using [matrix-org/synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider/tree/main)
+- Use s3 to store media using [element-hq/synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider/tree/main)
 - Use [matrix-sliding-sync-chart](https://github.com/small-hack/matrix-sliding-sync-chart) as a sub chart for using [element-x] which requires [matrix-org/sliding-sync](https://github.com/matrix-org/sliding-sync)
 - Use existing Kubernetes secrets and existing Persistent Volume Claims
-
-#### Databases
-
-You must select one of the following options:
-
-- Use the [Bitnami PostgreSQL subchart](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) (set `postgresql.enabled` to `true`)
-- Use your own external database, which can also be PostgreSQL. (set `externalDatabase.enabled` to `true`)
-
-Note: you cannot enable both `externalDatabase` and `postgresql`. You must select _one_.
 
 ### ⚠️ Optional Features (Untested Since Fork)
 
@@ -53,6 +44,18 @@ These features still need to be tested, but are technically baked into the chart
 - [Half-Shot/matrix-appservice-discord](https://github.com/Half-Shot/matrix-appservice-discord) Discord bridge
 - [matrix-org/matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) IRC bridge
 - [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge
+
+
+# Notes
+
+## Databases
+
+You must select one of the following options:
+
+- Use the [Bitnami PostgreSQL subchart](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) (set `postgresql.enabled` to `true`)
+- Use your own external database, which can also be PostgreSQL. (set `externalDatabase.enabled` to `true`)
+
+Note: you cannot enable both `externalDatabase` and `postgresql`. You must select _one_.
 
 
 ## Notes on using Matrix Sliding Sync
