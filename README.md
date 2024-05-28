@@ -83,6 +83,24 @@ syncv3:
     enabled: true
 ```
 
+After synapse is up, you should be able to verify it's returning correctly by doing:
+
+```console
+$ curl https://matrix.example.com/.well-known/matrix/client | jq
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   136  100   136    0     0   1818      0 --:--:-- --:--:-- --:--:--  1837
+{
+  "m.homeserver": {
+    "base_url": "https://matrix.example.com"
+  },
+  "org.matrix.msc3575.proxy": {
+    "url": "https://matrix.example.com"
+  }
+}
+
+```
+
 ## Notes on using MAS (Matrix Authentication Service)
 
 MAS is currently the only way to use OIDC with [element-x]. If you're using MAS (Matrix Authentication Service), you'll need to set `mas.enabled` to `true`. You'll also need to setup proper routes for synapse to redirect to MAS. See example below:
@@ -242,24 +260,6 @@ mas:
               action: suggest
               template: "{{ user.email }}"
               set_email_verification: always
-```
-
-After synapse is up, you should be able to verify it's returning correctly by doing:
-
-```console
-$ curl https://matrix.example.com/.well-known/matrix/client | jq
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100   136  100   136    0     0   1818      0 --:--:-- --:--:-- --:--:--  1837
-{
-  "m.homeserver": {
-    "base_url": "https://matrix.example.com"
-  },
-  "org.matrix.msc3575.proxy": {
-    "url": "https://matrix.example.com"
-  }
-}
-
 ```
 
 ## About and Status
