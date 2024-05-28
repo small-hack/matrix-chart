@@ -3,6 +3,42 @@ entries:
   matrix:
   - apiVersion: v2
     appVersion: v1.107.0
+    created: "2024-05-28T09:14:47.362025051Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 15.1.4
+    - condition: coturn.enabled
+      name: coturn
+      repository: https://small-hack.github.io/coturn-chart
+      version: 5.2.0
+    - alias: syncv3
+      condition: syncv3.enabled
+      name: matrix-sliding-sync
+      repository: https://small-hack.github.io/matrix-sliding-sync-chart
+      version: 0.4.1
+    - alias: mas
+      condition: mas.enabled
+      name: matrix-authentication-service
+      repository: https://small-hack.github.io/matrix-authentication-service-chart
+      version: 0.7.1
+    description: A Helm chart to deploy a Matrix homeserver stack on Kubernetes
+    digest: 4329089446977c51fb3da85d459065c2fe58cd977430d09992df5581fad5ebcf
+    home: https://github.com/small-hack/matrix-chart
+    icon: https://dacruz21.github.io/helm-charts/icons/matrix.svg
+    maintainers:
+    - name: jessebot
+      url: https://github.com/jessebot
+    name: matrix
+    sources:
+    - https://github.com/small-hack/matrix-chart
+    type: application
+    urls:
+    - https://github.com/small-hack/matrix-chart/releases/download/matrix-9.0.1/matrix-9.0.1.tgz
+    version: 9.0.1
+  - apiVersion: v2
+    appVersion: v1.107.0
     created: "2024-05-16T22:20:05.992400475Z"
     dependencies:
     - condition: postgresql.enabled
@@ -1405,4 +1441,4 @@ entries:
     urls:
     - https://github.com/jessebot/matrix-chart/releases/download/matrix-3.0.1/matrix-3.0.1.tgz
     version: 3.0.1
-generated: "2024-05-16T22:20:05.9925424Z"
+generated: "2024-05-28T09:14:47.362252216Z"
