@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 9.0.0](https://img.shields.io/badge/Version-9.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.107.0](https://img.shields.io/badge/AppVersion-v1.107.0-informational?style=flat-square)
+![Version: 9.0.1](https://img.shields.io/badge/Version-9.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.107.0](https://img.shields.io/badge/AppVersion-v1.107.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -406,7 +406,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.extra_well_known_client_content | object | `{}` | extra sections for the your /.well-known/matrix/client which returns json used by clients to know where your matrix sliding sync server is |
 | matrix.federation.allowPublicRooms | bool | `true` | Allow members of other homeservers to fetch *public* rooms |
 | matrix.federation.blacklist | list | `["127.0.0.0/8","10.0.0.0/8","172.16.0.0/12","192.168.0.0/16","100.64.0.0/10","169.254.0.0/16","::1/128","fe80::/64","fc00::/7"]` | IP addresses to blacklist federation requests to |
-| matrix.federation.enabled | bool | `false` | Set to false to disable federation and run an isolated homeserver |
+| matrix.federation.enabled | bool | `false` | Set to true to enable federation |
 | matrix.federation.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | matrix.federation.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
 | matrix.federation.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |

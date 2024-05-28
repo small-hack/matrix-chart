@@ -71,7 +71,7 @@ matrix:
 
   # Settings related to federation
   federation:
-    # -- Set to false to disable federation and run an isolated homeserver
+    # -- Set to true to enable federation
     enabled: false
 
     # -- Allow members of other homeservers to fetch *public* rooms
