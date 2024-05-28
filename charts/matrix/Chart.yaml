@@ -8,14 +8,14 @@ sources:
 
 type: application
 
-version: 8.2.0
+version: 9.0.0
 
 # renovate: image=matrixdotorg/synapse
 appVersion: v1.107.0
 
 maintainers:
   - name: "jessebot"
-    url: "https://github.com/jessebot/"
+    url: "https://github.com/jessebot"
 
 dependencies:
   - name: postgresql
@@ -27,3 +27,15 @@ dependencies:
     version: 5.2.0
     repository: https://small-hack.github.io/coturn-chart
     condition: coturn.enabled
+
+  - name: matrix-sliding-sync
+    version: 0.4.1
+    repository: https://small-hack.github.io/matrix-sliding-sync-chart
+    alias: syncv3
+    condition: syncv3.enabled
+
+  - name: matrix-authentication-service
+    alias: mas
+    version: 0.7.1
+    repository: https://small-hack.github.io/matrix-authentication-service-chart
+    condition: mas.enabled

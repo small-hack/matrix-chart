@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 8.2.0](https://img.shields.io/badge/Version-8.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.107.0](https://img.shields.io/badge/AppVersion-v1.107.0-informational?style=flat-square)
+![Version: 9.0.0](https://img.shields.io/badge/Version-9.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.107.0](https://img.shields.io/badge/AppVersion-v1.107.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -10,7 +10,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| jessebot |  | <https://github.com/jessebot/> |
+| jessebot |  | <https://github.com/jessebot> |
 
 ## Source Code
 
@@ -21,6 +21,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | Repository | Name | Version |
 |------------|------|---------|
 | https://small-hack.github.io/coturn-chart | coturn | 5.2.0 |
+| https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 0.7.1 |
+| https://small-hack.github.io/matrix-sliding-sync-chart | syncv3(matrix-sliding-sync) | 0.4.1 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql | 15.1.4 |
 
 ## Values
@@ -165,7 +167,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | element.enabled | bool | `true` | Set to false to disable a deployment of Element. Users will still be able to connect via any other instances of Element e.g. https://app.element.io, Element Desktop, or any other Matrix clients |
 | element.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy to use for element image, set to Always if using latest tag |
 | element.image.repository | string | `"vectorim/element-web"` | registry and repository to use for element docker image |
-| element.image.tag | string | `"v1.11.66"` | tag to use for element docker image |
+| element.image.tag | string | `"v1.11.67"` | tag to use for element docker image |
 | element.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | element.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` |  |
 | element.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
@@ -174,7 +176,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | element.ingress.tls.enabled | bool | `true` | enable a fairly stock ingress, open a github issue if you need more features |
 | element.ingress.tls.secretName | string | `"element-tls"` | name for the element tls secret for ingress |
 | element.integrations.api | string | `"https://scalar.vector.im/api"` | API for the integration server |
-| element.integrations.enabled | bool | `true` | enables the Integrations menu, including:    widgets, bots, and other plugins to Element |
+| element.integrations.enabled | bool | `false` | enables the Integrations menu, including:    widgets, bots, and other plugins to Element    disabled by default as this is for enterprise users |
 | element.integrations.ui | string | `"https://scalar.vector.im/"` | UI to load when a user selects the Integrations button at the top-right    of a room |
 | element.integrations.widgets | list | `["https://scalar.vector.im/_matrix/integrations/v1","https://scalar.vector.im/api","https://scalar-staging.vector.im/_matrix/integrations/v1","https://scalar-staging.vector.im/api","https://scalar-staging.element.im/scalar/api"]` | Array of API paths providing widgets |
 | element.labels | object | `{"component":"element"}` | Element specific labels |
@@ -183,11 +185,11 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | element.probes.liveness | object | `{}` |  |
 | element.probes.readiness | object | `{}` |  |
 | element.probes.startup | object | `{}` |  |
-| element.replicaCount | int | `1` |  |
+| element.replicaCount | int | `1` | replicas for element pods |
 | element.resources | object | `{}` |  |
 | element.roomDirectoryServers | list | `["matrix.org"]` | Servers to show in the Explore menu (the current server is always shown) |
-| element.service.port | int | `80` |  |
-| element.service.type | string | `"ClusterIP"` |  |
+| element.service.port | int | `80` | service port for element |
+| element.service.type | string | `"ClusterIP"` | service type for element |
 | element.welcomeUserId | string | `""` | Set to the user ID (@username:domain.tld) of a bot to invite all new users to a DM with the bot upon registration |
 | externalDatabase.database | string | `"matrix"` | name of the database to try and connect to |
 | externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
@@ -205,8 +207,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | externalDatabase.sslmode | string | `""` | sslmode to use, example: verify-full |
 | externalDatabase.sslrootcert | string | `""` | optional: tls/ssl root cert for postgresql connections |
 | externalDatabase.username | string | `"matrix"` | username of matrix postgres user |
-| fullnameOverride | string | `""` |  |
-| imagePullSecrets | list | `[]` |  |
+| fullnameOverride | string | `""` | override the full name of the chart |
+| imagePullSecrets | list | `[]` | imagePullSecrets to use for all below images |
 | mail.elementUrl | string | `""` | Optional: Element instance URL. If ingress is enabled, this is unnecessary, else if this is empty, emails will contain a link to https://app.element.io |
 | mail.enabled | bool | `false` | disabled all email notifications by default. NOTE: If enabled, either enable the Exim relay or configure an external mail server below |
 | mail.external.existingSecret | string | `""` | use an existing k8s Secret for your host, username, and password |
@@ -229,31 +231,209 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | mail.relay.resources | object | `{}` |  |
 | mail.relay.service.port | int | `25` |  |
 | mail.relay.service.type | string | `"ClusterIP"` |  |
+| mas.affinity | object | `{}` |  |
+| mas.autoscaling.enabled | bool | `false` |  |
+| mas.autoscaling.maxReplicas | int | `100` |  |
+| mas.autoscaling.minReplicas | int | `1` |  |
+| mas.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| mas.configVolume.existingClaim | string | `""` | name of an existing persistent volume claim to use for matrix-authentication-service config. If provided, ignores mas parameter map |
+| mas.configVolume.storage | string | `"500Mi"` | storage capacity for creating a persistent volume |
+| mas.configVolume.storageClassName | string | `"default"` | name of storage class for the persistent volume |
+| mas.enabled | bool | `false` | enable the MAS (Matrix Authentication Service) sub chart to use OIDC This is the only way that's tested to use with element-x beta right now You must also fill out matrix.experimental_feature.masc3861 if you use this method |
+| mas.existingMasConfigSecret | string | `""` | Existing Kubernetes Secret for entire matrix authentication service `config.yaml` file. If set, everything under the mas section of the values.yaml is ignored. |
+| mas.externalDatabase.database | string | `"mas"` | name of the database to try and connect to |
+| mas.externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
+| mas.externalDatabase.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
+| mas.externalDatabase.hostname | string | `""` | hostname of db server. Can be left blank if using postgres subchart |
+| mas.externalDatabase.password | string | `"changeme"` | password of matrix-authentication-service postgres user - ignored using exsitingSecret |
+| mas.externalDatabase.port | string | `"5432"` | which port to use to connect to your database server |
+| mas.externalDatabase.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existingSecret with the admin postgresql password |
+| mas.externalDatabase.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
+| mas.externalDatabase.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
+| mas.externalDatabase.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix to connect to db |
+| mas.externalDatabase.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix to connect to db |
+| mas.externalDatabase.sslcert | string | `""` | optional: tls/ssl cert for postgresql connections |
+| mas.externalDatabase.sslkey | string | `""` | optional: tls/ssl key for postgresql connections |
+| mas.externalDatabase.sslmode | string | `""` | sslmode to use, example: verify-full |
+| mas.externalDatabase.sslrootcert | string | `""` | optional: tls/ssl root cert for postgresql connections |
+| mas.externalDatabase.username | string | `"mas"` | username of matrix-authentication-service postgres user |
+| mas.extraVolumeMounts | list | `[]` |  |
+| mas.extravolumes | list | `[]` |  |
+| mas.fullnameOverride | string | `""` |  |
+| mas.image.pullPolicy | string | `"IfNotPresent"` | image pull policy. if image.tag is set to "latest", set to "Always" |
+| mas.image.repository | string | `"ghcr.io/matrix-org/matrix-authentication-service"` |  |
+| mas.image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
+| mas.imagePullSecrets | list | `[]` |  |
+| mas.ingress.annotations | object | `{}` |  |
+| mas.ingress.className | string | `""` |  |
+| mas.ingress.enabled | bool | `true` | enable ingress for matrix authentication service |
+| mas.ingress.hosts[0].host | string | `"chart-example.local"` |  |
+| mas.ingress.hosts[0].paths[0].path | string | `"/"` |  |
+| mas.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
+| mas.ingress.tls | list | `[]` |  |
+| mas.livenessProbe.enabled | bool | `false` | enable a liveness probe on the deployment |
+| mas.livenessProbe.httpGet.path | string | `"/"` |  |
+| mas.livenessProbe.httpGet.port | string | `"http"` |  |
+| mas.mas.captcha.secret_key | string | `""` | ignored if mas.captcha.service is ~ or null |
+| mas.mas.captcha.service | string | `nil` | Which service to use for CAPTCHA protection. Set to `null` (or `~`) to disable CAPTCHA protection. options are: ~, null, recaptcha_v2 (google), cloudflare_turnstile, or hcaptcha. see: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#captcha |
+| mas.mas.captcha.site_key | string | `""` | ignored if mas.captcha.service is ~ or null |
+| mas.mas.clients[0] | object | `{"client_auth_method":"client_secret_basic","client_id":"0000000000000000000SYNAPSE","client_secret":"exampletest"}` | a unique identifier for the client. It must be a valid ULID, and it happens that 0000000000000000000SYNAPSE is a valid ULID. |
+| mas.mas.clients[0].client_auth_method | string | `"client_secret_basic"` | set to client_secret_basic. Other methods are possible, such as client_secret_post, but this is the easiest to set up. |
+| mas.mas.clients[0].client_secret | string | `"exampletest"` | a shared secret used for the homeserver to authenticate |
+| mas.mas.database.connect_timeout | int | `30` |  |
+| mas.mas.database.idle_timeout | int | `600` |  |
+| mas.mas.database.max_connections | int | `10` |  |
+| mas.mas.database.max_lifetime | int | `1800` |  |
+| mas.mas.database.min_connections | int | `0` |  |
+| mas.mas.database.uri | string | `""` | if blank, this can be autogenerated from mas.postgres or mas.externalDatabase settings, or you can set this to a valid [postgres URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING-URIS) |
+| mas.mas.email.command | string | `"/usr/sbin/sendmail"` | Send emails by calling a local sendmail binary, only used if transport is sendmail |
+| mas.mas.email.from | string | `"\"The almighty auth service\" <auth@example.com>"` | email.from |
+| mas.mas.email.hostname | string | `"localhost"` | SMTP hostname. only used if transport is smtp |
+| mas.mas.email.mode | string | `"plain"` | SMTP mode. options are plan, tls, or starttls. only used if transport is smtp |
+| mas.mas.email.password | string | `"password"` | SMTP password. only used if transport is smtp |
+| mas.mas.email.port | int | `587` | SMTP port. only used if transport is smtp |
+| mas.mas.email.reply_to | string | `"\"No reply\" <no-reply@example.com>"` | email.reply_to |
+| mas.mas.email.transport | string | `"blackhole"` | Default transport: don't send any emails, options: blackhole, smtp, sendmail, aws_ses (use AWS SESv2 API, via the AWS SDK, so the usual AWS environment variables are supported) |
+| mas.mas.email.username | string | `"username"` | SMTP username. only used if transport is smtp |
+| mas.mas.http.issuer | string | `""` | OIDC issuer advertised by the service. Defaults to `public_base` |
+| mas.mas.http.listeners[0].binds[0].host | string | `"localhost"` |  |
+| mas.mas.http.listeners[0].binds[0].port | int | `8080` |  |
+| mas.mas.http.listeners[0].name | string | `"web"` |  |
+| mas.mas.http.listeners[0].proxy_protocol | bool | `false` |  |
+| mas.mas.http.listeners[0].resources[0].name | string | `"discovery"` |  |
+| mas.mas.http.listeners[0].resources[1].name | string | `"human"` |  |
+| mas.mas.http.listeners[0].resources[2].name | string | `"oauth"` |  |
+| mas.mas.http.listeners[0].resources[3].name | string | `"compat"` |  |
+| mas.mas.http.listeners[0].resources[4].name | string | `"graphql"` |  |
+| mas.mas.http.listeners[0].resources[4].playground | bool | `true` |  |
+| mas.mas.http.listeners[0].resources[5].name | string | `"assets"` |  |
+| mas.mas.http.listeners[0].tls | object | `{}` | If set, makes the listener use TLS with the provided certificate and key. more info: https://matrix-org.github.io/matrix-authentication-service/reference/configuration.html#httplisteners |
+| mas.mas.http.public_base | string | `""` | Public URL base used when building absolute public URLs |
+| mas.mas.masClientSecret.existingSecret | string | `""` | use an existing secret for clients section of config.yaml for: mas.clients[0].client_id, mas.clients[0].client_secret if set, ignores mas.clients[0].client_id, mas.clients[0].client_secret |
+| mas.mas.masClientSecret.secretKeys.client_id | string | `"client_id"` | key in secret with the client_id |
+| mas.mas.masClientSecret.secretKeys.client_secret | string | `"client_secret"` | key in secret with the client_secret |
+| mas.mas.matrix.endpoint | string | `"https://localhost:8008"` | endpoint of your matrix home server (synapse or dendrite) with port if needed |
+| mas.mas.matrix.existingSecret | string | `""` | grab the above secret from an existing k8s secret. if set, ignores mas.matrix.secret |
+| mas.mas.matrix.homeserver | string | `"localhost:8008"` | name of your matrix home server (synapse or dendrite) with port if needed |
+| mas.mas.matrix.secret | string | `"test"` | a shared secret the service will use to call the homeserver admin API |
+| mas.mas.matrix.secretKey | string | `"secret"` | name of the key in existing secret to grab matrix.secret from |
+| mas.mas.passwords.enabled | bool | `false` | Whether to enable the password database. If disabled, users will only be able to log in using upstream OIDC providers |
+| mas.mas.policy.data.admin_clients | list | `[]` | Client IDs which are allowed to ask for admin access with a client_credentials grant |
+| mas.mas.policy.data.admin_users | list | `[]` | Users which are allowed to ask for admin access. If possible, use the can_request_admin flag on users instead. |
+| mas.mas.policy.data.client_registration.allow_host_mismatch | bool | `true` | don't require URIs to be on the same host. default: false |
+| mas.mas.policy.data.client_registration.allow_insecure_uris | bool | `true` | allow non-SSL and localhost URIs. default: false |
+| mas.mas.policy.data.passwords | object | `{}` |  |
+| mas.mas.upstream_oauth2.existingSecret | string | `""` | use an existing k8s secret for upstream oauth2 client_id and client_secret |
+| mas.mas.upstream_oauth2.providers[0] | object | `{"authorization_endpoint":"","claims_imports":{"displayname":{"action":"suggest","template":"{{ user.name }}"},"email":{"action":"suggest","set_email_verification":"always","template":"{{ user.email }}"},"localpart":{"action":"require","template":"{{ user.preferred_username }}"},"subject":{"template":"{{ user.sub }}"}},"client_id":"","client_secret":"","discovery_mode":"oidc","id":"","issuer":"https://example.com/","jwks_uri":"","pkce_method":"auto","scope":"openid email profile","token_endpoint":"","token_endpoint_auth_method":"client_secret_basic"}` | A unique identifier for the provider Must be a valid ULID, and can be generated using online tools like: https://www.ulidtools.com |
+| mas.mas.upstream_oauth2.providers[0].authorization_endpoint | string | `""` | The provider authorization endpoint, takes precedence over the discovery mechanism |
+| mas.mas.upstream_oauth2.providers[0].claims_imports.displayname | object | `{"action":"suggest","template":"{{ user.name }}"}` | The display name is the user's display name. |
+| mas.mas.upstream_oauth2.providers[0].claims_imports.email | object | `{"action":"suggest","set_email_verification":"always","template":"{{ user.email }}"}` | An email address to import. |
+| mas.mas.upstream_oauth2.providers[0].claims_imports.email.set_email_verification | string | `"always"` | Whether the email address must be marked as verified. Possible values are:  - `import`: mark the email address as verified if the upstream provider     has marked it as verified, using the `email_verified` claim.     This is the default.   - `always`: mark the email address as verified   - `never`: mark the email address as not verified |
+| mas.mas.upstream_oauth2.providers[0].claims_imports.localpart | object | `{"action":"require","template":"{{ user.preferred_username }}"}` | The localpart is the local part of the user's Matrix ID. For example, on the `example.com` server, if the localpart is `alice`,  the user's Matrix ID will be `@alice:example.com`. |
+| mas.mas.upstream_oauth2.providers[0].claims_imports.subject | object | `{"template":"{{ user.sub }}"}` | The subject is an internal identifier used to link the user's provider identity to local accounts. By default it uses the `sub` claim as per the OIDC spec, which should fit most use cases. |
+| mas.mas.upstream_oauth2.providers[0].client_id | string | `""` | The client ID to use to authenticate to the provider |
+| mas.mas.upstream_oauth2.providers[0].client_secret | string | `""` | The client secret to use to authenticate to the provider This is only used by the `client_secret_post`, `client_secret_basic` and `client_secret_jwk` authentication methods |
+| mas.mas.upstream_oauth2.providers[0].discovery_mode | string | `"oidc"` | How the provider configuration and endpoints should be discovered |
+| mas.mas.upstream_oauth2.providers[0].issuer | string | `"https://example.com/"` | The issuer URL, which will be used to discover the provider's configuration. If discovery is enabled, this *must* exactly match the `issuer` field advertised in `<issuer>/.well-known/openid-configuration`. |
+| mas.mas.upstream_oauth2.providers[0].jwks_uri | string | `""` | The provider JWKS URI. takes precedence over the discovery mechanism |
+| mas.mas.upstream_oauth2.providers[0].pkce_method | string | `"auto"` | Whether PKCE should be used during the authorization code flow. Possible values are:  - `auto`: use PKCE if the provider supports it (default)    Determined through discovery, and disabled if discovery is disabled  - `always`: always use PKCE (with the S256 method)  - `never`: never use PKCE |
+| mas.mas.upstream_oauth2.providers[0].scope | string | `"openid email profile"` | The scopes to request from the provider In most cases, it should always include `openid` scope |
+| mas.mas.upstream_oauth2.providers[0].token_endpoint | string | `""` | The provider token endpoint. takes precedence over the discovery mechanism |
+| mas.mas.upstream_oauth2.providers[0].token_endpoint_auth_method | string | `"client_secret_basic"` | Which authentication method to use to authenticate to the provider Supported methods are:   - `none`   - `client_secret_basic`   - `client_secret_post`   - `client_secret_jwt`   - `private_key_jwt` (using the keys defined in the `secrets.keys` section) |
+| mas.mas.upstream_oauth2.secretKeys.authorization_endpoint | string | `""` | key in secret with the authorization_endpoint if discovery is disabled |
+| mas.mas.upstream_oauth2.secretKeys.client_id | string | `"client_id"` | key in secret with the client_id |
+| mas.mas.upstream_oauth2.secretKeys.client_secret | string | `"client_secret"` | key in secret with the client_secret |
+| mas.mas.upstream_oauth2.secretKeys.issuer | string | `"issuer"` | key in secret with the issuer |
+| mas.mas.upstream_oauth2.secretKeys.token_endpoint | string | `""` | key in secret with the token_endpoint if discovery is disabled |
+| mas.mas.upstream_oauth2.secretKeys.userinfo_endpoint | string | `""` | key in secret with the userinfo_endpoint if discovery is disabled |
+| mas.nameOverride | string | `""` |  |
+| mas.networkPolicies.enabled | bool | `true` |  |
+| mas.nodeSelector | object | `{}` |  |
+| mas.podAnnotations | object | `{}` |  |
+| mas.podLabels | object | `{}` |  |
+| mas.podSecurityContext | object | `{}` |  |
+| mas.postgresql.enabled | bool | `false` | Whether to deploy the Bitnami Postgresql sub chart If postgresql.enabled is set to true, externalDatabase.enabled must be set to false else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
+| mas.postgresql.global.postgresql.auth.database | string | `"mas"` | name of the database |
+| mas.postgresql.global.postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
+| mas.postgresql.global.postgresql.auth.password | string | `"changeme"` | password of matrix-authentication-service postgres user - ignored using exsitingSecret |
+| mas.postgresql.global.postgresql.auth.port | string | `"5432"` | which port to use to connect to your database server |
+| mas.postgresql.global.postgresql.auth.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existingSecret with the admin postgresql password |
+| mas.postgresql.global.postgresql.auth.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
+| mas.postgresql.global.postgresql.auth.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
+| mas.postgresql.global.postgresql.auth.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix-authentication-service to connect to db |
+| mas.postgresql.global.postgresql.auth.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix-authentication-service to connect to db |
+| mas.postgresql.global.postgresql.auth.username | string | `"mas"` | username of matrix-authentication-service postgres user |
+| mas.postgresql.primary.initdb | object | `{"scriptsConfigMap":"{{ .Release.Name }}-postgresql-initdb"}` | run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/element-hq/synapse/blob/develop/docs/postgres.md |
+| mas.postgresql.primary.podSecurityContext.enabled | bool | `true` |  |
+| mas.postgresql.primary.podSecurityContext.fsGroup | int | `1000` |  |
+| mas.postgresql.primary.podSecurityContext.runAsUser | int | `1000` |  |
+| mas.postgresql.tls.autoGenerated | bool | `false` | Generate automatically self-signed TLS certificates |
+| mas.postgresql.tls.certCAFilename | string | `""` | CA Certificate filename |
+| mas.postgresql.tls.certFilename | string | `""` | Certificate filename |
+| mas.postgresql.tls.certKeyFilename | string | `""` | Certificate key filename |
+| mas.postgresql.tls.certificatesSecret | string | `""` | Name of an existing secret that contains the certificates |
+| mas.postgresql.tls.crlFilename | string | `""` | File containing a Certificate Revocation List |
+| mas.postgresql.tls.enabled | bool | `false` | Enable TLS traffic support for postgresql, see [bitnami/charts/postgresql#securing-traffic-using-tls](https://github.com/bitnami/charts/tree/main/bitnami/postgresql#securing-traffic-using-tls) |
+| mas.postgresql.tls.preferServerCiphers | bool | `true` | Whether to use the server's TLS cipher preferences rather than the client's |
+| mas.postgresql.volumePermissions.enabled | bool | `true` | Enable init container that changes the owner and group of the PVC |
+| mas.readinessProbe.enabled | bool | `false` | enable a readiness probe on the deployment |
+| mas.readinessProbe.httpGet.path | string | `"/"` |  |
+| mas.readinessProbe.httpGet.port | string | `"http"` |  |
+| mas.replicaCount | int | `1` |  |
+| mas.resources | object | `{}` |  |
+| mas.securityContext | object | `{}` |  |
+| mas.service.annotations | object | `{}` | annotations for your service |
+| mas.service.port | int | `80` | Port of service |
+| mas.service.targetPort | int | `8080` | targetPort of service. should be the same as port for bindaddr |
+| mas.service.type | string | `"ClusterIP"` | type of service |
+| mas.serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
+| mas.serviceAccount.automount | bool | `true` | Automatically mount a ServiceAccount's API credentials? |
+| mas.serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
+| mas.serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
+| mas.tolerations | list | `[]` |  |
 | matrix.adminEmail | string | `"admin@example.com"` | Email address of the administrator |
 | matrix.blockNonAdminInvites | bool | `false` | Set to true to block non-admins from inviting users to any rooms |
 | matrix.disabled | bool | `false` | Set to true to globally block access to the homeserver |
 | matrix.disabledMessage | string | `""` | Human readable reason for why the homeserver is blocked |
-| matrix.encryptByDefault | string | `"invite"` |  |
+| matrix.encryptByDefault | string | `"invite"` | Which types of rooms to enable end-to-end encryption on by default. options: off (none), all (all rooms), or invite (private msg/room created w/ private_chat or trusted_private_chat room presets) |
+| matrix.experimental_features.msc3861.account_management_url | string | `""` | URL to advertise to clients where users can self-manage their account this is typically https://your-mas-domain.com/account |
+| matrix.experimental_features.msc3861.admin_token | string | `"AnotherRandomSecret"` | Matches the `mas.mas.matrix.secret` in the auth service config |
+| matrix.experimental_features.msc3861.client_auth_method | string | `"client_secret_basic"` | Matches the `client_auth_method` in the auth service config |
+| matrix.experimental_features.msc3861.client_id | string | `"0000000000000000000SYNAPSE"` | Matches the `mas.mas.clients[0].client_id` in the auth service config |
+| matrix.experimental_features.msc3861.client_secret | string | `"SomeRandomSecret"` | Matches the `mas.mas.clients[0].client_secret` in the auth service config |
+| matrix.experimental_features.msc3861.enabled | bool | `false` | experimental_feature msc3861 - enable this if you want to use the matrix authentication service Likely needed if using OIDC on synapse and you want to allow usage of Element-X (the beta of element) See: [Matrix authentication service home server docs](https://matrix-org.github.io/matrix-authentication-service/setup/homeserver.html#configure-the-homeserver-to-delegate-authentication-to-the-service), [full matrix authentication service docs](https://matrix-org.github.io/matrix-authentication-service/index.html), and [issue#1915](https://github.com/element-hq/element-meta/issues/1915#issuecomment-2119297748) where this is being discussed |
+| matrix.experimental_features.msc3861.issuer | string | `"http://localhost:8080/"` | Synapse will call `{issuer}/.well-known/openid-configuration` to get the OIDC configuration |
+| matrix.extra_well_known_client_content | object | `{}` | extra sections for the your /.well-known/matrix/client which returns json used by clients to know where your matrix sliding sync server is |
 | matrix.federation.allowPublicRooms | bool | `true` | Allow members of other homeservers to fetch *public* rooms |
 | matrix.federation.blacklist | list | `["127.0.0.0/8","10.0.0.0/8","172.16.0.0/12","192.168.0.0/16","100.64.0.0/10","169.254.0.0/16","::1/128","fe80::/64","fc00::/7"]` | IP addresses to blacklist federation requests to |
-| matrix.federation.enabled | bool | `true` | Set to false to disable federation and run an isolated homeserver |
+| matrix.federation.enabled | bool | `false` | Set to false to disable federation and run an isolated homeserver |
 | matrix.federation.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | matrix.federation.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
 | matrix.federation.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
-| matrix.federation.ingress.enabled | bool | `true` |  |
+| matrix.federation.ingress.enabled | bool | `false` | enable ingress for federation |
 | matrix.federation.ingress.host | string | `"matrix-fed.chart-example.local"` |  |
-| matrix.federation.ingress.tls.enabled | bool | `true` |  |
+| matrix.federation.ingress.tls.enabled | bool | `true` | enable a TLS cert |
 | matrix.federation.whitelist | list | `[]` | Allow list of domains to federate with (comment for all domains    except blacklisted) |
+| matrix.federation_client_minimum_tls_version | float | `1.2` | minimum required tls version support. set to 1.3 if you know all clients implement this. may break public servers |
 | matrix.homeserverExtra | object | `{}` | Contents will be appended to the end of the default configuration |
-| matrix.homeserverOverride | object | `{}` | Replace homeserver.yaml will be replaced with these contents |
+| matrix.homeserverOverride | object | `{}` | Manual overrides for homeserver.yaml, the main config file for Synapse Its highly recommended that you take a look at the defaults in templates/synapse/_homeserver.yaml, to get a sense of the requirements and default config options to use other services in this chart. |
+| matrix.hostname | string | `""` | Hostname where Synapse can be reached, e.g. matrix.mydomain.com |
+| matrix.limit_profile_requests_to_users_who_share_rooms | bool | `true` | require a user to share a room with another user in order to retrieve their profile information. Only checked on Client-Server requests. Profile requests from other servers should be checked by the requesting server. |
 | matrix.logging.rootLogLevel | string | `"WARNING"` | Root log level is the default log level for log outputs that don't have more specific settings. |
 | matrix.logging.sqlLogLevel | string | `"WARNING"` | beware: increasing this to DEBUG will make synapse log sensitive information such as access tokens. |
 | matrix.logging.synapseLogLevel | string | `"WARNING"` | The log level for the synapse server |
-| matrix.oidc.enabled | bool | `false` | set to true to enable authorization against an OpenID Connect server |
+| matrix.msc3861ExistingSecret | string | `""` | use an existing secret for all msc3861 (matrix authentication service) related values if set, all other msc3861 values are ignored (issuer, client_id, client_auth_method, client_secret, admin_token, account_management_url) |
+| matrix.msc3861SecretKeys.account_management_url | string | `""` | secret key to use in existing secret for masc3861 account_management_url |
+| matrix.msc3861SecretKeys.admin_token | string | `""` | secret key to use in existing secret for masc3861 admin_token |
+| matrix.msc3861SecretKeys.client_id | string | `""` | secret key to use in existing secret for masc3861 client id |
+| matrix.msc3861SecretKeys.client_secret | string | `""` | secret key to use in existing secret for masc3861 client secret |
+| matrix.msc3861SecretKeys.issuer | string | `""` | secret key to use in existing secret for masc3861 issuer |
+| matrix.oidc.enabled | bool | `false` | set to true to enable authorization against an OpenID Connect server unless using OIDC on synapse AND you want to allow usage of Element-X (the beta of element), then you must set experimental_feature.msc3861.enabled to True to use the MAS (Matrix Authentication Service) and fill out the values there. |
 | matrix.oidc.existingSecret | string | `""` | existing secret to use for the OIDC config |
-| matrix.oidc.providers | list | `[{"authorization_endpoint":"https://accounts.example.com/oauth2/auth","backchannel_logout_enabled":true,"client_auth_method":"client_secret_post","client_id":"provided-by-your-issuer","client_secret":"provided-by-your-issuer","discover":true,"idp_brand":"","idp_id":"","idp_name":"","issuer":"https://accounts.example.com/","scopes":["openid","profile"],"skip_verification":false,"token_endpoint":"https://accounts.example.com/oauth2/token","user_mapping_provider":{"config":{"display_name_template":"","localpart_template":"","picture_template":"{{ user.data.profile_image_url }}","subject_claim":""}},"userinfo_endpoint":"https://accounts.example.com/userinfo"}]` | each of these will be templated under oidc_providers in homeserver.yaml ref: https://matrix-org.github.io/synapse/latest/openid.html?search= |
+| matrix.oidc.providers | list | `[{"authorization_endpoint":"https://accounts.example.com/oauth2/auth","backchannel_logout_enabled":true,"client_auth_method":"client_secret_post","client_id":"provided-by-your-issuer","client_secret":"provided-by-your-issuer","discover":true,"idp_brand":"","idp_id":"","idp_name":"","issuer":"https://accounts.example.com/","scopes":["openid","profile"],"skip_verification":false,"token_endpoint":"https://accounts.example.com/oauth2/token","user_mapping_provider":{"config":{"display_name_template":"","localpart_template":"","picture_template":"{{ user.data.profile_image_url }}","subject_claim":""}},"userinfo_endpoint":"https://accounts.example.com/userinfo"}]` | each of these will be templated under oidc_providers in homeserver.yaml ref: https://element-hq.github.io/synapse/latest/openid.html?search= |
 | matrix.oidc.providers[0] | object | `{"authorization_endpoint":"https://accounts.example.com/oauth2/auth","backchannel_logout_enabled":true,"client_auth_method":"client_secret_post","client_id":"provided-by-your-issuer","client_secret":"provided-by-your-issuer","discover":true,"idp_brand":"","idp_id":"","idp_name":"","issuer":"https://accounts.example.com/","scopes":["openid","profile"],"skip_verification":false,"token_endpoint":"https://accounts.example.com/oauth2/token","user_mapping_provider":{"config":{"display_name_template":"","localpart_template":"","picture_template":"{{ user.data.profile_image_url }}","subject_claim":""}},"userinfo_endpoint":"https://accounts.example.com/userinfo"}` | id of your identity provider, e.g. dex |
 | matrix.oidc.providers[0].authorization_endpoint | string | `"https://accounts.example.com/oauth2/auth"` | oauth2 authorization endpoint. Required if provider discovery disabled. |
+| matrix.oidc.providers[0].backchannel_logout_enabled | bool | `true` | optional - maybe useful for keycloak |
 | matrix.oidc.providers[0].client_auth_method | string | `"client_secret_post"` | auth method to use when exchanging the token. Valid values are: 'client_secret_basic' (default), 'client_secret_post' and 'none'. |
 | matrix.oidc.providers[0].client_id | string | `"provided-by-your-issuer"` | oauth2 client id to use. Required if 'enabled' is true. |
 | matrix.oidc.providers[0].client_secret | string | `"provided-by-your-issuer"` | oauth2 client secret to use. Required if 'enabled' is true. |
@@ -263,6 +443,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.oidc.providers[0].issuer | string | `"https://accounts.example.com/"` | OIDC issuer. Used to validate tokens and (if discovery is enabled) to discover the provider's endpoints. Required if 'enabled' is true. |
 | matrix.oidc.providers[0].scopes | list | `["openid","profile"]` | list of scopes to request. should normally include the "openid" scope. Defaults to ["openid"]. |
 | matrix.oidc.providers[0].token_endpoint | string | `"https://accounts.example.com/oauth2/token"` | the oauth2 token endpoint. Required if provider discovery is disabled. |
+| matrix.oidc.providers[0].user_mapping_provider.config.display_name_template | string | `""` | Jinja2 template for the display name to set on first login. If unset, no displayname will be set. |
+| matrix.oidc.providers[0].user_mapping_provider.config.localpart_template | string | `""` | This must be configured if using the default mapping provider. |
 | matrix.oidc.providers[0].user_mapping_provider.config.subject_claim | string | `""` | name of the claim containing a unique identifier for user. Defaults to `sub`, which OpenID Connect compliant providers should provide. |
 | matrix.oidc.providers[0].userinfo_endpoint | string | `"https://accounts.example.com/userinfo"` | the OIDC userinfo endpoint. Required if discovery is disabled and the "openid" scope is not requested. |
 | matrix.oidc.secretKeys.authorization_endpoint | string | `""` | key in secret with the authorization_endpoint if discovery is disabled |
@@ -271,6 +453,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.oidc.secretKeys.issuer | string | `"issuer"` | key in secret with the issuer |
 | matrix.oidc.secretKeys.token_endpoint | string | `""` | key in secret with the token_endpoint if discovery is disabled |
 | matrix.oidc.secretKeys.userinfo_endpoint | string | `""` | key in secret with the userinfo_endpoint if discovery is disabled |
+| matrix.password_config | object | `{}` |  |
 | matrix.presence | bool | `true` | Set to false to disable presence (online/offline indicators) |
 | matrix.registration.allowGuests | bool | `false` | Allow users to join rooms as a guest |
 | matrix.registration.autoJoinRooms | list | `[]` | Rooms to automatically join all new users to |
@@ -280,6 +463,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.registration.requiresToken | bool | `false` | Whether to allow token based registration |
 | matrix.registration.secretKey | string | `"registrationSharedSecret"` | key in existing k8s secret for registration shared secret |
 | matrix.registration.sharedSecret | string | `""` | If set, allows registration of standard or admin accounts by anyone who has the shared secret, even if registration is otherwise disabled. ignored if existingSecret is passed in |
+| matrix.require_auth_for_profile_requests | bool | `true` | require auth for profile requests, not useful if federation is enable |
 | matrix.retentionPeriod | string | `"7d"` | How long to keep redacted events in unredacted form in the database |
 | matrix.search | bool | `true` | Set to false to disable message searching |
 | matrix.security.surpressKeyServerWarning | bool | `true` |  |
@@ -301,7 +485,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.urlPreviews.rules.ip.whitelist | list | `[]` |  |
 | matrix.urlPreviews.rules.maxSize | string | `"10M"` | Max size of a crawlable page. Keep this low to prevent a DOS vector |
 | matrix.urlPreviews.rules.url | object | `{}` | Whitelist and blacklist based on URL pattern matching |
-| nameOverride | string | `""` |  |
+| nameOverride | string | `""` | override the name of the chart |
 | networkPolicies.enabled | bool | `true` | whether to enable kubernetes network policies or not |
 | postgresql.enabled | bool | `true` | Whether to deploy the Bitnami Postgresql sub chart If postgresql.enabled is set to true, externalDatabase.enabled must be set to false else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
 | postgresql.global.postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
@@ -314,7 +498,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | postgresql.global.postgresql.auth.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix to connect to db |
 | postgresql.global.postgresql.auth.username | string | `"matrix"` | username of matrix postgres user |
 | postgresql.persistence.enabled | bool | `false` |  |
-| postgresql.primary.initdb | object | `{"scriptsConfigMap":"{{ .Release.Name }}-postgresql-initdb"}` | run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/matrix-org/synapse/blob/master/docs/postgres.md |
+| postgresql.primary.initdb | object | `{"scriptsConfigMap":"{{ .Release.Name }}-postgresql-initdb"}` | run the scripts in templates/postgresql/initdb-configmap.yaml If using an external Postgres server, make sure to configure the database ref: https://github.com/element-hq/synapse/blob/develop/docs/postgres.md |
 | postgresql.primary.podSecurityContext.enabled | bool | `true` |  |
 | postgresql.primary.podSecurityContext.fsGroup | int | `1000` |  |
 | postgresql.primary.podSecurityContext.runAsUser | int | `1000` |  |
@@ -337,13 +521,14 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy for synapse image, Use Always if using image.tag: latest |
 | synapse.image.repository | string | `"matrixdotorg/synapse"` | image registry and repository to use for synapse |
 | synapse.image.tag | string | `""` | tag of synapse docker image to use. change this to latest to grab the    cutting-edge release of synapse |
-| synapse.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | synapse.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | This annotation is required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
 | synapse.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
-| synapse.ingress.enabled | bool | `true` |  |
-| synapse.ingress.host | string | `"matrix.chart-example.local"` |  |
-| synapse.ingress.tls.enabled | bool | `true` |  |
-| synapse.ingress.tls.secretName | string | `"matrix-tls"` |  |
+| synapse.ingress.enabled | bool | `true` | enable ingress for synapse, so the server is reachable outside the cluster |
+| synapse.ingress.host | string | `""` | @DEPRECATION: hostname for your synapse server, please use synapse.ingress.hosts instead. This will be removed in a future release |
+| synapse.ingress.hosts[0].host | string | `"matrix.chart-example.local"` |  |
+| synapse.ingress.hosts[0].paths[0].path | string | `"/"` |  |
+| synapse.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
+| synapse.ingress.tls | list | `[]` | enable tls for synapse ingress |
 | synapse.labels | object | `{"component":"synapse"}` | Labels to be appended to all Synapse resources |
 | synapse.metrics.annotations | bool | `true` |  |
 | synapse.metrics.enabled | bool | `true` | Whether Synapse should capture metrics on an additional endpoint |
@@ -361,8 +546,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.probes.startup.failureThreshold | int | `6` | startup probe times to try and fail before giving up |
 | synapse.probes.startup.periodSeconds | int | `5` | startup probe seconds trying again |
 | synapse.probes.startup.timeoutSeconds | int | `5` | startup probe seconds before timing out |
-| synapse.replicaCount | int | `1` |  |
-| synapse.resources | object | `{}` |  |
+| synapse.replicaCount | int | `1` | replica count of the synapse pods |
+| synapse.resources | object | `{}` | resource requests and limits for synapse |
 | synapse.securityContext | object | `{"allowPrivilegeEscalation":false,"readOnlyRootFilesystem":false,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | securityContext for the synapse CONTAINER ONLY Does not work by default in all cloud providers, disable by default |
 | synapse.securityContext.allowPrivilegeEscalation | bool | `false` | AllowPrivilegeEscalation controls whether a process can gain more privileges than its parent process. This bool directly controls if the no_new_privs flag will be set on the container process. AllowPrivilegeEscalation is true always when the container is: 1) run as Privileged 2) has CAP_SYS_ADMIN Note that this field cannot be set when spec.os.name is windows. |
 | synapse.securityContext.readOnlyRootFilesystem | bool | `false` | Whether this container has a read-only root filesystem. Default is false. Note that this field cannot be set when spec.os.name is windows. |
@@ -373,6 +558,58 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.service.federation.type | string | `"ClusterIP"` |  |
 | synapse.service.port | int | `80` | service port for synapse |
 | synapse.service.type | string | `"ClusterIP"` | service type for synpase |
+| syncv3.enabled | bool | `false` | enable sliding sync (required for using element-x). You can see all possible values [here](https://github.com/small-hack/matrix-sliding-sync-chart). If enabled, you must also provide `matrix.extra_well_known_client_content` |
+| syncv3.existingEnvSecret | string | `""` | existing kubernetes secret for ALL syncv3 env vars listed below. if set, ignores all values under syncv3 including syncv3.db and syncv3.otlp. |
+| syncv3.externalDatabase.database | string | `"syncv3"` | name of the database to try and connect to |
+| syncv3.externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
+| syncv3.externalDatabase.hostname | string | `""` | hostname of db server. Can be left blank if using postgres subchart |
+| syncv3.externalDatabase.password | string | `"changeme"` | password of matrix-sliding-sync postgres user - ignored using exsitingSecret |
+| syncv3.externalDatabase.port | int | `5432` | which port to use to connect to your database server |
+| syncv3.externalDatabase.sslcert | string | `""` | optional: tls/ssl cert for postgresql connections |
+| syncv3.externalDatabase.sslkey | string | `""` | optional: tls/ssl key for postgresql connections |
+| syncv3.externalDatabase.sslmode | string | `""` | sslmode to use, example: verify-full |
+| syncv3.externalDatabase.sslrootcert | string | `""` | optional: tls/ssl root cert for postgresql connections |
+| syncv3.externalDatabase.username | string | `"syncv3"` | username of matrix-sliding-sync postgres user |
+| syncv3.ingress.annotations | object | `{}` |  |
+| syncv3.ingress.className | string | `""` |  |
+| syncv3.ingress.enabled | bool | `false` |  |
+| syncv3.ingress.hosts[0].host | string | `"chart-example.local"` |  |
+| syncv3.ingress.hosts[0].paths[0].path | string | `"/"` |  |
+| syncv3.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
+| syncv3.ingress.tls | list | `[]` |  |
+| syncv3.networkPolicies.enabled | bool | `true` | whether to enable kubernetes network policies or not |
+| syncv3.postgresql.enabled | bool | `false` | Whether to deploy the Bitnami Postgresql sub chart If postgresql.enabled is set to true, externalDatabase.enabled must be set to false else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
+| syncv3.postgresql.global.postgresql.auth.database | string | `"syncv3"` | name of the database |
+| syncv3.postgresql.global.postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
+| syncv3.postgresql.global.postgresql.auth.password | string | `"changeme"` | password of matrix-sliding-sync postgres user - ignored using exsitingSecret |
+| syncv3.postgresql.global.postgresql.auth.port | int | `5432` | which port to use to connect to your database server |
+| syncv3.postgresql.global.postgresql.auth.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existingSecret with the admin postgresql password |
+| syncv3.postgresql.global.postgresql.auth.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
+| syncv3.postgresql.global.postgresql.auth.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
+| syncv3.postgresql.global.postgresql.auth.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix to connect to db |
+| syncv3.postgresql.global.postgresql.auth.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix to connect to db |
+| syncv3.postgresql.global.postgresql.auth.username | string | `"syncv3"` | username of matrix-sliding-sync postgres user |
+| syncv3.postgresql.persistence.enabled | bool | `false` |  |
+| syncv3.postgresql.volumePermissions.enabled | bool | `true` | Enable init container that changes the owner and group of the PVC |
+| syncv3.syncv3.bindaddr | string | `"0.0.0.0:8008"` | SYNCV3_BINDADDR - The interface and port to listen on. (Supports unix socket: /path/to/socket) |
+| syncv3.syncv3.db | string | `""` | SYNCV3_DB - db connection string: https://www.postgresql.org/docs/current/libpq-connect.html if db is empty, you must either provide postgresql or externalDatabase parameters, OR set syncv3.existingDbSecret and syncv3.dbSecretKey |
+| syncv3.syncv3.dbSecretKey | string | `"SYNCV3_DB"` | db key in existing Db Secret for |
+| syncv3.syncv3.existingDbSecret | string | `""` | use an existing kubernetes secret for the db connection connection string. if set, ignores syncv3.db |
+| syncv3.syncv3.existingSyncv3Secret | string | `""` | if set, we'll grab your SYNCV3_SECRET from an existing kubernetes secret and ignore syncv3.secret |
+| syncv3.syncv3.logLevel | string | `"info"` | SYNCV3_LOG_LEVEL - The level of verbosity for messages logged. Available values are trace, debug, info, warn, error and fatal |
+| syncv3.syncv3.maxDbConn | string | `""` | SYNCV3_MAX_DB_CONN - Default: unset. Max database connections to use when communicating with postgres. Unset or 0 means no limit. |
+| syncv3.syncv3.otlp.existingSecret | string | `""` |  |
+| syncv3.syncv3.otlp.password | string | `""` | SYNCV3_OTLP_PASSWORD - Default: unset. The OTLP password for Basic auth. If unset, does not send an Authorization header. |
+| syncv3.syncv3.otlp.url | string | `""` | SYNCV3_OTLP_URL - Default: unset. The OTLP HTTP URL to send spans to e.g https://localhost:4318 - if unset does not send OTLP traces. |
+| syncv3.syncv3.otlp.username | string | `""` | SYNCV3_OTLP_USERNAME - Default: unset. The OTLP username for Basic auth. If unset, does not send an Authorization header. |
+| syncv3.syncv3.pprof | string | `""` | SYNCV3_PPROF - Default: unset. The bind addr for pprof debugging e.g ':6060'. If not set, does not listen. |
+| syncv3.syncv3.prom | string | `""` | SYNCV3_PROM - Default: unset. The bind addr for Prometheus metrics, which will be accessible at /metrics at this address. |
+| syncv3.syncv3.secret | string | `""` | SYNCV3_SECRET - Required. A secret to use to encrypt access tokens. Must remain the same for the lifetime of the database. If both syncv3.secret and syncv3.existingSecret are not set, we will autogenerate this value |
+| syncv3.syncv3.sentryDsn | string | `""` | SYNCV3_SENTRY_DSN - Default: unset. The Sentry DSN to report events to e.g https://sliding-sync@sentry.example.com/123 - if unset does not send sentry events. |
+| syncv3.syncv3.server | string | `""` | SYNCV3_SERVER - Required. The destination homeserver to talk to (CS API HTTPS URL) e.g 'https://matrix-client.matrix.org' (Supports unix socket: /path/to/socket) |
+| syncv3.syncv3.syncv3SecretKey | string | `"SYNCV3_SECRET"` | secret key to get synvcv3 secret from in existing kubernetes secret. |
+| syncv3.syncv3.tlsCert | string | `""` | SYNCV3_TLS_CERT - Default: unset. Path to a certificate file to serve to HTTPS clients. Specifying this enables TLS on the bound address. |
+| syncv3.syncv3.tlsKey | string | `""` | SYNCV3_TLS_KEY - Default: unset. Path to a key file for the certificate. Must be provided along with the certificate file. |
 | volumes.extraPipPackages.capacity | string | `"100Mi"` | Capacity of the extra pip packages PVC. Note: 1Mi is more than enough, but some cloud providers set a min PVC size of 1Mi or 1Gi, adjust as necessary |
 | volumes.extraPipPackages.existingClaim | string | `""` | name of an existing persistent volume claim for the extra pip packages |
 | volumes.extraPipPackages.storageClass | string | `""` | Storage class (optional) |

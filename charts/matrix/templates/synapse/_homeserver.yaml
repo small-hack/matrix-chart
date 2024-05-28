@@ -23,7 +23,9 @@ pid_file: /data/homeserver.pid
 # under the 'listeners' configuration, however this is a security risk:
 # https://github.com/matrix-org/synapse#security-note
 #
-#web_client_location: https://element.example.com/
+{{- if .Values.element.enabled }}
+web_client_location: "https://{{ .Values.element.ingress.host }}/"
+{{- end }}
 
 # The public-facing base URL that clients use to access this HS
 # (not including _matrix/...). This is the same URL a user would
@@ -48,14 +50,14 @@ use_presence: {{ .Values.matrix.presence }}
 # API, so this setting is of limited value if federation is enabled on
 # the server.
 #
-#require_auth_for_profile_requests: true
+require_auth_for_profile_requests: {{ .Values.matrix.require_auth_for_profile_requests }}
 
 # Uncomment to require a user to share a room with another user in order
 # to retrieve their profile information. Only checked on Client-Server
 # requests. Profile requests from other servers should be checked by the
 # requesting server. Defaults to 'false'.
 #
-#limit_profile_requests_to_users_who_share_rooms: true
+limit_profile_requests_to_users_who_share_rooms: {{ .Values.matrix.limit_profile_requests_to_users_who_share_rooms }}
 
 # If set to 'true', removes the need for authentication to access the server's
 # public rooms directory through the client API, meaning that anyone can
@@ -461,7 +463,7 @@ retention:
 # of the public Matrix network: only configure it to `1.3` if you have an
 # entirely private federation setup and you can ensure TLS 1.3 support.
 #
-#federation_client_minimum_tls_version: 1.2
+federation_client_minimum_tls_version: {{ .Values.matrix.federation_client_minimum_tls_version }}
 
 # Skip federation certificate verification on the following whitelist
 # of domains.
@@ -1684,64 +1686,15 @@ sso:
     #audiences:
     #    - "provided-by-your-issuer"
 
-
+{{- with .Values.matrix.password_config }}
 password_config:
-   # Uncomment to disable password login
-   #
-   #enabled: false
-
-   # Uncomment to disable authentication against the local password
-   # database. This is ignored if `enabled` is false, and is only useful
-   # if you have other password_providers.
-   #
-   #localdb_enabled: false
-
-   # Uncomment and change to a secret random string for extra security.
-   # DO NOT CHANGE THIS AFTER INITIAL SETUP!
-   #
-   #pepper: "EVEN_MORE_SECRET"
-
-   # Define and enforce a password policy. Each parameter is optional.
-   # This is an implementation of MSC2000.
-   #
-   policy:
-      # Whether to enforce the password policy.
-      # Defaults to 'false'.
-      #
-      #enabled: true
-
-      # Minimum accepted length for a password.
-      # Defaults to 0.
-      #
-      #minimum_length: 15
-
-      # Whether a password must contain at least one digit.
-      # Defaults to 'false'.
-      #
-      #require_digit: true
-
-      # Whether a password must contain at least one symbol.
-      # A symbol is any character that's not a number or a letter.
-      # Defaults to 'false'.
-      #
-      #require_symbol: true
-
-      # Whether a password must contain at least one lowercase letter.
-      # Defaults to 'false'.
-      #
-      #require_lowercase: true
-
-      # Whether a password must contain at least one lowercase letter.
-      # Defaults to 'false'.
-      #
-      #require_uppercase: true
-
+  {{ toYaml . | nindent 2 }}
+{{- end }}
 
 # Configuration for sending emails from Synapse.
 #
 email:
   enable_notifs: {{ .Values.mail.enabled }}
-  notif_from: {{ .Values.mail.from }}
   {{- if .Values.mail.relay.enabled }}
   smtp_host: {{ include "matrix.fullname" . }}-exim-relay
   smtp_port: {{ .Values.mail.relay.service.port }}
@@ -2208,8 +2161,17 @@ opentracing:
     #  logging:
     #    false
 
+{{- if .Values.matrix.experimental_features.msc3861.enabled }}
+experimental_features:
+{{- toYaml .Values.matrix.experimental_features | nindent 2 }}
+{{- end }}
 {{ if .Values.matrix.homeserverExtra }}
 {{- toYaml .Values.matrix.homeserverExtra }}
 {{- end }}
+
+{{- with .Values.matrix.extra_well_known_client_content }}
+extra_well_known_client_content:
+{{- toYaml . | nindent 2 }}
 {{- end }}
-{{- end }}
+{{- end }}{{/* end define "homeserver.yaml" */}}
+{{- end }}{{/* end if .Values.matrix.homeserverOverride */}}
