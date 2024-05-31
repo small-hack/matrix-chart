@@ -3,13 +3,11 @@ name: Generate helm docs
 on:
   pull_request:
     paths:
-      - 'charts/home-assistant/Chart.yaml'
-      - 'charts/home-assistant/values.yaml'
-
+      - 'charts/matrix/**'
+      
 permissions:
   contents: write
   pull-requests: write
-  deployments: read
 
 jobs:
   update-docs:
