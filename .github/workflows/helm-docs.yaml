@@ -24,5 +24,5 @@ jobs:
       - name: Render helm docs inside the README.md and push changes back to PR branch
         uses: netfoundry/helm-docs-action@v1
         with:
-          working-dir: charts/home-assistant
+          working-dir: charts/matrix
           git-push: "true"
