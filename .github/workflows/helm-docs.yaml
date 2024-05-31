@@ -3,11 +3,13 @@ name: Generate helm docs
 on:
   pull_request:
     paths:
-      - 'charts/matrix/Chart.yaml'
-      - 'charts/matrix/values.yaml'
+      - 'charts/home-assistant/Chart.yaml'
+      - 'charts/home-assistant/values.yaml'
 
 permissions:
   contents: write
+  pull-requests: write
+  deployments: read
 
 jobs:
   update-docs:
@@ -16,19 +18,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      # update the docs
-      - uses: gabe565/setup-helm-docs-action@v1
-      - name: generate helm docs with helm-docs
-        run: helm-docs
-
-      # commit the docs changes back up
-      # see: https://github.com/EndBug/add-and-commit/issues/389#issuecomment-1116589962
-      - uses: EndBug/add-and-commit@v9
-        name: commit helm docs changes
         with:
-          add: 'charts/matrix/README.md'
-          author_name: jessebot
-          committer_name: friend
-          message: 'Automated GHA - Updating helm docs'
-          push: origin HEAD:${{ github.head_ref }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Render helm docs inside the README.md and push changes back to PR branch
+        uses: netfoundry/helm-docs-action@v1
+        with:
+          working-dir: charts/home-assistant
+          git-push: "true"
