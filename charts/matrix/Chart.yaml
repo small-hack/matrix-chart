@@ -8,7 +8,7 @@ sources:
 
 type: application
 
-version: 10.0.0
+version: 10.1.0
 
 # renovate: image=matrixdotorg/synapse
 appVersion: v1.108.0
@@ -36,6 +36,6 @@ dependencies:
 
   - name: matrix-authentication-service
     alias: mas
-    version: 0.7.2
+    version: 0.8.0
     repository: https://small-hack.github.io/matrix-authentication-service-chart
     condition: mas.enabled
