@@ -1,5 +1,8 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+          "config:recommended", ":disableDependencyDashboard"
+    ],
     "customManagers": [
         {
           "customType": "regex",
@@ -43,7 +46,8 @@
           "commands": [
             "bash scripts/bump-chart-version.sh '{{{updateType}}}'"
           ],
-          "fileFilters": ["charts/matrix/Chart.yaml"]
+          "fileFilters": ["charts/matrix/Chart.yaml"],
+          "executionMode": "branch"
         }
       }
     ]

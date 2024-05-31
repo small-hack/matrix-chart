@@ -6,5 +6,6 @@
     "platform": "github",
     "repositories": [
         "small-hack/matrix-chart"
-    ]
+    ],
+    "allowedPostUpgradeCommands": ["^scripts"]
 }
