@@ -229,6 +229,13 @@ spec:
                   name: {{ .Values.s3.existingSecret }}
                   key: {{ .Values.s3.secretKeys.secretKey }}
             {{- end }}
+            {{- if .Values.matrix.security.trustedKeyServersExistingSecret }}
+            - name: TRUSTED_KEY_SERVERS
+              valueFrom:
+                secretKeyRef:
+                    name: {{ .Values.matrix.security.trustedKeyServersExistingSecret }}
+                    key: {{ .Values.matrix.security.trustedKeyServersSecretKey }}
+            {{- end }}
           command:
             - /bin/sh
             - -ec
@@ -276,6 +283,9 @@ spec:
               yq eval -i '.email.smtp_host = env(SMTP_HOST)' /data/homeserver.yaml && \
               yq eval -i '.email.smtp_user = env(SMTP_USER)' /data/homeserver.yaml && \
               yq eval -i '.email.smtp_pass = env(SMTP_PASS)' /data/homeserver.yaml && \
+              {{- end }}
+              {{- if and .Values.matrix.security.trustedKeyServersExistingSecret (not .Values.matrix.security.trustedKeyServers) }}
+              yq eval -i '.trusted_key_servers = env(TRUSTED_KEY_SERVERS)' /data/homeserver.yaml && \
               {{- end }}
               yq eval -i '.database.args.host = env(DATABASE_HOSTNAME)' /data/homeserver.yaml && \
               yq eval -i '.database.args.database = env(DATABASE)' /data/homeserver.yaml && \
