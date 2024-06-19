@@ -285,7 +285,10 @@ spec:
               yq eval -i '.email.smtp_pass = env(SMTP_PASS)' /data/homeserver.yaml && \
               {{- end }}
               {{- if and .Values.matrix.security.trustedKeyServersExistingSecret (not .Values.matrix.security.trustedKeyServers) }}
+              echo "about to do trusted keys..." && \
+              echo -e $TRUSTED_KEY_SERVERS && \
               yq eval -i '.trusted_key_servers = env(TRUSTED_KEY_SERVERS)' /data/homeserver.yaml && \
+              echo "it worked" && \
               {{- end }}
               yq eval -i '.database.args.host = env(DATABASE_HOSTNAME)' /data/homeserver.yaml && \
               yq eval -i '.database.args.database = env(DATABASE)' /data/homeserver.yaml && \
