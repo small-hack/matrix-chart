@@ -1335,6 +1335,8 @@ trusted_key_servers:
       accept_keys_insecurely: {{ .acceptKeysInsecurely }}
       {{- end }}
     {{- end }}
+{{- else }}
+trusted_key_servers: []
 {{- end }}
 
 # Uncomment the following to disable the warning that is emitted when the
