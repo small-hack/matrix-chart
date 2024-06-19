@@ -286,7 +286,10 @@ spec:
               {{- end }}
               {{- if and .Values.matrix.security.trustedKeyServersExistingSecret (not .Values.matrix.security.trustedKeyServers) }}
               echo "about to do trusted keys..." && \
+              echo "here's the current TRUSTED_KEY_SERVERS env variable" && \
               echo -e $TRUSTED_KEY_SERVERS && \
+              echo "here's the current trusted_key_servers key in /data/homeserver.yaml:" && \
+              yq '.trusted_key_servers' /data/homeserver.yaml && \
               yq eval -i '.trusted_key_servers = env(TRUSTED_KEY_SERVERS)' /data/homeserver.yaml && \
               echo "it worked" && \
               {{- end }}
