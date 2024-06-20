@@ -48,7 +48,9 @@ These features still need to be tested, but are technically baked into the chart
 # Notes
 
 * [Databases](#databases)
-* [Addiing Trusted Key Servers from an existing Secret](#addiing-trusted-key-servers-from-an-existing-secret)
+* [Federation](#federation)
+    * [Federation not Working](#federation-not-working)
+    * [Addiing Trusted Key Servers from an existing Secret](#addiing-trusted-key-servers-from-an-existing-secret)
 * [Notes on using Matrix Sliding Sync](#notes-on-using-matrix-sliding-sync)
 * [Notes on using MAS (Matrix Authentication Service)](#notes-on-using-mas-matrix-authentication-service)
 * [About and Status](#about-and-status)
@@ -62,7 +64,30 @@ You must select one of the following options:
 
 Note: you cannot enable both `externalDatabase` and `postgresql`. You must select _one_.
 
-## Addiing Trusted Key Servers from an existing Secret
+
+## Federation
+
+### Federation not Working
+
+This can be broken for a number of reasons, and some of them are listed in the official [synapse docs](https://element-hq.github.io/synapse/latest/federate.html#setting-up-federation), but one that was persistent for the devs here was constantly getting a 401 when testing.
+
+I managed to finally get past that by adding the following to my values.yaml:
+
+```yaml
+synapse:
+  ingress:
+    # replace matrix.mydomain.com with your actual matrix domain
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      location /.well-known/matrix/server {
+        return 200 '{"m.server": "matrix.mydomain.com:443"}';
+        add_header Content-Type application/json;
+      }
+```
+
+!!! NOTE
+    By the way, you can test by going to `https://federationtester.matrix.org/api/report?server_name=matrix.mydomain.com` where `matrix.mydomain.com` is replaced by your synapse server.
+
+### Addiing Trusted Key Servers from an existing Secret
 
 If you'd like to get your [`trusted_key_servers`](https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html#trusted_key_servers) from an existing Kubernetes Secret, you can do so with an in-line yaml block. Here's an example values.yaml:
 
