@@ -280,6 +280,8 @@ spec:
               {{- if and .Values.matrix.security.trustedKeyServersExistingSecret (not .Values.matrix.security.trustedKeyServers) }}
               echo "here's the current trusted_key_servers key in /data/homeserver.yaml:" && \
               yq '.trusted_key_servers' /data/homeserver.yaml && \
+              echo "here's what's in /key-servers/{{ .Values.matrix.security.trustedKeyServersSecretKey }}:" && \
+              yq /key-servers/{{ .Values.matrix.security.trustedKeyServersSecretKey }} && \
               echo "merging secret trusted keys into homeserver.yaml" && \
               yq eval-all --inplace 'select(fileIndex == 0) * select(fileIndex == 1)' /data/homeserver.yaml /key-servers/{{ .Values.matrix.security.trustedKeyServersSecretKey }} && \
               echo "trusted key server merge worked" && \
