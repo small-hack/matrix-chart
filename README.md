@@ -45,8 +45,13 @@ These features still need to be tested, but are technically baked into the chart
 - [matrix-org/matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) IRC bridge
 - [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge
 
-
 # Notes
+
+* [Databases](#databases)
+* [Addiing Trusted Key Servers from an existing Secret](#addiing-trusted-key-servers-from-an-existing-secret)
+* [Notes on using Matrix Sliding Sync](#notes-on-using-matrix-sliding-sync)
+* [Notes on using MAS (Matrix Authentication Service)](#notes-on-using-mas-matrix-authentication-service)
+* [About and Status](#about-and-status)
 
 ## Databases
 
@@ -57,6 +62,34 @@ You must select one of the following options:
 
 Note: you cannot enable both `externalDatabase` and `postgresql`. You must select _one_.
 
+## Addiing Trusted Key Servers from an existing Secret
+
+If you'd like to get your [`trusted_key_servers`](https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html#trusted_key_servers) from an existing Kubernetes Secret, you can do so with an in-line yaml block. Here's an example values.yaml:
+
+```yaml
+matrix:
+  security:
+    trustedKeyServersExistingSecret: "trusted-key-servers"
+    trustedKeyServersSecretKey: "trustedKeyServers"
+```
+
+Here's an example Kubernetes Secret using in-line YAML (NOTE the `trusted_key_servers`):
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: trusted-key-servers
+  namespace: matrix
+type: Opaque
+stringData:
+  # friend.com is the matrix server you'd like to federate with :)
+  trustedKeyServers: |-
+    trusted_key_servers:
+      - server_name: friend.com
+        verify_keys:
+          ed25519:auto: abcdefghijklmnopqrstuvwxyz1234567890
+```
 
 ## Notes on using Matrix Sliding Sync
 
