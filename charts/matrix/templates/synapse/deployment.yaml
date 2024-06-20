@@ -277,11 +277,19 @@ spec:
               yq eval -i '.email.smtp_user = env(SMTP_USER)' /data/homeserver.yaml && \
               yq eval -i '.email.smtp_pass = env(SMTP_PASS)' /data/homeserver.yaml && \
               {{- end }}
+              {{- if and .Values.matrix.security.trustedKeyServersExistingSecret (not .Values.matrix.security.trustedKeyServers) }}
+              yq eval-all --inplace 'select(fileIndex == 0) * select(fileIndex == 1)' /data/homeserver.yaml /key-servers/{{ .Values.matrix.security.trustedKeyServersSecretKey }} && \
+              echo "Trusted key server merge finished." && \
+              {{- end }}
               yq eval -i '.database.args.host = env(DATABASE_HOSTNAME)' /data/homeserver.yaml && \
               yq eval -i '.database.args.database = env(DATABASE)' /data/homeserver.yaml && \
               yq eval -i '.database.args.user = env(DATABASE_USERNAME)' /data/homeserver.yaml && \
               yq eval -i '.database.args.password = env(DATABASE_PASSWORD)' /data/homeserver.yaml
           volumeMounts:
+            {{- if and .Values.matrix.security.trustedKeyServersExistingSecret (not .Values.matrix.security.trustedKeyServers) }}
+            - name: trusted-key-servers
+              mountPath: "/key-servers"
+            {{- end }}
             - name: synapse-initial-config
               mountPath: "/initial"
             - name: synapse-config
@@ -436,6 +444,11 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
+        {{- if and .Values.matrix.security.trustedKeyServersExistingSecret (not .Values.matrix.security.trustedKeyServers) }}
+        - name: trusted-key-servers
+          secret:
+            secretName: {{ .Values.matrix.security.trustedKeyServersExistingSecret }}
+        {{- end }}
         - name: synapse-initial-config
           configMap:
             name: {{ include "matrix.fullname" . }}-initial-synapse-config

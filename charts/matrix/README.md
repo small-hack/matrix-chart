@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 10.1.1](https://img.shields.io/badge/Version-10.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.108.0](https://img.shields.io/badge/AppVersion-v1.108.0-informational?style=flat-square)
+![Version: 11.0.0](https://img.shields.io/badge/Version-11.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.109.0](https://img.shields.io/badge/AppVersion-v1.109.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -20,7 +20,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://small-hack.github.io/coturn-chart | coturn | 6.2.0 |
+| https://small-hack.github.io/coturn-chart | coturn | 6.2.1 |
 | https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 0.8.1 |
 | https://small-hack.github.io/matrix-sliding-sync-chart | syncv3(matrix-sliding-sync) | 0.5.0 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql | 15.1.4 |
@@ -167,7 +167,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | element.enabled | bool | `true` | Set to false to disable a deployment of Element. Users will still be able to connect via any other instances of Element e.g. https://app.element.io, Element Desktop, or any other Matrix clients |
 | element.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy to use for element image, set to Always if using latest tag |
 | element.image.repository | string | `"vectorim/element-web"` | registry and repository to use for element docker image |
-| element.image.tag | string | `"v1.11.68"` | tag to use for element docker image |
+| element.image.tag | string | `"v1.11.69"` | tag to use for element docker image |
 | element.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | element.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` |  |
 | element.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
@@ -405,7 +405,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.experimental_features.msc3861.issuer | string | `"http://localhost:8080/"` | Synapse will call `{issuer}/.well-known/openid-configuration` to get the OIDC configuration |
 | matrix.extra_well_known_client_content | object | `{}` | extra sections for the your /.well-known/matrix/client which returns json used by clients to know where your matrix sliding sync server is |
 | matrix.federation.allowPublicRooms | bool | `true` | Allow members of other homeservers to fetch *public* rooms |
-| matrix.federation.blacklist | list | `["127.0.0.0/8","10.0.0.0/8","172.16.0.0/12","192.168.0.0/16","100.64.0.0/10","169.254.0.0/16","::1/128","fe80::/64","fc00::/7"]` | IP addresses to blacklist federation requests to |
+| matrix.federation.blacklist | list | `[]` | IP addresses to blacklist federation requests to example blacklist values:  - '127.0.0.0/8'  - '10.0.0.0/8'  - '172.16.0.0/12'  - '192.168.0.0/16'  - '100.64.0.0/10'  - '169.254.0.0/16'  - '::1/128'  - 'fe80::/64'  - 'fc00::/7' |
 | matrix.federation.enabled | bool | `false` | Set to true to enable federation |
 | matrix.federation.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | matrix.federation.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
@@ -467,6 +467,9 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.retentionPeriod | string | `"7d"` | How long to keep redacted events in unredacted form in the database |
 | matrix.search | bool | `true` | Set to false to disable message searching |
 | matrix.security.surpressKeyServerWarning | bool | `true` |  |
+| matrix.security.trustedKeyServers | list | `[]` |  |
+| matrix.security.trustedKeyServersExistingSecret | string | `""` | use an existing Kubernetes Secret for trusted server list instead of matrix.security.trustedKeyServers |
+| matrix.security.trustedKeyServersSecretKey | string | `"trustedKeys"` | key in existing Kubernetes Secret for trusted server list |
 | matrix.serverName | string | `"example.com"` | Domain name of the server: This is not necessarily the host name where the service is reachable. In fact, you may want to omit any subdomains from this value as the server name set here will be the name of your homeserver in the fediverse, & will be the domain name at the end of every username |
 | matrix.telemetry | bool | `false` | Enable anonymous telemetry to matrix.org |
 | matrix.uploads | object | `{"maxPixels":"32M","maxSize":"10M"}` | Settings related to image and multimedia uploads |

@@ -82,16 +82,17 @@ matrix:
     whitelist: []
 
     # -- IP addresses to blacklist federation requests to
-    blacklist:
-      - '127.0.0.0/8'
-      - '10.0.0.0/8'
-      - '172.16.0.0/12'
-      - '192.168.0.0/16'
-      - '100.64.0.0/10'
-      - '169.254.0.0/16'
-      - '::1/128'
-      - 'fe80::/64'
-      - 'fc00::/7'
+    # example blacklist values:
+    #  - '127.0.0.0/8'
+    #  - '10.0.0.0/8'
+    #  - '172.16.0.0/12'
+    #  - '192.168.0.0/16'
+    #  - '100.64.0.0/10'
+    #  - '169.254.0.0/16'
+    #  - '::1/128'
+    #  - 'fe80::/64'
+    #  - 'fc00::/7'
+    blacklist: []
 
     ingress:
       # -- enable ingress for federation
@@ -348,6 +349,14 @@ matrix:
     #         key: "abcdefghijklmnopqrstuvwxyzabcdefghijklmopqr"
     #     acceptKeysInsecurely: false
     #   - serverName: my_other_trusted_server.example.com
+    trustedKeyServers: []
+
+    # -- use an existing Kubernetes Secret for trusted server list instead of
+    # matrix.security.trustedKeyServers
+    trustedKeyServersExistingSecret: ""
+
+    # -- key in existing Kubernetes Secret for trusted server list
+    trustedKeyServersSecretKey: "trustedKeys"
 
   # -- Set to true to globally block access to the homeserver
   disabled: false
@@ -1507,7 +1516,7 @@ element:
     # -- registry and repository to use for element docker image
     repository: "vectorim/element-web"
     # -- tag to use for element docker image
-    tag: v1.11.68
+    tag: v1.11.69
     # -- pullPolicy to use for element image, set to Always if using latest tag
     pullPolicy: IfNotPresent
   service:
