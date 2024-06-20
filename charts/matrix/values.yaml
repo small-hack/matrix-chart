@@ -82,7 +82,6 @@ matrix:
     whitelist: []
 
     # -- IP addresses to blacklist federation requests to
-    blacklist: []
     # example blacklist values:
     #  - '127.0.0.0/8'
     #  - '10.0.0.0/8'
@@ -93,6 +92,7 @@ matrix:
     #  - '::1/128'
     #  - 'fe80::/64'
     #  - 'fc00::/7'
+    blacklist: []
 
     ingress:
       # -- enable ingress for federation

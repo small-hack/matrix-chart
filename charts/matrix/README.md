@@ -405,7 +405,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.experimental_features.msc3861.issuer | string | `"http://localhost:8080/"` | Synapse will call `{issuer}/.well-known/openid-configuration` to get the OIDC configuration |
 | matrix.extra_well_known_client_content | object | `{}` | extra sections for the your /.well-known/matrix/client which returns json used by clients to know where your matrix sliding sync server is |
 | matrix.federation.allowPublicRooms | bool | `true` | Allow members of other homeservers to fetch *public* rooms |
-| matrix.federation.blacklist | list | `[]` | IP addresses to blacklist federation requests to |
+| matrix.federation.blacklist | list | `[]` | IP addresses to blacklist federation requests to example blacklist values:  - '127.0.0.0/8'  - '10.0.0.0/8'  - '172.16.0.0/12'  - '192.168.0.0/16'  - '100.64.0.0/10'  - '169.254.0.0/16'  - '::1/128'  - 'fe80::/64'  - 'fc00::/7' |
 | matrix.federation.enabled | bool | `false` | Set to true to enable federation |
 | matrix.federation.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | matrix.federation.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
