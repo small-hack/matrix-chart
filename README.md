@@ -62,7 +62,9 @@ You must select one of the following options:
 - Use the [Bitnami PostgreSQL subchart](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) (set `postgresql.enabled` to `true`)
 - Use your own external database, which can also be PostgreSQL. (set `externalDatabase.enabled` to `true`)
 
-Note: you cannot enable both `externalDatabase` and `postgresql`. You must select _one_.
+> [!NOTE]
+>
+> You cannot enable both `externalDatabase` and `postgresql`. You must select _one_.
 
 
 ## Federation
@@ -84,8 +86,9 @@ synapse:
       }
 ```
 
-!!! NOTE
-    By the way, you can test by going to `https://federationtester.matrix.org/api/report?server_name=matrix.mydomain.com` where `matrix.mydomain.com` is replaced by your synapse server.
+> [!NOTE]
+>
+> By the way, you can test by going to `https://federationtester.matrix.org/api/report?server_name=matrix.mydomain.com` where `matrix.mydomain.com` is replaced by your synapse server.
 
 ### Addiing Trusted Key Servers from an existing Secret
 
