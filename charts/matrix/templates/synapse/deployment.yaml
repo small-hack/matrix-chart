@@ -229,13 +229,6 @@ spec:
                   name: {{ .Values.s3.existingSecret }}
                   key: {{ .Values.s3.secretKeys.secretKey }}
             {{- end }}
-            {{- if .Values.matrix.security.trustedKeyServersExistingSecret }}
-            - name: TRUSTED_KEY_SERVERS
-              valueFrom:
-                secretKeyRef:
-                    name: {{ .Values.matrix.security.trustedKeyServersExistingSecret }}
-                    key: {{ .Values.matrix.security.trustedKeyServersSecretKey }}
-            {{- end }}
           command:
             - /bin/sh
             - -ec
@@ -285,19 +278,21 @@ spec:
               yq eval -i '.email.smtp_pass = env(SMTP_PASS)' /data/homeserver.yaml && \
               {{- end }}
               {{- if and .Values.matrix.security.trustedKeyServersExistingSecret (not .Values.matrix.security.trustedKeyServers) }}
-              echo "about to do trusted keys..." && \
-              echo "here's the current TRUSTED_KEY_SERVERS env variable" && \
-              echo -e $TRUSTED_KEY_SERVERS && \
               echo "here's the current trusted_key_servers key in /data/homeserver.yaml:" && \
               yq '.trusted_key_servers' /data/homeserver.yaml && \
-              yq eval -i '.trusted_key_servers = env(TRUSTED_KEY_SERVERS)' /data/homeserver.yaml && \
-              echo "it worked" && \
+              echo "merging secret trusted keys into homeserver.yaml" && \
+              yq eval-all --inplace 'select(fileIndex == 0) * select(fileIndex == 1)' /data/homeserver.yaml /key-servers/{{ .Values.matrix.security.trustedKeyServersSecretKey }} && \
+              echo "trusted key server merge worked" && \
               {{- end }}
               yq eval -i '.database.args.host = env(DATABASE_HOSTNAME)' /data/homeserver.yaml && \
               yq eval -i '.database.args.database = env(DATABASE)' /data/homeserver.yaml && \
               yq eval -i '.database.args.user = env(DATABASE_USERNAME)' /data/homeserver.yaml && \
               yq eval -i '.database.args.password = env(DATABASE_PASSWORD)' /data/homeserver.yaml
           volumeMounts:
+            {{- if and .Values.matrix.security.trustedKeyServersExistingSecret (not .Values.matrix.security.trustedKeyServers) }}
+            - name: trusted-key-servers
+              mountPath: "/key-servers"
+            {{- end }}
             - name: synapse-initial-config
               mountPath: "/initial"
             - name: synapse-config
@@ -452,6 +447,11 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
+        {{- if and .Values.matrix.security.trustedKeyServersExistingSecret (not .Values.matrix.security.trustedKeyServers) }}
+        - name: trusted-key-servers
+          secret:
+            secretName: {{ .Values.matrix.security.trustedKeyServersExistingSecret }}
+        {{- end }}
         - name: synapse-initial-config
           configMap:
             name: {{ include "matrix.fullname" . }}-initial-synapse-config
