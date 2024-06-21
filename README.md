@@ -90,6 +90,13 @@ synapse:
 >
 > By the way, you can test by going to `https://federationtester.matrix.org/api/report?server_name=matrix.mydomain.com` where `matrix.mydomain.com` is replaced by your synapse server.
 
+Later on, I realized I could also just do:
+
+```yaml
+matrix:
+  serve_server_wellknown: true
+```
+
 ### Addiing Trusted Key Servers from an existing Secret
 
 If you'd like to get your [`trusted_key_servers`](https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html#trusted_key_servers) from an existing Kubernetes Secret, you can do so with an in-line yaml block. Here's an example values.yaml:
