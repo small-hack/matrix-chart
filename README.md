@@ -90,7 +90,7 @@ synapse:
 >
 > By the way, you can test by going to `https://federationtester.matrix.org/api/report?server_name=matrix.mydomain.com` where `matrix.mydomain.com` is replaced by your synapse server.
 
-Later on, I realized I could also just do:
+Later on, I realized I could also use [`serve_server_wellknown`](https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html#serve_server_wellknown) in the synapse config, so I've added it to the Chart's parameters and you can use it like this in your values.yaml:
 
 ```yaml
 matrix:
