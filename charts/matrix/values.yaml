@@ -69,6 +69,9 @@ matrix:
   #  "org.matrix.msc3575.proxy":
   #    "url": "https://wherever-your-sliding-sync-proxy-is.com"
 
+  # -- By default, other servers will try to reach our server on port 8448, which can be inconvenient in some environments. Provided https://<server_name>/ on port 443 is routed to Synapse, this option configures Synapse to serve a file at https://<server_name>/.well-known/matrix/server. This will tell other servers to send traffic to port 443 instead
+  serve_server_wellknown: false
+
   # Settings related to federation
   federation:
     # -- Set to true to enable federation

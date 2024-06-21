@@ -2150,5 +2150,10 @@ experimental_features:
 extra_well_known_client_content:
 {{- toYaml . | nindent 2 }}
 {{- end }}
+
+{{- with .Values.matrix.serve_server_wellknown }}
+serve_server_wellknown: {{ . }}
+{{- end }}
+
 {{- end }}{{/* end define "homeserver.yaml" */}}
 {{- end }}{{/* end if .Values.matrix.homeserverOverride */}}
