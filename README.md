@@ -332,7 +332,7 @@ mas:
 
 ## About and Status
 
-This is a fork of [Arkaniad/matrix-chart](https://github.com/Arkaniad/matrix-chart), which is a fork of [typokign/matrix-chart](https://github.com/typokign/matrix-chart). We recently transferred this chart from [@jessebot](https://github.com/jessebot) to the small-hack org to help with maintanence longterm :) Working on full stability, but always happy to receive GitHub Issues or PRs 💙 Please star the repo if you like our work <3
+This is a fork of [Arkaniad/matrix-chart](https://github.com/Arkaniad/matrix-chart), which is a fork of [typokign/matrix-chart](https://github.com/typokign/matrix-chart). We recently transferred this chart from [@jessebot](https://github.com/jessebot) to the small-hack org to help with maintanence longterm :) Working on full stability, but always happy to receive GitHub Issues or PRs! Please star the repo if you like our work 💙
 
 Our goal is to provide regular updates using renovatebot and provide some level of basic security from a k8s perspective. We're also trying to standardize the chart more by following predictable values.yaml patterns.
 
