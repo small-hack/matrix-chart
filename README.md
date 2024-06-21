@@ -90,6 +90,13 @@ synapse:
 >
 > By the way, you can test by going to `https://federationtester.matrix.org/api/report?server_name=matrix.mydomain.com` where `matrix.mydomain.com` is replaced by your synapse server.
 
+Later on, I realized I could also use [`serve_server_wellknown`](https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html#serve_server_wellknown) in the synapse config, so I've added it to the Chart's parameters and you can use it like this in your values.yaml:
+
+```yaml
+matrix:
+  serve_server_wellknown: true
+```
+
 ### Addiing Trusted Key Servers from an existing Secret
 
 If you'd like to get your [`trusted_key_servers`](https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html#trusted_key_servers) from an existing Kubernetes Secret, you can do so with an in-line yaml block. Here's an example values.yaml:
@@ -325,7 +332,7 @@ mas:
 
 ## About and Status
 
-This is a fork of [Arkaniad/matrix-chart](https://github.com/Arkaniad/matrix-chart), which is a fork of [typokign/matrix-chart](https://github.com/typokign/matrix-chart). We recently transferred this chart from [@jessebot](https://github.com/jessebot) to the small-hack org to help with maintanence longterm :) Working on full stability, but always happy to receive GitHub Issues or PRs 💙 Please star the repo if you like our work <3
+This is a fork of [Arkaniad/matrix-chart](https://github.com/Arkaniad/matrix-chart), which is a fork of [typokign/matrix-chart](https://github.com/typokign/matrix-chart). We recently transferred this chart from [@jessebot](https://github.com/jessebot) to the small-hack org to help with maintanence longterm :) Working on full stability, but always happy to receive GitHub Issues or PRs! Please star the repo if you like our work 💙
 
 Our goal is to provide regular updates using renovatebot and provide some level of basic security from a k8s perspective. We're also trying to standardize the chart more by following predictable values.yaml patterns.
 
