@@ -63,12 +63,24 @@ limit_profile_requests_to_users_who_share_rooms: {{ .Values.matrix.limit_profile
 # public rooms directory through the client API, meaning that anyone can
 # query the room directory. Defaults to 'false'.
 #
-#allow_public_rooms_without_auth: true
+allow_public_rooms_without_auth: {{ .Values.matrix.allow_public_rooms_without_auth }}
 
 # If set to 'true', allows any other homeserver to fetch the server's public
 # rooms directory via federation. Defaults to 'false'.
 #
-allow_public_rooms_over_federation: {{ and .Values.matrix.federation.enabled .Values.matrix.federation.allowPublicRooms }}
+allow_public_rooms_over_federation: {{ and .Values.matrix.federation.enabled .Values.matrix.allow_public_rooms_over_federation }}
+
+{{- if .Values.matrix.federation.enabled }}
+federation:
+  client_timeout: {{ .Values.matrix.federation.client_timeout }}
+  max_short_retry_delay: {{ .Values.matrix.federation.max_short_retry_delay }}
+  max_long_retry_delay: {{ .Values.matrix.federation.max_long_retry_delay }}
+  max_short_retries: {{ .Values.matrix.federation.max_short_retries }}
+  max_long_retries: {{ .Values.matrix.federation.max_long_retries }}
+  destination_min_retry_interval: {{ .Values.matrix.federation.destination_min_retry_interval }}
+  destination_retry_multiplier: {{ .Values.matrix.federation.destination_retry_multiplier }}
+  destination_max_retry_interval: {{ .Values.matrix.federation.destination_max_retry_interval }}
+{{- end }}
 
 # The default room version for newly created rooms.
 #
@@ -107,26 +119,26 @@ enable_search: {{ .Values.matrix.search }}
 # purely on this application-layer restriction.  If not specified, the
 # default is to whitelist everything.
 
-{{- if .Values.matrix.federation.whitelist }}
+{{- if .Values.matrix.federation_domain_whitelist }}
 federation_domain_whitelist:
-    {{- range .Values.matrix.federation.whitelist }}
-    - {{ . }}
-    {{- end }}
+  {{- range .Values.matrix.federation_domain_whitelist }}
+  - {{ . }}
+  {{- end }}
 {{- end}}
 
-# Prevent federation requests from being sent to the following
-# blacklist IP address CIDR ranges. If this option is not specified, or
-# specified with an empty list, no ip range blacklist will be enforced.
+# This option prevents outgoing requests from being sent to the specified blacklisted IP address CIDR ranges. If this option is not specified then it defaults to private IP address ranges (see the example below).
 #
-# As of Synapse v1.4.0 this option also affects any outbound requests to identity
-# servers provided by user input.
+# The blacklist applies to the outbound requests for federation, identity servers, push servers, and for checking key validity for third-party invite events.
 #
-# (0.0.0.0 and :: are always blacklisted, whether or not they are explicitly
-# listed here, since they correspond to unroutable addresses.)
-
-federation_ip_range_blacklist:
-{{- range .Values.matrix.federation.blacklist }}
-    - {{ . }}
+# (0.0.0.0 and :: are always blacklisted, whether or not they are explicitly listed here, since they correspond to unroutable addresses.)
+#
+# This option replaces federation_ip_range_blacklist in Synapse v1.25.0.
+# Note: The value is ignored when an HTTP proxy is in use.
+{{- if .Values.ip_range_blacklist }}
+ip_range_blacklist:
+  {{- range .Values.matrix.ip_range_blacklist }}
+      - {{ . }}
+  {{- end }}
 {{- end }}
 
 # List of ports that Synapse should listen on, their purpose and their

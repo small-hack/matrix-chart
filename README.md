@@ -76,6 +76,10 @@ This can be broken for a number of reasons, and some of them are listed in the o
 I managed to finally get past that by adding the following to my values.yaml:
 
 ```yaml
+matrix:
+  federation:
+    enabled: true
+
 synapse:
   ingress:
     # replace matrix.mydomain.com with your actual matrix domain
@@ -94,6 +98,8 @@ Later on, I realized I could also use [`serve_server_wellknown`](https://element
 
 ```yaml
 matrix:
+  federation:
+    enabled: true
   serve_server_wellknown: true
 ```
 
@@ -103,6 +109,8 @@ If you'd like to get your [`trusted_key_servers`](https://element-hq.github.io/s
 
 ```yaml
 matrix:
+  federation:
+    enabled: true
   security:
     trustedKeyServersExistingSecret: "trusted-key-servers"
     trustedKeyServersSecretKey: "trustedKeyServers"
