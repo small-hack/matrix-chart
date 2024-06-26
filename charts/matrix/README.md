@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 11.1.1](https://img.shields.io/badge/Version-11.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.109.0](https://img.shields.io/badge/AppVersion-v1.109.0-informational?style=flat-square)
+![Version: 12.0.0](https://img.shields.io/badge/Version-12.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.109.0](https://img.shields.io/badge/AppVersion-v1.109.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -392,6 +392,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | mas.serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
 | mas.tolerations | list | `[]` |  |
 | matrix.adminEmail | string | `"admin@example.com"` | Email address of the administrator |
+| matrix.allow_public_rooms_over_federation | bool | `false` | Allow members of other homeservers to fetch *public* rooms |
+| matrix.allow_public_rooms_without_auth | bool | `false` | If set to true, removes the need for authentication to access the server's public rooms directory through the client API, meaning that anyone can query the room directory |
 | matrix.blockNonAdminInvites | bool | `false` | Set to true to block non-admins from inviting users to any rooms |
 | matrix.disabled | bool | `false` | Set to true to globally block access to the homeserver |
 | matrix.disabledMessage | string | `""` | Human readable reason for why the homeserver is blocked |
@@ -404,8 +406,10 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.experimental_features.msc3861.enabled | bool | `false` | experimental_feature msc3861 - enable this if you want to use the matrix authentication service Likely needed if using OIDC on synapse and you want to allow usage of Element-X (the beta of element) See: [Matrix authentication service home server docs](https://matrix-org.github.io/matrix-authentication-service/setup/homeserver.html#configure-the-homeserver-to-delegate-authentication-to-the-service), [full matrix authentication service docs](https://matrix-org.github.io/matrix-authentication-service/index.html), and [issue#1915](https://github.com/element-hq/element-meta/issues/1915#issuecomment-2119297748) where this is being discussed |
 | matrix.experimental_features.msc3861.issuer | string | `"http://localhost:8080/"` | Synapse will call `{issuer}/.well-known/openid-configuration` to get the OIDC configuration |
 | matrix.extra_well_known_client_content | object | `{}` | extra sections for the your /.well-known/matrix/client which returns json used by clients to know where your matrix sliding sync server is |
-| matrix.federation.allowPublicRooms | bool | `true` | Allow members of other homeservers to fetch *public* rooms |
-| matrix.federation.blacklist | list | `[]` | IP addresses to blacklist federation requests to example blacklist values:  - '127.0.0.0/8'  - '10.0.0.0/8'  - '172.16.0.0/12'  - '192.168.0.0/16'  - '100.64.0.0/10'  - '169.254.0.0/16'  - '::1/128'  - 'fe80::/64'  - 'fc00::/7' |
+| matrix.federation.client_timeout | string | `"60s"` | timeout for the federation requests |
+| matrix.federation.destination_max_retry_interval | string | `"1w"` | a cap on the backoff. Defaults to a week |
+| matrix.federation.destination_min_retry_interval | string | `"10m"` | the initial backoff, after the first request fails |
+| matrix.federation.destination_retry_multiplier | int | `2` | how much we multiply the backoff by after each subsequent fail |
 | matrix.federation.enabled | bool | `false` | Set to true to enable federation |
 | matrix.federation.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | matrix.federation.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
@@ -413,11 +417,16 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.federation.ingress.enabled | bool | `false` | enable ingress for federation |
 | matrix.federation.ingress.host | string | `"matrix-fed.chart-example.local"` |  |
 | matrix.federation.ingress.tls.enabled | bool | `true` | enable a TLS cert |
-| matrix.federation.whitelist | list | `[]` | Allow list of domains to federate with (comment for all domains    except blacklisted) |
+| matrix.federation.max_long_retries | int | `10` | maximum number of retries for the long retry algo |
+| matrix.federation.max_long_retry_delay | string | `"60s"` | maximum delay to be used for the short retry algo |
+| matrix.federation.max_short_retries | int | `3` | maximum number of retries for the short retry algo |
+| matrix.federation.max_short_retry_delay | string | `"2s"` | maximum delay to be used for the short retry algo |
 | matrix.federation_client_minimum_tls_version | float | `1.2` | minimum required tls version support. set to 1.3 if you know all clients implement this. may break public servers |
+| matrix.federation_domain_whitelist | list | `[]` | Restrict federation to the given whitelist of domains. N.B. we recommend also firewalling your federation listener to limit inbound federation traffic as early as possible, rather than relying purely on this application-layer restriction. If not specified, the default is to whitelist everythingNote Note: this does not stop a server from joining rooms that servers not on the whitelist are in. As such, this option is really only useful to establish a "private federation", where a group of servers all whitelist each other and have the same whitelist. |
 | matrix.homeserverExtra | object | `{}` | Contents will be appended to the end of the default configuration |
 | matrix.homeserverOverride | object | `{}` | Manual overrides for homeserver.yaml, the main config file for Synapse Its highly recommended that you take a look at the defaults in templates/synapse/_homeserver.yaml, to get a sense of the requirements and default config options to use other services in this chart. |
 | matrix.hostname | string | `""` | Hostname where Synapse can be reached, e.g. matrix.mydomain.com |
+| matrix.ip_range_blacklist | list | `["127.0.0.0/8","10.0.0.0/8","172.16.0.0/12","192.168.0.0/16","100.64.0.0/10","192.0.0.0/24","169.254.0.0/16","192.88.99.0/24","198.18.0.0/15","192.0.2.0/24","198.51.100.0/24","203.0.113.0/24","224.0.0.0/4","::1/128","fe80::/10","fc00::/7","2001:db8::/32","ff00::/8","fec0::/10"]` | This option prevents outgoing requests from being sent to the specified blacklisted IP address CIDR ranges. If this option is not specified then it defaults to private IP address ranges (see the example below). The blacklist applies to the outbound requests for federation, identity servers, push servers, and for checking key validity for third-party invite events. (0.0.0.0 and :: are always blacklisted, whether or not they are explicitly listed here, since they correspond to unroutable addresses.) This option replaces federation_ip_range_blacklist in Synapse v1.25.0. Note: The value is ignored when an HTTP proxy is in use. |
 | matrix.limit_profile_requests_to_users_who_share_rooms | bool | `true` | require a user to share a room with another user in order to retrieve their profile information. Only checked on Client-Server requests. Profile requests from other servers should be checked by the requesting server. |
 | matrix.logging.rootLogLevel | string | `"WARNING"` | Root log level is the default log level for log outputs that don't have more specific settings. |
 | matrix.logging.sqlLogLevel | string | `"WARNING"` | beware: increasing this to DEBUG will make synapse log sensitive information such as access tokens. |
@@ -628,4 +637,4 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | volumes.synapseConfig.storageClass | string | `""` | Storage class (optional) |
 
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)
+Autogenerated from chart metadata using [helm-docs v1.13.1](https://github.com/norwoodj/helm-docs/releases/v1.13.1)
