@@ -1,0 +1,18 @@
+{{- if .Values.bridges.hookshot.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "matrix.fullname" . }}-bridge-hookshot
+  labels:
+{{ include "matrix.labels" . | indent 4 }}
+spec:
+  type: {{ .Values.bridges.hookshot.service.type }}
+  ports:
+    - port: {{ .Values.bridges.hookshot.service.port }}
+      targetPort: bridge
+      protocol: TCP
+      name: bridge
+  selector:
+    app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-hookshot
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

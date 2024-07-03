@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 12.0.0](https://img.shields.io/badge/Version-12.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.109.0](https://img.shields.io/badge/AppVersion-v1.109.0-informational?style=flat-square)
+![Version: 12.1.0](https://img.shields.io/badge/Version-12.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.109.0](https://img.shields.io/badge/AppVersion-v1.109.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -51,6 +51,54 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord.typingNotifications | bool | `true` | Set to false to disable typing notifications (only for Discord to Matrix) |
 | bridges.discord.users.nickname | string | `":nick"` | Nickname of bridged Discord users Available vars:   :nick     - user's Discord nickname   :username - user's Discord username   :tag      - user's 4 digit Discord tag   :id       - user's Discord developer ID (long) |
 | bridges.discord.users.username | string | `":username#:tag"` | Username of bridged Discord users Available vars:   :username - user's Discord username   :tag      - user's 4 digit Discord tag   :id       - user's Discord developer ID (long) |
+| bridges.hookshot.enabled | bool | `false` | enable the [hookshot](https://matrix-org.github.io/matrix-hookshot) bridge |
+| bridges.hookshot.feeds.enabled | bool | `false` | enable RSS/Atom feed support |
+| bridges.hookshot.feeds.pollConcurrency | int | `4` |  |
+| bridges.hookshot.feeds.pollIntervalSeconds | int | `600` |  |
+| bridges.hookshot.feeds.pollTimeoutSeconds | int | `30` |  |
+| bridges.hookshot.generic.allowJsTransformationFunctions | bool | `false` | will allow users to write short transformation snippets in code, and thus is unsafe in untrusted environments |
+| bridges.hookshot.generic.enableHttpGet | bool | `false` |  |
+| bridges.hookshot.generic.enabled | bool | `false` | enable support for generic webhook events via the hookshot bridge |
+| bridges.hookshot.generic.outbound | bool | `false` |  |
+| bridges.hookshot.generic.urlPrefix | string | `"https://example.com/webhook/"` |  |
+| bridges.hookshot.generic.userIdPrefix | string | `"_webhooks_"` |  |
+| bridges.hookshot.generic.waitForComplete | bool | `false` |  |
+| bridges.hookshot.github.auth.id | int | `123` | App id for the GitHub App |
+| bridges.hookshot.github.auth.privateKeyFile | string | `"github-key.pem"` | App private key file for the GitHub App. |
+| bridges.hookshot.github.defaultOptions.hotlinkIssues.prefix | string | `"#"` |  |
+| bridges.hookshot.github.defaultOptions.showIssueRoomLink | bool | `false` |  |
+| bridges.hookshot.github.enabled | bool | `false` | enable GitHub support in the hookshot bridge |
+| bridges.hookshot.github.oauth.client_id | string | `"foo"` |  |
+| bridges.hookshot.github.oauth.client_secret | string | `"bar"` |  |
+| bridges.hookshot.github.oauth.redirect_uri | string | `"https://example.com/oauth/"` |  |
+| bridges.hookshot.github.userIdPrefix | string | `"_github_"` |  |
+| bridges.hookshot.github.webhook.secret | string | `"secrettoken"` | Webhook settings for the GitHub app. |
+| bridges.hookshot.gitlab.commentDebounceMs | Optional | `5000` | Aggregate comments by waiting this many miliseconds before posting them to Matrix. Defaults to 5000 (5 seconds) |
+| bridges.hookshot.gitlab.enabled | bool | `false` | enable GitLab support in the hookshot bridge |
+| bridges.hookshot.gitlab.instances."gitlab.com".url | string | `"https://gitlab.com"` |  |
+| bridges.hookshot.gitlab.userIdPrefix | Optional | `""` | Prefix used when creating ghost users for GitLab accounts. docs suggest: "_gitlab_" |
+| bridges.hookshot.gitlab.webhook.publicUrl | string | `"https://example.com/hookshot/"` |  |
+| bridges.hookshot.gitlab.webhook.secret | string | `"secrettoken"` |  |
+| bridges.hookshot.image.pullPolicy | string | `"IfNotPresent"` | hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always" |
+| bridges.hookshot.image.repository | string | `"halfshot/matrix-hookshot"` | hookshot bridge docker image |
+| bridges.hookshot.image.tag | string | `"5.4.1"` | hookshot bridge docker image tag |
+| bridges.hookshot.listeners[0].bindAddress | string | `"0.0.0.0"` |  |
+| bridges.hookshot.listeners[0].port | int | `9000` |  |
+| bridges.hookshot.listeners[0].resources[0] | string | `"webhooks"` |  |
+| bridges.hookshot.listeners[1].bindAddress | string | `"127.0.0.1"` |  |
+| bridges.hookshot.listeners[1].port | int | `9001` |  |
+| bridges.hookshot.listeners[1].resources[0] | string | `"metrics"` |  |
+| bridges.hookshot.listeners[1].resources[1] | string | `"provisioning"` |  |
+| bridges.hookshot.logging.colorize | bool | `true` | enable text colors in logging |
+| bridges.hookshot.logging.json | bool | `false` | enable json formatted logging |
+| bridges.hookshot.logging.level | string | `"info"` | log severity level. Options: debug, info, warn, error |
+| bridges.hookshot.logging.timestampFormat | string | `"HH:mm:ss:SSS"` | logging timestamp format |
+| bridges.hookshot.metrics.enabled | bool | `false` | enable Prometheus metrics support from hookshot to Prometheus |
+| bridges.hookshot.passFile | string | `"./passkey.pem"` |  |
+| bridges.hookshot.replicaCount | int | `1` | hookshot bridge pod replicas |
+| bridges.hookshot.resources | object | `{}` | resources limits/requests for the hookshot bridge pod |
+| bridges.hookshot.service.port | int | `9006` | service port for the hookshot bridge |
+| bridges.hookshot.service.type | string | `"ClusterIP"` | service type for the hookshot bridge |
 | bridges.irc.data.capacity | string | `"1Mi"` | Size of the data PVC to allocate |
 | bridges.irc.database | string | `"matrix_irc"` | Postgres database to store IRC bridge data in, this db will be created if postgresql.enabled: true, otherwise you must create it manually |
 | bridges.irc.databaseSslVerify | bool | `true` |  |
@@ -637,4 +685,4 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | volumes.synapseConfig.storageClass | string | `""` | Storage class (optional) |
 
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)
+Autogenerated from chart metadata using [helm-docs v1.13.1](https://github.com/norwoodj/helm-docs/releases/v1.13.1)

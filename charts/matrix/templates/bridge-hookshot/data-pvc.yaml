@@ -1,0 +1,17 @@
+{{- if .Values.bridges.hookshot.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "matrix.fullname" . }}-hookshot-data
+  labels:
+{{ include "matrix.labels" . | indent 4}}
+spec:
+  {{- if .Values.bridges.hookshot.data.storageClass }}
+  storageClassName: {{ .Values.bridges.hookshot.data.storageClass }}
+  {{- end }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.bridges.hookshot.data.capacity }}
+{{- end }}
