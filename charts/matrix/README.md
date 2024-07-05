@@ -97,7 +97,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.config.logging.level | string | `"info"` | log severity level. Options: debug, info, warn, error |
 | bridges.hookshot.config.logging.timestampFormat | string | `"HH:mm:ss:SSS"` | logging timestamp format |
 | bridges.hookshot.config.metrics.enabled | bool | `false` | enable Prometheus metrics support from hookshot to Prometheus |
-| bridges.hookshot.config.passFile | string | `"./passkey.pem"` | A passkey used to encrypt tokens stored inside the bridge. Run openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 to generate |
+| bridges.hookshot.config.passFile | string | `"/data/passkey.pem"` | A passkey used to encrypt tokens stored inside the bridge. |
 | bridges.hookshot.config.permissions | Optional | `[]` | Permissions for using the bridge. See docs/setup.md#permissions for help |
 | bridges.hookshot.config.queue | Optional | `{"redisUri":""}` | Message queue configuration options for large scale deployments. |
 | bridges.hookshot.config.queue.redisUri | string | `""` | For encryption to work, this must not be configured. example value: redis://localhost:6379 |
