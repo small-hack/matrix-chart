@@ -1,5 +1,5 @@
 {{- if not .Values.bridges.volume.existingClaim }}
-{{- if or .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.irc.enabled }}
+{{- if or .Values.bridges.hookshot.enabled .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.irc.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

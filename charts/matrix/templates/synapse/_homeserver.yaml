@@ -1262,17 +1262,20 @@ report_stats: {{ .Values.matrix.telemetry }}
 
 # A list of application service config files to use
 #
-{{- if or .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.irc.enabled }}
+{{- if or .Values.bridges.hookshot.enabled .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.irc.enabled }}
 app_service_config_files:
-{{- end }}
-{{- if .Values.bridges.whatsapp.enabled }}
+  {{- if .Values.bridges.whatsapp.enabled }}
   - "/bridges/whatsapp.yaml"
-{{- end }}
-{{- if .Values.bridges.discord.enabled }}
+  {{- end }}
+  {{- if .Values.bridges.discord.enabled }}
   - "/bridges/discord.yaml"
-{{- end }}
-{{- if .Values.bridges.irc.enabled }}
+  {{- end }}
+  {{- if .Values.bridges.irc.enabled }}
   - "/bridges/irc.yaml"
+  {{- end }}
+  {{- if .Values.bridges.hookshot.enabled }}
+  - "/bridges/hookshot.yaml"
+  {{- end }}
 {{- end }}
 
 # Uncomment to enable tracking of application service IP addresses. Implicitly

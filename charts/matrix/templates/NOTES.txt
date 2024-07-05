@@ -24,6 +24,9 @@ Installed components:
 {{- if .Values.bridges.discord.enabled }}
  - Discord Bridge ({{ .Values.bridges.discord.image.repository }})
 {{- end }}
+{{- if .Values.bridges.hookshot.enabled }}
+ - Hookshot Bridge ({{ .Values.bridges.hookshot.image.repository }})
+{{- end }}
 
 Thank you for installing small-hack/matrix-chart! If you have any questions or run into any issues, please file a GitHub issue. :)
 

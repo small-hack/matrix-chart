@@ -397,7 +397,7 @@ spec:
             - name: extra-packages
               mountPath: /data/extra_pip_packages
             {{- end }}
-            {{- if or .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.irc.enabled }}
+            {{- if or .Values.bridges.hookshot.enabled .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.irc.enabled }}
             - name: bridges
               mountPath: /bridges
               readOnly: true
@@ -482,7 +482,7 @@ spec:
             {{ else }}
             claimName: {{ .Values.volumes.media.existingClaim }}
             {{- end }}
-        {{- if or .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.irc.enabled }}
+        {{- if or .Values.bridges.hookshot.enabled .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.irc.enabled }}
         - name: bridges
           persistentVolumeClaim:
             {{- if not .Values.bridges.volume.existingClaim }}
