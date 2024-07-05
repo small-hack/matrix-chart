@@ -51,7 +51,7 @@ spec:
       {{- end }}
       {{- with .Values.bridges.hookshot.securityContext }}
       securityContext:
-        {{- toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
         - name: "load-config"
