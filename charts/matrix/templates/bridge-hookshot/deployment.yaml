@@ -79,13 +79,13 @@ spec:
               containerPort: 9005
               protocol: TCP
             - name: webhook
-              containerPort: {{ .Values.bridges.hookshot.service.webhook }}
+              containerPort: {{ .Values.bridges.hookshot.service.webhook.port }}
               protocol: TCP
             - name: metrics
-              containerPort: {{ .Values.bridges.hookshot.service.metrics }}
+              containerPort: {{ .Values.bridges.hookshot.service.metrics.port }}
               protocol: TCP
             - name: appservice
-              containerPort: {{ .Values.bridges.hookshot.service.appservice }}
+              containerPort: {{ .Values.bridges.hookshot.service.appservice.port }}
               protocol: TCP
           volumeMounts:
             - name: data
