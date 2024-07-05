@@ -1853,6 +1853,11 @@ bridges:
       # -- service port for the hookshot bridge
       port: 9006
 
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+
     # Run openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 to generate
     # After generating the file, you can run:
     # awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' <your_passkey.pem>

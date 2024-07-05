@@ -49,24 +49,21 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.bridges.hookshot.securityContext }}
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        {{- toYaml . | indent 8 }}
+      {{- end }}
       initContainers:
         - name: "load-config"
           image: "{{ .Values.bridges.hookshot.image.repository }}:{{ .Values.bridges.hookshot.image.tag }}"
           imagePullPolicy: {{ .Values.bridges.hookshot.image.pullPolicy }}
           command: ["sh"]
-          args: ["-c", "cp /load/registration.yaml /data/hookshot-registration.yaml; cp /load/config.yaml /data/config.yaml; cp /load/registration.yaml /bridges/hookshot.yaml"]
+          args: ["-c", "cp /data/registration.yaml /bridges/hookshot.yaml"]
           volumeMounts:
             - name: data
               mountPath: /data
             - name: bridges
               mountPath: /bridges
-            - name: config
-              mountPath: /load
-              readOnly: true
           securityContext:
             capabilities:
               drop:
@@ -96,13 +93,19 @@ spec:
           {{- end }}
       volumes:
         - name: data
-          persistentVolumeClaim:
-            claimName: "{{ include "matrix.fullname" . }}-hookshot-data"
-        {{- if not .Values.bridges.hookshot.existingSecret.config }}
-        - name: config
-          configMap:
-            name: "{{ include "matrix.fullname" . }}-hookshot-config"
-        {{- end }}
+          projected:
+            sources:
+              {{- if not .Values.bridges.hookshot.existingSecret.config }}
+              configMap:
+                name: {{ include "matrix.hookshot.configmap" . }}
+              {{- else -}}
+              secret:
+                secretName: {{ include "matrix.hookshot.configSecret" . }}
+              {{- end }}
+              secret:
+                secretName: {{ include "matrix.hookshot.passkeySecret" . }}
+              secret:
+                secretName: {{ include "matrix.hookshot.registrationSecret" . }}
         - name: bridges
           persistentVolumeClaim:
             claimName: "{{ include "matrix.fullname" . }}-bridges"

@@ -116,6 +116,9 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.passkey | string | `""` |  |
 | bridges.hookshot.replicaCount | int | `1` | hookshot bridge pod replicas |
 | bridges.hookshot.resources | object | `{}` | resources limits/requests for the hookshot bridge pod |
+| bridges.hookshot.securityContext.fsGroup | int | `1000` |  |
+| bridges.hookshot.securityContext.runAsGroup | int | `1000` |  |
+| bridges.hookshot.securityContext.runAsUser | int | `1000` |  |
 | bridges.hookshot.service.port | int | `9006` | service port for the hookshot bridge |
 | bridges.hookshot.service.type | string | `"ClusterIP"` | service type for the hookshot bridge |
 | bridges.irc.data.capacity | string | `"1Mi"` | Size of the data PVC to allocate |
