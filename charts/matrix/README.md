@@ -96,9 +96,9 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.config.logging.json | bool | `false` | enable json formatted logging |
 | bridges.hookshot.config.logging.level | string | `"info"` | log severity level. Options: debug, info, warn, error |
 | bridges.hookshot.config.logging.timestampFormat | string | `"HH:mm:ss:SSS"` | logging timestamp format |
-| bridges.hookshot.config.metrics.enabled | bool | `false` | enable Prometheus metrics support from hookshot to Prometheus |
+| bridges.hookshot.config.metrics.enabled | bool | `false` | enable Prometheus metrics support from hookshot to Prometheus, see [docs](https://matrix-org.github.io/matrix-hookshot/latest/metrics.html) |
 | bridges.hookshot.config.passFile | string | `"/data/passkey.pem"` | A passkey used to encrypt tokens stored inside the bridge. |
-| bridges.hookshot.config.permissions | Optional | `[]` | Permissions for using the bridge. See docs/setup.md#permissions for help |
+| bridges.hookshot.config.permissions | Optional | `[]` | Permissions for using the bridge. See [docs](https://matrix-org.github.io/matrix-hookshot/latest/setup.html#permissions) |
 | bridges.hookshot.config.queue | Optional | `{"redisUri":""}` | Message queue configuration options for large scale deployments. |
 | bridges.hookshot.config.queue.redisUri | string | `""` | For encryption to work, this must not be configured. example value: redis://localhost:6379 |
 | bridges.hookshot.config.sentry | Optional | `{"dsn":"","environment":""}` | Configure Sentry error reporting |
