@@ -1989,14 +1989,15 @@ bridges:
         commentDebounceMs: 5000
 
       generic:
-        # -- enable support for generic webhook events via the hookshot bridge
+        # -- enable support for generic webhook events via the hookshot bridge,
+        # see [docs](https://matrix-org.github.io/matrix-hookshot/latest/setup/webhooks.html) for more info
         enabled: false
         # -- configure Hookshot to send outgoing requests to other services when
         # a message appears on Matrix
         outbound: false
         # -- means that webhooks can be triggered by GET requests, in addition to
         # POST and PUT. This was previously on by default, but is now disabled
-        # due to concerns mentioned below.
+        # due to concerns mentioned in docs.
         enableHttpGet: false
         # -- describes the public facing URL of your webhook handler. For instance,
         # if your load balancer redirected webhook requests from
