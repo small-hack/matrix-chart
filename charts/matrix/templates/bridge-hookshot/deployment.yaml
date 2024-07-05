@@ -105,16 +105,16 @@ spec:
           projected:
             sources:
               {{- if not .Values.bridges.hookshot.existingSecret.config }}
-              configMap:
-                name: {{ include "matrix.hookshot.configmap" . }}
+              - configMap:
+                  name: {{ include "matrix.hookshot.configmap" . }}
               {{- else -}}
-              secret:
-                secretName: {{ include "matrix.hookshot.configSecret" . }}
+              - secret:
+                  name: {{ include "matrix.hookshot.configSecret" . }}
               {{- end }}
-              secret:
-                secretName: {{ include "matrix.hookshot.passkeySecret" . }}
-              secret:
-                secretName: {{ include "matrix.hookshot.registrationSecret" . }}
+              - secret:
+                  name: {{ include "matrix.hookshot.passkeySecret" . }}
+              - secret:
+                  name: {{ include "matrix.hookshot.registrationSecret" . }}
         - name: bridges
           persistentVolumeClaim:
             claimName: "{{ include "matrix.fullname" . }}-bridges"
