@@ -1,3 +1,11 @@
+{{- define "matrix.hookshot.as_token" -}}
+{{- randAlphaNum 64 -}}
+{{- end -}}
+
+{{- define "matrix.hookshot.hs_token" -}}
+{{- randAlphaNum 64 -}}
+{{- end -}}
+
 {{- define "matrix.hookshot.configmap" -}}
 {{- if and .Values.bridges.hookshot.existingConfigMap (not .Values.bridges.hookshot.existingSecret.config) -}}
 {{ .Values.bridges.hookshot.existingConfigMap }}
