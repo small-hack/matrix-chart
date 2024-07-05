@@ -1,155 +1,130 @@
-{{- if .Values.bridges.hookshot.enabled }}
+{{- if and (not .Values.bridges.hookshot.existingConfigMap) (not .Values.bridges.hookshot.existingSecret.config) .Values.bridges.hookshot.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "matrix.fullname" . }}-hookshot-config
+  name: {{ include "matrix.hookshot.configmap" . }}
   labels:
   {{ include "matrix.labels" . | nindent 4}}
 data:
-  config.yaml: |
-    # This is an example configuration file
+  config.yaml: |-
     bridge:
-      # Basic homeserver configuration
-      domain: {{ .Values.matrix.serverName }}
-      # url: http://localhost:8008
-      url: "{{ include "matrix.baseUrl" . }}"
-      # mediaUrl: https://example.com
-      port: 9993
-      bindAddress: 127.0.0.1
-    passFile:
-      # A passkey used to encrypt tokens stored inside the bridge.
-      # Run openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 to generate
-      ./passkey.pem
+      domain: {{ .Values.bridges.hookshot.config.bridge.domain | default .Values.matrix.serverName }}
+      url: {{ .Values.bridges.hookshot.config.bridge.url | default (include "matrix.baseUrl" .) }}
+      {{- with .Values.bridges.hookshot.config.mediaUrl }}
+      mediaUrl: {{ . }}
+      {{- end }}
+      port: {{ .Values.bridges.hookshot.config.bridge.port }}
+      bindAddress: {{ .Values.bridges.hookshot.config.bridge.bindAddress }}
+
+    passFile: {{ .Values.bridges.hookshot.config.passFile }}
+
     logging:
-      # Logging settings. You can have a severity debug,info,warn,error
-      level: info
-      colorize: true
-      json: false
-      timestampFormat: HH:mm:ss:SSS
+      level: {{ .Values.bridges.hookshot.config.logging.level }}
+      colorize: {{ .Values.bridges.hookshot.config.logging.colorize }}
+      json: {{ .Values.bridges.hookshot.config.logging.json }}
+      timestampFormat: {{ .Values.bridges.hookshot.config.logging.timestampFormat }}
+
+    {{- range .Values.bridges.hookshot.config.listeners }}
     listeners:
-      # HTTP Listener configuration.
-      # Bind resource endpoints to ports and addresses.
-      # 'port' must be specified. Each listener must listen on a unique port.
-      # 'bindAddress' will default to '127.0.0.1' if not specified, which may not be suited to Docker environments.
-      # 'resources' may be any of webhooks, widgets, metrics, provisioning
-      - port: 9000
-        bindAddress: 0.0.0.0
+      - port: {{ .port }}
+        bindAddress: {{ .bindAddress }}
+        {{- range .listeners }}
         resources:
-          - webhooks
-      - port: 9001
-        bindAddress: 127.0.0.1
-        resources:
-          - metrics
-          - provisioning
-      - port: 9002
-        bindAddress: 0.0.0.0
-        resources:
-          - widgets
+          - {{ . }}
+        {{- end }}
+    {{- end }}
+    {{- if .Values.bridges.hookshot.config.github.enabled }}
+    github:
+      {{- with .Values.bridges.hookshot.config.github.enterpriseUrl }}
+      enterpriseUrl: {{ . }}
+      {{- end }}
+      auth:
+        id: {{ .Values.bridges.hookshot.config.github.auth.id }}
+        privateKeyFile: {{ .Values.bridges.hookshot.config.github.auth.privateKeyFile }}
 
-    #github:
-    #  # (Optional) Configure this to enable GitHub support
-    #  auth:
-    #    # Authentication for the GitHub App.
-    #    id: 123
-    #    privateKeyFile: github-key.pem
-    #  webhook:
-    #    # Webhook settings for the GitHub app.
-    #    secret: secrettoken
-    #  oauth:
-    #    # (Optional) Settings for allowing users to sign in via OAuth.
-    #    client_id: foo
-    #    client_secret: bar
-    #    redirect_uri: https://example.com/oauth/
-    #  defaultOptions:
-    #    # (Optional) Default options for GitHub connections.
-    #    showIssueRoomLink: false
-    #    hotlinkIssues:
-    #      prefix: "#"
-    #  userIdPrefix:
-    #    # (Optional) Prefix used when creating ghost users for GitHub accounts.
-    #    _github_
+      webhook:
+        secret: {{ .Values.bridges.hookshot.config.github.webhook.secret }}
 
-    #gitlab:
-    #  # (Optional) Configure this to enable GitLab support
-    #  instances:
-    #    gitlab.com:
-    #      url: https://gitlab.com
-    #  webhook:
-    #    secret: secrettoken
-    #    publicUrl: https://example.com/hookshot/
-    #  userIdPrefix:
-    #    # (Optional) Prefix used when creating ghost users for GitLab accounts.
-    #    _gitlab_
-    #  commentDebounceMs:
-    #    # (Optional) Aggregate comments by waiting this many miliseconds before posting them to Matrix. Defaults to 5000 (5 seconds)
-    #    5000
+      oauth:
+        client_id: {{ .Values.bridges.hookshot.config.github.oauth.client_id }}
+        client_secret: {{ .Values.bridges.hookshot.config.github.oauth.client_secret }}
+        redirect_uri: {{ .Values.bridges.hookshot.config.github.oauth.redirect_uri }}
 
-    #generic:
-    #  # (Optional) Support for generic webhook events.
-    #  #'allowJsTransformationFunctions' will allow users to write short transformation snippets in code, and thus is unsafe in untrusted environments
+      defaultOptions:
+        showIssueRoomLink: {{ .Values.bridges.hookshot.config.github.defaultOptions.showIssueRoomLink }}
+        hotlinkIssues:
+          prefix: {{ .Values.bridges.hookshot.config.github.defaultOptions.hotlinkIssues.prefix }}
 
-    #  enabled: false
-    #  outbound: false
-    #  enableHttpGet: false
-    #  urlPrefix: https://example.com/webhook/
-    #  userIdPrefix: _webhooks_
-    #  allowJsTransformationFunctions: false
-    #  waitForComplete: false
+      userIdPrefix: {{ .Values.bridges.hookshot.config.github.userIdPrefix }}
+    {{- end }}
+    {{- if .Values.bridges.hookshot.config.gitlab.enabled }}
+    gitlab:
+      {{- with .Values.bridges.hookshot.config.github.instances }}
+      instances:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 
-    #feeds:
-    #  # (Optional) Configure this to enable RSS/Atom feed support
-    #  enabled: false
-    #  pollConcurrency: 4
-    #  pollIntervalSeconds: 600
-    #  pollTimeoutSeconds: 30
+      webhook:
+        secret: {{ .Values.bridges.hookshot.config.gitlab.webhook.secret }}
+        publicUrl: {{ .Values.bridges.hookshot.config.gitlab.webhook.publicUrl }}
 
-    #provisioning:
-    #  # (Optional) Provisioning API for integration managers
-    #  secret: "!secretToken"
+      userIdPrefix: {{ .Values.bridges.hookshot.config.gitlab.userIdPrefix }}
 
-    #bot:
-    #  # (Optional) Define profile information for the bot user
-    #  displayname: Hookshot Bot
-    #  avatar: mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d
+      commentDebounceMs: {{ .Values.bridges.hookshot.config.gitlab.commentDebounceMs }}
+    {{- end }}
+    {{- if .Values.bridges.hookshot.config.generic.enabled }}
+    generic:
+      outbound: {{ .Values.bridges.hookshot.config.generic.outbound }}
+      enableHttpGet: {{ .Values.bridges.hookshot.config.generic.enableHttpGet }}
+      urlPrefix: {{ .Values.bridges.hookshot.config.generic.urlPrefix }}
+      userIdPrefix: {{ .Values.bridges.hookshot.config.generic.userIdPrefix }}
+      allowJsTransformationFunctions: {{ .Values.bridges.hookshot.config.generic.allowJsTransformationFunctions }}
+      waitForComplete: {{ .Values.bridges.hookshot.config.generic.waitForComplete }}
+    {{- end }}
+    {{- if .Values.bridges.hookshot.config.feeds.enabled }}
+    feeds:
+      pollConcurrency: {{ .Values.bridges.hookshot.config.feeds.pollConcurrency }}
+      pollIntervalSeconds: {{ .Values.bridges.hookshot.config.feeds.pollIntervalSeconds }}
+      pollTimeoutSeconds: {{ .Values.bridges.hookshot.config.feeds.pollTimeoutSeconds }}
+    {{- end }}
+    bot:
+      displayName: {{ .Values.bridges.hookshot.config.bot.displayname }}
+      avatar: {{ .Values.bridges.hookshot.config.bot.avatar }}
+    {{- if .Values.bridges.hookshot.config.serviceBots }}
+    {{- range .Values.bridges.hookshot.config.serviceBots }}
+    serviceBots:
+      - localpart: {{ .localport }}
+        displayname: {{ .displayname }}
+        avatar: {{ .avatar }}
+        prefix: {{ .prefix }}
+        service: {{ .service }}
+    {{- end }}
+    {{- end }}
+    metrics:
+      enabled: {{ .Values.bridges.hookshot.config.metrics.enabled }}
 
-    #serviceBots:
-    #  # (Optional) Define additional bot users for specific services
-    #  - localpart: feeds
-    #    displayname: Feeds
-    #    avatar: ./assets/feeds_avatar.png
-    #    prefix: "!feeds"
-    #    service: feeds
-
-    #metrics:
-    #  # (Optional) Prometheus metrics support
-    #  enabled: true
-
-    #cache:
-    #  # (Optional) Cache options for large scale deployments.
-    #  #    For encryption to work, this must be configured.
-    #  redisUri: redis://localhost:6379
-
-    #queue:
-    #  # (Optional) Message queue configuration options for large scale deployments.
-    #  # For encryption to work, this must not be configured.
-    #  redisUri: redis://localhost:6379
-
-    #sentry:
-    #  # (Optional) Configure Sentry error reporting
-    #  dsn: https://examplePublicKey@o0.ingest.sentry.io/0
-    #  environment: production
-
-    #permissions:
-    #  # (Optional) Permissions for using the bridge. See docs/setup.md#permissions for help
-    #  - actor: example.com
-    #    services:
-    #      - service: "*"
-    #        level: admin
-
-  registration.yaml: |
-    id: appservice-hookshot
-    namespaces:
-      users:
-        - exclusive: true
-          regex: "@webook_.+:{{ .Values.matrix.serverName }}"
+    {{- with .Values.bridges.hookshot.config.cache.redisUri }}
+    cache:
+      redisUri: {{ . }}
+    {{- end }}
+    {{- with .Values.bridges.hookshot.config.queue.redisUri }}
+    queue:
+      redisUri: {{ . }}
+    {{- end }}
+    {{- if .Values.bridges.hookshot.config.sentry.dsn }}
+    sentry:
+      dns: {{ .Values.bridges.hookshot.config.sentry.dsn }}
+      environment: {{ .Values.bridges.hookshot.config.sentry.environment }}
+    {{- end }}
+    {{- if .Values.bridges.hookshot.config.permissions }}
+    {{- range .Values.bridges.hookshot.config.permissions }}
+    permissions:
+      - actor: {{ .actor }}
+        services:
+        {{- range .services }}
+          - service: {{ .service }}
+            level: {{ .level }}
+        {{- end }}
+    {{- end }}
+    {{- end }}
 {{- end }}

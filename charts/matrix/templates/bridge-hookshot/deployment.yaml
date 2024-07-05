@@ -19,9 +19,11 @@ spec:
       matrix-chart/allow-synapse-access: allow
   template:
     metadata:
+      {{- if not .Values.bridges.hookshot.existingSecret.config }}
       annotations:
         # re-roll deployment on config change
         checksum/hookshot-config: {{ include (print $.Template.BasePath "/bridge-hookshot/configmap.yaml") . | sha256sum }}
+      {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-hookshot
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -96,9 +98,11 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: "{{ include "matrix.fullname" . }}-hookshot-data"
+        {{- if not .Values.bridges.hookshot.existingSecret.config }}
         - name: config
           configMap:
             name: "{{ include "matrix.fullname" . }}-hookshot-config"
+        {{- end }}
         - name: bridges
           persistentVolumeClaim:
             claimName: "{{ include "matrix.fullname" . }}-bridges"

@@ -1853,146 +1853,212 @@ bridges:
       # -- service port for the hookshot bridge
       port: 9006
 
-    passFile:
-      # A passkey used to encrypt tokens stored inside the bridge.
-      # Run openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 to generate
-      ./passkey.pem
+    # Run openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 to generate
+    # After generating the file, you can run:
+    # awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' <your_passkey.pem>
+    # This will replace new line characters with '\n' and print the file in a single line#
+    passkey: ""
 
-    logging:
-      # -- log severity level. Options: debug, info, warn, error
-      level: info
-      # -- enable text colors in logging
-      colorize: true
-      # -- enable json formatted logging
-      json: false
-      # -- logging timestamp format
-      timestampFormat: HH:mm:ss:SSS
+    # -- use the name of an existing ConfigMap for hookshot bridge. If set, ignores
+    # entire bridges.hookshot.config section
+    existingConfigMap: ""
 
-    listeners:
-      # HTTP Listener configuration.
-      # Bind resource endpoints to ports and addresses.
-      # 'port' must be specified. Each listener must listen on a unique port.
-      # 'bindAddress' will default to '127.0.0.1' if not specified, which may not be suited to Docker environments.
-      # 'resources' may be any of webhooks, metrics, provisioning
-      - port: 9000
-        bindAddress: 0.0.0.0
-        resources:
-          - webhooks
+    # optionally use existing kubernetes Secrets for passkey.pem, registration.yml, config.yml
+    existingSecret:
+      # optionally use existing kubernetes Secret for passkey.pem, ignores hookshot.passkey
+      passkey: ""
+      # optionally use existing kubernetes Secret for registration
+      registration: ""
+      # optionally use existing kubernetes Secret for config.yml, ignores hookshot.config
+      config: ""
 
-      - port: 9001
+    config:
+      bridge:
+        # -- if not set, defaults to matrix.serverName
+        domain: ""
+        # -- url in example is http://localhost:8008, but if not set, we use matrix.baseUrl
+        url: ""
+        # -- example is https://example.com, but if left blank, we don't include it
+        mediaUrl: ""
+        port: 9993
         bindAddress: 127.0.0.1
-        resources:
-          - metrics
-          - provisioning
 
-    github:
-      # -- enable GitHub support in the hookshot bridge
-      enabled: false
-      auth:
-        # -- App id for the GitHub App
-        id: 123
-        # -- App private key file for the GitHub App.
-        privateKeyFile: github-key.pem
+      # -- A passkey used to encrypt tokens stored inside the bridge.
+      # Run openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 to generate
+      passFile: ./passkey.pem
 
-      webhook:
-        # -- Webhook settings for the GitHub app.
-        secret: secrettoken
+      logging:
+        # -- log severity level. Options: debug, info, warn, error
+        level: info
+        # -- enable text colors in logging
+        colorize: true
+        # -- enable json formatted logging
+        json: false
+        # -- logging timestamp format
+        timestampFormat: HH:mm:ss:SSS
 
-      oauth:
-        # (Optional) Settings for allowing users to sign in via OAuth.
-        client_id: foo
-        client_secret: bar
-        redirect_uri: https://example.com/oauth/
+      listeners:
+        # HTTP Listener configuration.
+        # Bind resource endpoints to ports and addresses.
+        # 'port' must be specified. Each listener must listen on a unique port.
+        # 'bindAddress' will default to '127.0.0.1' if not specified, which may not be suited to Docker environments.
+        # 'resources' may be any of webhooks, metrics, provisioning
+        - port: 9000
+          bindAddress: 0.0.0.0
+          resources:
+            - webhooks
 
-      defaultOptions:
-        # (Optional) Default options for GitHub connections.
-        showIssueRoomLink: false
-        hotlinkIssues:
-          prefix: "#"
+        - port: 9001
+          bindAddress: 127.0.0.1
+          resources:
+            - metrics
+            - provisioning
 
-      userIdPrefix:
-        # (Optional) Prefix used when creating ghost users for GitHub accounts.
-        _github_
+      # https://matrix-org.github.io/matrix-hookshot/latest/setup/github.html
+      github:
+        # -- enable GitHub support in the hookshot bridge
+        enabled: false
+        # -- If you are using an on-premise / enterprise edition of GitHub,
+        # you need provide the base URL in enterpriseUrl. You do not need to
+        # specify the /api/... path in the URL
+        enterpriseUrl: ""
+        auth:
+          # -- App ID for the GitHub App, e.g. 123
+          id: ""
+          # -- privateKeyFile can be generated by clicking "Generate a private key"
+          # under the Private keys section on the GitHub app page.
+          privateKeyFile: github-key.pem
 
-    gitlab:
-      # -- enable GitLab support in the hookshot bridge
-      enabled: false
+        webhook:
+          # -- Webhook settings for the GitHub app. example showed value secrettoken
+          secret: ""
 
-      instances:
-        gitlab.com:
-          url: https://gitlab.com
+        # -- oauth section should include both the Client ID and Client Secret
+        # on the GitHub App page. The redirect_uri value must be the public path
+        # to /oauth on the webhooks path. E.g. if your load balancer points
+        # https://example.com/hookshot to the bridge webhooks listener, you should
+        # use the path https://example.com/hookshot/oauth. This value MUST exactly
+        # match the Callback URL on the GitHub App page.
+        oauth:
+          client_id: ""
+          client_secret: ""
+          redirect_uri: ""
 
-      webhook:
-        secret: secrettoken
-        publicUrl: https://example.com/hookshot/
+        # -- (Optional) Default options for GitHub connections. see docs for more:
+        # https://matrix-org.github.io/matrix-hookshot/latest/usage/room_configuration/github_repo.html#configuration
+        defaultOptions:
+          showIssueRoomLink: false
+          hotlinkIssues:
+            prefix: "#"
 
-      # -- (Optional) Prefix used when creating ghost users for GitLab accounts.
-      # docs suggest: "_gitlab_"
-      userIdPrefix: ""
+        # -- (Optional) Prefix used when creating ghost users for GitHub accounts.
+        userIdPrefix: _github_
 
-      # -- (Optional) Aggregate comments by waiting this many miliseconds before posting them to Matrix. Defaults to 5000 (5 seconds)
-      commentDebounceMs: 5000
+      # https://matrix-org.github.io/matrix-hookshot/latest/setup/gitlab.html
+      gitlab:
+        # -- enable GitLab support in the hookshot bridge
+        enabled: false
 
-    generic:
-      # -- enable support for generic webhook events via the hookshot bridge
-      enabled: false
-      outbound: false
-      enableHttpGet: false
-      urlPrefix: https://example.com/webhook/
-      userIdPrefix: _webhooks_
-      # -- will allow users to write short transformation snippets in code, and thus is unsafe in untrusted environments
-      allowJsTransformationFunctions: false
-      waitForComplete: false
+        # -- gitlab instances to use
+        instances: {}
+        # gitlab.com:
+        #   url: https://gitlab.com
 
-    feeds:
-      # -- enable RSS/Atom feed support
-      enabled: false
-      pollConcurrency: 4
-      pollIntervalSeconds: 600
-      pollTimeoutSeconds: 30
+        webhook:
+          # -- example showed value of secrettoken
+          secret: ""
+          # -- example showed https://example.com/hookshot/
+          publicUrl: ""
 
-    #provisioning:
-    #  # (Optional) Provisioning API for integration managers
-    #  secret: "!secretToken"
+        # -- (Optional) Prefix used when creating ghost users for GitLab accounts.
+        # docs suggest: "_gitlab_"
+        userIdPrefix: ""
 
-    #bot:
-    #  # (Optional) Define profile information for the bot user
-    #  displayname: Hookshot Bot
-    #  avatar: mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d
+        # -- (Optional) Aggregate comments by waiting this many miliseconds before posting them to Matrix. Defaults to 5000 (5 seconds)
+        commentDebounceMs: 5000
 
-    #serviceBots:
-    #  # (Optional) Define additional bot users for specific services
-    #  - localpart: feeds
-    #    displayname: Feeds
-    #    avatar: ./assets/feeds_avatar.png
-    #    prefix: "!feeds"
-    #    service: feeds
+      generic:
+        # -- enable support for generic webhook events via the hookshot bridge
+        enabled: false
+        # -- configure Hookshot to send outgoing requests to other services when
+        # a message appears on Matrix
+        outbound: false
+        # -- means that webhooks can be triggered by GET requests, in addition to
+        # POST and PUT. This was previously on by default, but is now disabled
+        # due to concerns mentioned below.
+        enableHttpGet: false
+        # -- describes the public facing URL of your webhook handler. For instance,
+        # if your load balancer redirected webhook requests from
+        # https://example.com/mywebhookspath to the bridge (on /webhook), an
+        # example webhook URL would look like: https://example.com/mywebhookspath/abcdef.
+        urlPrefix: ""
+        # -- create a specific user for each new webhook connection in a room.
+        # For example, a connection with a name like example for a prefix of
+        # webhook_ will create a user called @webhook_example:example.com. If you
+        # enable this option, you need to configure the user to be part of your
+        # registration file
+        userIdPrefix: ""
+        # -- will allow users to write short transformation snippets in code,
+        # and thus is unsafe in untrusted environments
+        allowJsTransformationFunctions: false
+        # -- causes the bridge to wait until the webhook is processed before
+        # sending a response. Some services prefer you always respond with a 200
+        # as soon as the webhook has entered processing (false) while others
+        # prefer to know if the resulting Matrix message has been sent (true)
+        waitForComplete: false
 
-    metrics:
-      # -- enable Prometheus metrics support from hookshot to Prometheus
-      enabled: false
+      feeds:
+        # -- enable RSS/Atom feed support
+        enabled: false
+        pollConcurrency: 4
+        # -- specifies how often each feed will be checked for updates. It may be checked less often if under exceptional load, but it will never be checked more often than every pollIntervalSeconds
+        pollIntervalSeconds: 600
+        pollTimeoutSeconds: 30
 
-    #cache:
-    #  # (Optional) Cache options for large scale deployments.
-    #  #    For encryption to work, this must be configured.
-    #  redisUri: redis://localhost:6379
+      # (Optional) Define profile information for the bot user
+      bot:
+        # -- Define profile display name for the bot user
+        displayname: Hookshot Bot
+        # -- Define profile avatar for the bot user
+        avatar: mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d
 
-    #queue:
-    #  # (Optional) Message queue configuration options for large scale deployments.
-    #  # For encryption to work, this must not be configured.
-    #  redisUri: redis://localhost:6379
+      # -- (Optional) Define additional bot users for specific services
+      serviceBots: []
+      #  - localpart: feeds
+      #    displayname: Feeds
+      #    avatar: ./assets/feeds_avatar.png
+      #    prefix: "!feeds"
+      #    service: feeds
 
-    #sentry:
-    #  # (Optional) Configure Sentry error reporting
-    #  dsn: https://examplePublicKey@o0.ingest.sentry.io/0
-    #  environment: production
+      metrics:
+        # -- enable Prometheus metrics support from hookshot to Prometheus
+        enabled: false
 
-    #permissions:
-    #  # (Optional) Permissions for using the bridge. See docs/setup.md#permissions for help
-    #  - actor: example.com
-    #    services:
-    #      - service: "*"
-    #        level: admin
+      # -- (Optional) Cache options for large scale deployments.
+      cache:
+        # -- For encryption to work, this must be configured.
+        # example value: redis://localhost:6379
+        redisUri: ""
+
+      # -- (Optional) Message queue configuration options for large scale deployments.
+      queue:
+        # -- For encryption to work, this must not be configured.
+        # example value: redis://localhost:6379
+        redisUri: ""
+
+      # -- (Optional) Configure Sentry error reporting
+      sentry:
+        # -- example value: https://examplePublicKey@o0.ingest.sentry.io/0
+        dsn: ""
+        # -- example value: production
+        environment: ""
+
+      # -- (Optional) Permissions for using the bridge. See docs/setup.md#permissions for help
+      permissions: []
+      #  - actor: example.com
+      #    services:
+      #      - service: "*"
+      #        level: admin
 
   irc:
     # -- Set to true to enable the IRC bridge
