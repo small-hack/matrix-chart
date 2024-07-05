@@ -679,6 +679,15 @@ synapse:
           #       port:
           #         name: http
 
+          # if bridges.hookshot.generic.enabled, you want to uncomment the following:
+          #  - path: /_hookshot_webhook
+          #   pathType: ImplementationSpecific
+          #   backend:
+          #     service:
+          #       value: release-name-bridge-hookshot
+          #       port:
+          #         name: http
+
     # -- enable tls for synapse ingress
     tls: []
     # to enable tls for synapse remove the [] on the line above and uncomment the
