@@ -24,8 +24,8 @@ data:
       json: {{ .Values.bridges.hookshot.config.logging.json }}
       timestampFormat: {{ .Values.bridges.hookshot.config.logging.timestampFormat }}
 
-    {{- range .Values.bridges.hookshot.config.listeners }}
     listeners:
+    {{- range .Values.bridges.hookshot.config.listeners }}
       - port: {{ .port }}
         bindAddress: {{ .bindAddress }}
         {{- range .listeners }}
