@@ -6,7 +6,7 @@ metadata:
   labels:
   {{ include "matrix.labels" . | nindent 4}}
 data:
-  config.yaml: |-
+  config.yml: |-
     bridge:
       domain: {{ .Values.bridges.hookshot.config.bridge.domain | default .Values.matrix.serverName }}
       url: {{ .Values.bridges.hookshot.config.bridge.url | default (include "matrix.baseUrl" .) }}
