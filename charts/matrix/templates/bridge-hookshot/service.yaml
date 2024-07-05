@@ -8,10 +8,18 @@ metadata:
 spec:
   type: {{ .Values.bridges.hookshot.service.type }}
   ports:
-    - port: {{ .Values.bridges.hookshot.service.port }}
-      targetPort: bridge
+    - port: {{ .Values.bridges.hookshot.service.webhook.port }}
+      targetPort: webhook
       protocol: TCP
-      name: bridge
+      name: webhook
+    - port: {{ .Values.bridges.hookshot.service.metrics.port }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+    - port: {{ .Values.bridges.hookshot.service.appservice.port }}
+      targetPort: appservice
+      protocol: TCP
+      name: appservice
   selector:
     app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-hookshot
     app.kubernetes.io/instance: {{ .Release.Name }}

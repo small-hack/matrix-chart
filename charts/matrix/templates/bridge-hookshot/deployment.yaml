@@ -78,6 +78,15 @@ spec:
             - name: bridge
               containerPort: 9005
               protocol: TCP
+            - name: webhook
+              containerPort: {{ .Values.bridges.hookshot.service.webhook }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.bridges.hookshot.service.metrics }}
+              protocol: TCP
+            - name: appservice
+              containerPort: {{ .Values.bridges.hookshot.service.appservice }}
+              protocol: TCP
           volumeMounts:
             - name: data
               mountPath: /data

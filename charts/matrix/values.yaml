@@ -1850,8 +1850,15 @@ bridges:
     service:
       # -- service type for the hookshot bridge
       type: ClusterIP
-      # -- service port for the hookshot bridge
-      port: 9006
+      webhook:
+        # -- webhook service port for the hookshot bridge
+        port: 9000
+      metrics:
+        # -- metrics service port for the hookshot bridge
+        port: 9001
+      appservice:
+        # -- appservice service port for the hookshot bridge
+        port: 9002
 
     securityContext:
       runAsUser: 1000
