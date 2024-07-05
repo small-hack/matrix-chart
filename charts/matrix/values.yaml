@@ -1858,10 +1858,10 @@ bridges:
       runAsGroup: 1000
       fsGroup: 1000
 
-    # Run openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 to generate
-    # After generating the file, you can run:
-    # awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' <your_passkey.pem>
-    # This will replace new line characters with '\n' and print the file in a single line#
+    # Run:
+    # openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 && \
+    # awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' passkey.pem
+    # This will replace new line characters with '\n' and print the file in a single line
     passkey: ""
 
     # -- use the name of an existing ConfigMap for hookshot bridge. If set, ignores
@@ -1889,8 +1889,7 @@ bridges:
         bindAddress: 127.0.0.1
 
       # -- A passkey used to encrypt tokens stored inside the bridge.
-      # Run openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 to generate
-      passFile: ./passkey.pem
+      passFile: /data/passkey.pem
 
       logging:
         # -- log severity level. Options: debug, info, warn, error
