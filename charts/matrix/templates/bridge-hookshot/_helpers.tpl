@@ -1,5 +1,5 @@
 {{- define "matrix.hookshot.configmap" -}}
-{{- if and (not .Values.bridges.hookshot.existingConfigMap) (not .Values.bridges.hookshot.existingSecret.config) -}}
+{{- if and .Values.bridges.hookshot.existingConfigMap (not .Values.bridges.hookshot.existingSecret.config) -}}
 {{ .Values.bridges.hookshot.existingConfigMap }}
 {{- else -}}
 {{ template "matrix.fullname" . }}-hookshot-config
