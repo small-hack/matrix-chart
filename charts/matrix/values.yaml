@@ -2043,7 +2043,8 @@ bridges:
       #    service: feeds
 
       metrics:
-        # -- enable Prometheus metrics support from hookshot to Prometheus
+        # -- enable Prometheus metrics support from hookshot to Prometheus, see
+        # [docs](https://matrix-org.github.io/matrix-hookshot/latest/metrics.html)
         enabled: false
 
       # -- (Optional) Cache options for large scale deployments.
@@ -2065,7 +2066,8 @@ bridges:
         # -- example value: production
         environment: ""
 
-      # -- (Optional) Permissions for using the bridge. See docs/setup.md#permissions for help
+      # -- (Optional) Permissions for using the bridge. See
+      # [docs](https://matrix-org.github.io/matrix-hookshot/latest/setup.html#permissions)
       permissions: []
       #  - actor: example.com
       #    services:
