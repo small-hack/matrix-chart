@@ -1845,6 +1845,9 @@ bridges:
     # -- enable the [hookshot](https://matrix-org.github.io/matrix-hookshot) bridge
     enabled: false
 
+    # -- if you'd like to enable encryption in your registration.yml
+    encryption: false
+
     image:
       # -- hookshot bridge docker image
       repository: "halfshot/matrix-hookshot"
