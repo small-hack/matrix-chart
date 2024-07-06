@@ -1874,10 +1874,9 @@ bridges:
       runAsGroup: 1000
       fsGroup: 1000
 
-    # Run:
-    # openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 && \
-    # awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' passkey.pem
-    # This will replace new line characters with '\n' and print the file in a single line
+    # If bridges.hookshot.passkey AND bridges.hookshot.existingSecret.passkey are
+    # BOTH empty strings, we will generate a passkey for you. To Generate yourself:
+    # openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
     passkey: ""
 
     # -- use the name of an existing ConfigMap for hookshot bridge. If set, ignores
