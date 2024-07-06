@@ -58,7 +58,7 @@ spec:
           image: "{{ .Values.bridges.hookshot.image.repository }}:{{ .Values.bridges.hookshot.image.tag }}"
           imagePullPolicy: {{ .Values.bridges.hookshot.image.pullPolicy }}
           command: ["sh"]
-          args: ["-c", "cp /data/registration.yaml /bridges/hookshot.yaml"]
+          args: ["-c", "cp /data/registration.yml /bridges/hookshot.yaml"]
           volumeMounts:
             - name: data
               mountPath: /data
