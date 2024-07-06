@@ -1836,6 +1836,9 @@ mail:
       username: "username"
       password: "password"
 
+############################################################################
+#  Bridges to synapse, for services such as Discord, Webhooks, IRC, and RSS
+############################################################################
 bridges:
   # see: https://matrix-org.github.io/matrix-hookshot/latest/setup/sample-configuration.html
   hookshot:
