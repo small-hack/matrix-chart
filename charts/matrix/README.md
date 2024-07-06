@@ -106,6 +106,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.config.sentry.environment | string | `""` | example value: production |
 | bridges.hookshot.config.serviceBots | Optional | `[]` | Define additional bot users for specific services |
 | bridges.hookshot.enabled | bool | `false` | enable the [hookshot](https://matrix-org.github.io/matrix-hookshot) bridge |
+| bridges.hookshot.encryption | bool | `false` | if you'd like to enable encryption in your registration.yml |
 | bridges.hookshot.existingConfigMap | string | `""` | use the name of an existing ConfigMap for hookshot bridge. If set, ignores entire bridges.hookshot.config section |
 | bridges.hookshot.existingSecret.config | string | `""` |  |
 | bridges.hookshot.existingSecret.passkey | string | `""` |  |
