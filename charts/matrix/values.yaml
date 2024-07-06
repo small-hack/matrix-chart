@@ -680,7 +680,7 @@ synapse:
           #         name: http
 
           # if bridges.hookshot.generic.enabled, you want to uncomment the following:
-          #  - path: /_hookshot_webhook
+          #  - path: /webhook
           #   pathType: ImplementationSpecific
           #   backend:
           #     service:
