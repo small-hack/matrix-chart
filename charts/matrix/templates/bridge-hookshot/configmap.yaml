@@ -28,8 +28,8 @@ data:
     {{- range .Values.bridges.hookshot.config.listeners }}
       - port: {{ .port }}
         bindAddress: {{ .bindAddress }}
-        {{- range .listeners }}
         resources:
+        {{- range .resources }}
           - {{ . }}
         {{- end }}
     {{- end }}
