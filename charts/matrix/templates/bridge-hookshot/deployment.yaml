@@ -19,10 +19,18 @@ spec:
       matrix-chart/allow-synapse-access: allow
   template:
     metadata:
-      {{- if not .Values.bridges.hookshot.existingSecret.config }}
+      {{- if and (not .Values.bridges.hookshot.existingSecret.config) (not .Values.bridges.hookshot.existingSecret.config) (not .Values.bridges.hookshot.existingSecret.passkey) (not .Values.bridges.hookshot.existingSecret.registration)}}
       annotations:
         # re-roll deployment on config change
+        {{- if and (not .Values.bridges.hookshot.existingSecret.config) (not .Values.bridges.hookshot.existingSecret.config)}}
         checksum/hookshot-config: {{ include (print $.Template.BasePath "/bridge-hookshot/configmap.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if not .Values.bridges.hookshot.existingSecret.registration }}
+        checksum/hookshot-registration: {{ include (print $.Template.BasePath "/bridge-hookshot/secret-registration.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if not .Values.bridges.hookshot.existingSecret.passkey }}
+        checksum/hookshot-passkey: {{ include (print $.Template.BasePath "/bridge-hookshot/secret-passkey.yaml") . | sha256sum }}
+        {{- end }}
       {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-hookshot

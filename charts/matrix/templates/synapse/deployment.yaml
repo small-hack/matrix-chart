@@ -18,6 +18,16 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "matrix.name" . }}-synapse
         app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- if and (not .Values.bridges.hookshot.existingSecret.registration) (not .Values.matrix.homeserverOverride) }}
+      annotations:
+        # re-roll deployment on config change
+        {{- if not .Values.bridges.hookshot.existingSecret.registration }}
+        checksum/hookshot-registration: {{ include (print $.Template.BasePath "/bridge-hookshot/secret-registration.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if not .Values.matrix.homeserverOverride }}
+        checksum/synapse-config: {{ include (print $.Template.BasePath "/synapse/initial-config-map.yaml") . | sha256sum }}
+        {{- end }}
+      {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
