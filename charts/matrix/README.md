@@ -108,13 +108,16 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.enabled | bool | `false` | enable the [hookshot](https://matrix-org.github.io/matrix-hookshot) bridge |
 | bridges.hookshot.encryption | bool | `false` | if you'd like to enable encryption in your registration.yml |
 | bridges.hookshot.existingConfigMap | string | `""` | use the name of an existing ConfigMap for hookshot bridge. If set, ignores entire bridges.hookshot.config section |
-| bridges.hookshot.existingSecret.config | string | `""` |  |
-| bridges.hookshot.existingSecret.passkey | string | `""` |  |
-| bridges.hookshot.existingSecret.registration | string | `""` |  |
+| bridges.hookshot.existingSecret.config | string | `""` | optionally use existing kubernetes Secret for config.yml, ignores hookshot.config |
+| bridges.hookshot.existingSecret.passkey | string | `""` | optionally use existing kubernetes Secret for passkey.pem, ignores hookshot.passkey |
+| bridges.hookshot.existingSecret.registration | string | `""` | optionally use existing kubernetes Secret for registration |
 | bridges.hookshot.image.pullPolicy | string | `"IfNotPresent"` | hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always" |
 | bridges.hookshot.image.repository | string | `"halfshot/matrix-hookshot"` | hookshot bridge docker image |
 | bridges.hookshot.image.tag | string | `"5.4.1"` | hookshot bridge docker image tag |
-| bridges.hookshot.passkey | string | `""` |  |
+| bridges.hookshot.passkey | string | `""` | If bridges.hookshot.passkey AND bridges.hookshot.existingSecret.passkey are BOTH empty strings, we will generate a passkey for you. To Generate yourself: openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 |
+| bridges.hookshot.registration.rate_limited | bool | `false` |  |
+| bridges.hookshot.registration.sender_localpart | string | `"hookshot"` |  |
+| bridges.hookshot.registration.url | string | `""` | This should match the bridges.hookshot.config.bridge.port in your config file |
 | bridges.hookshot.replicaCount | int | `1` | hookshot bridge pod replicas |
 | bridges.hookshot.resources | object | `{}` | resources limits/requests for the hookshot bridge pod |
 | bridges.hookshot.securityContext.fsGroup | int | `1000` |  |
