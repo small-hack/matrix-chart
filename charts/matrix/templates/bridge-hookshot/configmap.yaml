@@ -8,7 +8,7 @@ metadata:
 data:
   config.yml: |-
     bridge:
-      domain: {{ .Values.bridges.hookshot.config.bridge.domain | default .Values.matrix.serverName }}
+      domain: {{ .Values.bridges.hookshot.config.bridge.domain | default .Values.matrix.hostname }}
       url: {{ .Values.bridges.hookshot.config.bridge.url | default (include "matrix.baseUrl" .) }}
       {{- with .Values.bridges.hookshot.config.mediaUrl }}
       mediaUrl: {{ . }}

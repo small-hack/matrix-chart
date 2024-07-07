@@ -1880,7 +1880,7 @@ bridges:
       runAsGroup: 1000
       fsGroup: 1000
 
-    # If bridges.hookshot.passkey AND bridges.hookshot.existingSecret.passkey are
+    # -- If bridges.hookshot.passkey AND bridges.hookshot.existingSecret.passkey are
     # BOTH empty strings, we will generate a passkey for you. To Generate yourself:
     # openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
     passkey: ""
@@ -1891,12 +1891,21 @@ bridges:
 
     # optionally use existing kubernetes Secrets for passkey.pem, registration.yml, config.yml
     existingSecret:
-      # optionally use existing kubernetes Secret for passkey.pem, ignores hookshot.passkey
+      # -- optionally use existing kubernetes Secret for passkey.pem, ignores hookshot.passkey
       passkey: ""
-      # optionally use existing kubernetes Secret for registration
+      # -- optionally use existing kubernetes Secret for registration
       registration: ""
-      # optionally use existing kubernetes Secret for config.yml, ignores hookshot.config
+      # -- optionally use existing kubernetes Secret for config.yml, ignores hookshot.config
       config: ""
+
+    # this file config is used to register the hookshot service with synapse
+    # if you don't provide any of these parameters, we will guess them
+    registration:
+      # -- This should match the bridges.hookshot.config.bridge.port in your config file
+      url: ""
+      sender_localpart: "hookshot"
+      rate_limited: false
+
 
     config:
       bridge:
