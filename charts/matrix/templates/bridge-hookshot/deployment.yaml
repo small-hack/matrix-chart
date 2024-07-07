@@ -83,6 +83,9 @@ spec:
           image: "{{ .Values.bridges.hookshot.image.repository }}:{{ .Values.bridges.hookshot.image.tag }}"
           imagePullPolicy: {{ .Values.bridges.hookshot.image.pullPolicy }}
           ports:
+            - name: bridge
+              containerPort: {{ .Values.bridges.hookshot.config.bridge.port }}
+              protocol: TCP
             - name: webhook
               containerPort: {{ .Values.bridges.hookshot.service.webhook.port }}
               protocol: TCP
