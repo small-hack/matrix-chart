@@ -127,7 +127,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.config.bridge.message_error_notices | bool | `true` | Whether the bridge should send error notices via m.notice events when a message fails to bridge. |
 | bridges.discord_mautrix.config.bridge.message_status_events | bool | `false` | Whether the bridge should send the message status as a custom com.beeper.message_send_status event. |
 | bridges.discord_mautrix.config.bridge.mute_channels_on_create | bool | `false` | Should guild channels be muted when the portal is created? This only meant for single-user instances, it won't mute it for all users if there are multiple Matrix users in the same Discord guild. |
-| bridges.discord_mautrix.config.bridge.permissions | list | `[]` |  |
+| bridges.discord_mautrix.config.bridge.permissions | object | `{}` |  |
 | bridges.discord_mautrix.config.bridge.portal_message_buffer | int | `128` |  |
 | bridges.discord_mautrix.config.bridge.prefix_webhook_messages | bool | `false` | Prefix messages from webhooks with the profile info? This can be used along with a custom displayname_template to better handle webhooks that change their name all the time (like ones used by bridges). |
 | bridges.discord_mautrix.config.bridge.private_chat_portal_meta | string | `"default"` | Whether to explicitly set the avatar and room name for private chat portal rooms. If set to `default`, this will be enabled in encrypted rooms and disabled in unencrypted rooms. If set to `always`, all DM rooms will have explicit names and avatars set. If set to `never`, DM rooms will never have names and avatars set. |
