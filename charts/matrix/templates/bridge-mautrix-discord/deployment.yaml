@@ -56,7 +56,7 @@ spec:
           command: ["sh"]
           args:
            - "-ec"
-           - |-
+           - |
              cp /load/registration.yaml /data/registration.yaml && \
              {{- if .Values.bridges.discord_mautrix.registration.existingSecret }}
              yq eval -i '.as_token = env(AS_TOKEN)' /data/registration.yaml && \
