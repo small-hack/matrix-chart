@@ -160,13 +160,16 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.config.logging.writers[1].max_size | int | `100` |  |
 | bridges.discord_mautrix.config.logging.writers[1].type | string | `"file"` |  |
 | bridges.discord_mautrix.enabled | bool | `false` | Set to true to enable the Discord bridge. Learn more in the [mautrix bridge docs](https://docs.mau.fi/bridges/go/discord/index.html). |
-| bridges.discord_mautrix.existingSecret | string | `""` | use an existingSecret for mautrix/discord bridge config.yaml if set, ignores everything under bridges.discord_mautrix.config |
+| bridges.discord_mautrix.existingSecret | object | `{"config":"","registration":""}` | use an existingSecret for mautrix/discord bridge config.yaml if set, ignores everything under bridges.discord_mautrix.config |
 | bridges.discord_mautrix.extraVolumeMounts | list | `[]` | extra volumeMounts for the mautrix/discord deployment |
 | bridges.discord_mautrix.extraVolumes | list | `[]` | extra volumes for the mautrix/discord deployment |
 | bridges.discord_mautrix.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bridges.discord_mautrix.image.repository | string | `"dock.mau.dev/mautrix/discord"` | docker image repo for mautrix/discord bridge |
 | bridges.discord_mautrix.image.tag | string | `"08cde6313a32d2382886444db86a7a6e6b12080c-amd64"` | tag for mautrix/discord bridge docker image |
 | bridges.discord_mautrix.podSecurityContext | object | `{}` |  |
+| bridges.discord_mautrix.registration.existingSecret | string | `""` | Use an existing Kubernetes Secret to store your own generated appservice and homeserver tokens. If this is not set, we'll generate them for you. Setting this won't override the ENTIRE registration.yaml we generate for the synapse pod to authenticate mautrix/discord. It will only replaces the tokens. To replaces the ENTIRE registration.yaml, use bridges.discord_mautrix.existingSecret.registration |
+| bridges.discord_mautrix.registration.existingSecretKeys.as_token | string | `"as_token"` | key in existingSecret for as_token (appservice token) |
+| bridges.discord_mautrix.registration.existingSecretKeys.hs_token | string | `"hs_token"` | key in existingSecret for hs_token (home server token) |
 | bridges.discord_mautrix.registration.sender_localpart | string | `"discord"` | I don't actually know what this does |
 | bridges.discord_mautrix.securityContext | object | `{}` |  |
 | bridges.discord_mautrix.service.bridge.port | int | `29334` |  |
