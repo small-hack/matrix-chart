@@ -158,15 +158,16 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.config.logging.writers[1].max_backups | int | `10` |  |
 | bridges.discord_mautrix.config.logging.writers[1].max_size | int | `100` |  |
 | bridges.discord_mautrix.config.logging.writers[1].type | string | `"file"` |  |
-| bridges.discord_mautrix.enabled | bool | `false` | Set to true to enable the Discord bridge. Learn more in the [docs](https://docs.mau.fi/bridges/go/discord/index.html). |
+| bridges.discord_mautrix.enabled | bool | `false` | Set to true to enable the Discord bridge. Learn more in the [mautrix bridge docs](https://docs.mau.fi/bridges/go/discord/index.html). |
 | bridges.discord_mautrix.existingSecret | string | `""` | use an existingSecret for mautrix/discord bridge config.yaml if set, ignores everything under bridges.discord_mautrix.config |
 | bridges.discord_mautrix.extraVolumeMounts | list | `[]` | extra volumeMounts for the mautrix/discord deployment |
 | bridges.discord_mautrix.extraVolumes | list | `[]` | extra volumes for the mautrix/discord deployment |
 | bridges.discord_mautrix.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bridges.discord_mautrix.image.repository | string | `"dock.mau.dev/mautrix/discord"` | docker image repo for mautrix/discord bridge |
 | bridges.discord_mautrix.image.tag | string | `"08cde6313a32d2382886444db86a7a6e6b12080c-amd64"` | tag for mautrix/discord bridge docker image |
+| bridges.discord_mautrix.podSecurityContext.fsGroup | int | `1337` |  |
+| bridges.discord_mautrix.podSecurityContext.runAsUser | int | `1337` |  |
 | bridges.discord_mautrix.registration.sender_localpart | string | `"discord"` | I don't actually know what this does |
-| bridges.discord_mautrix.securityContext.fsGroup | int | `1337` |  |
 | bridges.discord_mautrix.securityContext.runAsGroup | int | `1337` |  |
 | bridges.discord_mautrix.securityContext.runAsUser | int | `1337` |  |
 | bridges.discord_mautrix.service.bridge.port | int | `29334` |  |
