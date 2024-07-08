@@ -369,10 +369,10 @@ bridge:
     permissions:
     {{- if .Values.bridges.discord_mautrix.config.bridge.permissions }}
         {{- toYaml . | nindent 8 }}
-    {{- else -}}
+    {{- else }}
         "*": relay
-        "{{ include "matrix.hostname" . }}": user
-        "@admin:{{ include "matrix.hostname" . }}": admin
+        "*": user
+        "*": admin
     {{- end }}
 
 # Logging config. See https://github.com/tulir/zeroconfig for details.
