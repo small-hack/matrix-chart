@@ -2224,7 +2224,8 @@ bridges:
       port: 29318
 
   discord_mautrix:
-    # -- Set to true to enable the Discord bridge. Learn more in the [docs](https://docs.mau.fi/bridges/go/discord/index.html).
+    # -- Set to true to enable the Discord bridge. Learn more in the
+    # [mautrix bridge docs](https://docs.mau.fi/bridges/go/discord/index.html).
     enabled: false
 
     image:
@@ -2239,9 +2240,14 @@ bridges:
       bridge:
         port: 29334
 
+    # security context for the init container and main container in the discord pod
     securityContext:
       runAsUser: 1337
       runAsGroup: 1337
+
+    # security context for the entire mautrix/discord pod
+    podSecurityContext:
+      runAsUser: 1337
       fsGroup: 1337
 
     volume:

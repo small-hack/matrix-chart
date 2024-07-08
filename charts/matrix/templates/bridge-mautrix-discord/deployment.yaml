@@ -45,7 +45,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.bridges.discord_mautrix.securityContext }}
+      {{- with .Values.bridges.discord_mautrix.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -62,11 +62,10 @@ spec:
               mountPath: /data
             - name: bridges
               mountPath: /bridges
+          {{- with .Values.bridges.discord_mautrix.securityContext }}
           securityContext:
-            capabilities:
-              drop:
-                - ALL
-            allowPrivilegeEscalation: false
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       containers:
         - name: "bridge-discord"
           image: "{{ .Values.bridges.discord_mautrix.image.repository }}:{{ .Values.bridges.discord_mautrix.image.tag }}"
@@ -81,11 +80,10 @@ spec:
            {{- with .Values.bridges.discord_mautrix.extraVolumeMounts }}
              {{- toYaml . | nindent 12 }}
            {{- end }}
+          {{- with .Values.bridges.discord_mautrix.securityContext }}
           securityContext:
-            capabilities:
-              drop:
-                - ALL
-            allowPrivilegeEscalation: false
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.bridges.discord_mautrix.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
