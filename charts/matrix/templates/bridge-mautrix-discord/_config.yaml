@@ -373,8 +373,8 @@ bridge:
     {{- end }}
     {{- else }}
         "*": relay
-        "{{ include "matrix.baseUrl" . }}": user
-        "{{ include "matrix.baseUrl" . }}": admin
+        "{{ include "matrix.hostname" . }}": user
+        "{{ include "matrix.hostname" . }}": admin
     {{- end }}
 
 # Logging config. See https://github.com/tulir/zeroconfig for details.
