@@ -8,7 +8,7 @@ metadata:
 spec:
   type: {{ .Values.bridges.discord_mautrix.service.type }}
   ports:
-    - port: {{ .Values.bridges.discord_mautrix.config.bridge.port }}
+    - port: {{ .Values.bridges.discord_mautrix.config.appservice.port }}
       targetPort: bridge
       protocol: TCP
       name: bridge
