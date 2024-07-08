@@ -366,13 +366,9 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
+    {{- with .Values.bridges.discord_mautrix.config.bridge.permissions }}
     permissions:
-    {{- if .Values.bridges.discord_mautrix.config.bridge.permissions }}
         {{- toYaml . | nindent 8 }}
-    {{- else }}
-        "*": relay
-        "*": user
-        "*": admin
     {{- end }}
 
 # Logging config. See https://github.com/tulir/zeroconfig for details.
