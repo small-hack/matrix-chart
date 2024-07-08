@@ -2621,10 +2621,10 @@ bridges:
         #        * - All Matrix users
         #   domain - All users on that homeserver
         #     mxid - Specific user
-        permissions:
-          "*": relay
-          "example.com": user
-          "@admin:example.com": admin
+        permissions: []
+        #   "*": relay
+        #   "example.com": user
+        #   "@admin:example.com": admin
 
       # Logging config. See https://github.com/tulir/zeroconfig for details.
       logging:
