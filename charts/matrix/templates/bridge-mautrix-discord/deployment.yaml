@@ -1,0 +1,79 @@
+{{- if .Values.bridges.discord_mautrix.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "matrix.fullname" . }}-bridge-discord
+  labels:
+{{ include "matrix.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.bridges.discord_mautrix.replicaCount }}
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-discord
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      matrix-chart/allow-synapse-access: allow
+  template:
+    metadata:
+      annotations:
+        # re-roll deployment on config change
+        checksum/discord-config: {{ include (print $.Template.BasePath "/bridge-mautrix-discord/config-secret.yaml") . | sha256sum }}
+      labels:
+        app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-discord
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        matrix-chart/allow-synapse-access: allow
+    spec:
+      {{- if .Values.bridges.affinity }}
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - {{ include "matrix.name" . }}-synapse
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                      - {{ .Release.Name }}
+              topologyKey: kubernetes.io/hostname
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.bridges.discord_mautrix.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: "bridge-discord"
+          image: "{{ .Values.bridges.discord_mautrix.image.repository }}:{{ .Values.bridges.discord_mautrix.image.tag }}"
+          imagePullPolicy: {{ .Values.bridges.discord_mautrix.image.pullPolicy }}
+          ports:
+            - name: bridge
+              containerPort: {{ .Values.bridges.discord_mautrix.config.appservice.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+          {{- with .Values.bridges.discord_mautrix.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: data
+          secret:
+            name: {{ include "matrix.fullname" . }}-bridge-discord-config
+{{- end }}

@@ -51,7 +51,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord.typingNotifications | bool | `true` | Set to false to disable typing notifications (only for Discord to Matrix) |
 | bridges.discord.users.nickname | string | `":nick"` | Nickname of bridged Discord users Available vars:   :nick     - user's Discord nickname   :username - user's Discord username   :tag      - user's 4 digit Discord tag   :id       - user's Discord developer ID (long) |
 | bridges.discord.users.username | string | `":username#:tag"` | Username of bridged Discord users Available vars:   :username - user's Discord username   :tag      - user's 4 digit Discord tag   :id       - user's Discord developer ID (long) |
-| bridges.discord_mautrix.config.appservice.address | string | `"http://localhost:29334"` | The address that the homeserver can use to connect to this appservice. |
+| bridges.discord_mautrix.config.appservice.address | string | `""` | The address that the homeserver can use to connect to this appservice. example is http://localhost:29334 but if not provided, we guess :) |
 | bridges.discord_mautrix.config.appservice.async_transactions | bool | `false` | Should incoming events be handled asynchronously? This may be necessary for large public instances with lots of messages going through. However, messages will not be guaranteed to be bridged in the same order they were sent in. |
 | bridges.discord_mautrix.config.appservice.bot.avatar | string | `"mxc://maunium.net/nIdEykemnwdisvHbpxflpDlC"` | Display avatar for bot. Set to "remove" to remove display avatar. |
 | bridges.discord_mautrix.config.appservice.bot.displayname | string | `"Discord bridge bot"` | Display name for bot. Set to "remove" to remove display name. |
@@ -60,8 +60,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.config.appservice.database.max_conn_lifetime | string | `nil` | Maximum connection lifetime before its closed. Disabled if null. Parsed with https://pkg.go.dev/time#ParseDuration |
 | bridges.discord_mautrix.config.appservice.database.max_idle_conns | int | `2` |  |
 | bridges.discord_mautrix.config.appservice.database.max_open_conns | int | `20` | Maximum number of connections. Mostly relevant for Postgres. |
-| bridges.discord_mautrix.config.appservice.database.type | string | `"postgres"` | The database type. "sqlite3-fk-wal" and "postgres" are supported. |
-| bridges.discord_mautrix.config.appservice.database.uri | string | `"postgres://user:password@host/database?sslmode=disable"` | The database URI.   SQLite: A raw file path is supported, but `file:<path>?_txlock=immediate` is recommended.      https://github.com/mattn/go-sqlite3#connection-string   Postgres: Connection string. For example,       postgres://user:password@host/database?sslmode=disable   To connect via Unix socket, use something like,       postgres:///dbname?host=/var/run/postgresql |
+| bridges.discord_mautrix.config.appservice.database.type | string | `"sqlite3-fk-wal"` | The database type. "sqlite3-fk-wal" and "postgres" are supported. |
+| bridges.discord_mautrix.config.appservice.database.uri | string | `"file:<path>?_txlock=immediate"` | The database URI.   SQLite: A raw file path is supported, but `file:<path>?_txlock=immediate` is recommended.      https://github.com/mattn/go-sqlite3#connection-string   Postgres: Connection string. For example,       postgres://user:password@host/database?sslmode=disable   To connect via Unix socket, use something like,       postgres:///dbname?host=/var/run/postgresql |
 | bridges.discord_mautrix.config.appservice.ephemeral_events | bool | `true` | Whether or not to receive ephemeral events via appservice transactions. Requires MSC2409 support (i.e. Synapse 1.22+). |
 | bridges.discord_mautrix.config.appservice.hostname | string | `"0.0.0.0"` | The hostname where this appservice should listen. |
 | bridges.discord_mautrix.config.appservice.id | string | `"discord"` | The unique ID of this appservice. |
@@ -141,7 +141,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.config.bridge.startup_private_channel_create_limit | int | `5` | Number of private channel portals to create on bridge startup. Other portals will be created when receiving messages. |
 | bridges.discord_mautrix.config.bridge.sync_direct_chat_list | bool | `false` | Should the bridge update the m.direct account data event when double puppeting is enabled. Note that updating the m.direct event is not atomic (except with mautrix-asmux) and is therefore prone to race conditions. |
 | bridges.discord_mautrix.config.bridge.use_discord_cdn_upload | bool | `true` | Should the bridge upload media to the Discord CDN directly before sending the message when using a user token, like the official client does? The other option is sending the media in the message send request as a form part (which is always used by bots and webhooks). |
-| bridges.discord_mautrix.config.bridge.username_template | string | `""` | Localpart template of MXIDs for Discord users. defaults to discord_{{.}} if not set {{.}} is replaced with the internal ID of the Discord user. |
+| bridges.discord_mautrix.config.bridge.username_template | string | `"discord_{{.}}"` | Localpart template of MXIDs for Discord users. {{.}} is replaced with the internal ID of the Discord user. |
 | bridges.discord_mautrix.config.homeserver.address | string | `""` | The address that this appservice can use to connect to the homeserver. this would be something like https://matrix.example.com, but if not set, we'll try to guess the correct homeserver url :) |
 | bridges.discord_mautrix.config.homeserver.async_media | bool | `false` | Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246? |
 | bridges.discord_mautrix.config.homeserver.domain | string | `""` | domain of the homeserver (also known as server_name, used for MXIDs, etc). if not provided, we'll try to guess the correct one, but if your server is https://matrix.example.com, it's probably example.com |
@@ -161,9 +161,15 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.config.logging.writers[1].max_size | int | `100` |  |
 | bridges.discord_mautrix.config.logging.writers[1].type | string | `"file"` |  |
 | bridges.discord_mautrix.enabled | bool | `false` | Set to true to enable the Discord bridge. Learn more in the [docs](https://docs.mau.fi/bridges/go/discord/index.html). |
+| bridges.discord_mautrix.existingSecret | string | `""` | use an existingSecret for mautrix/discord bridge config.yaml if set, ignores everything under bridges.discord_mautrix.config |
 | bridges.discord_mautrix.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bridges.discord_mautrix.image.repository | string | `"dock.mau.dev/mautrix/discord"` | docker image repo for mautrix/discord bridge |
 | bridges.discord_mautrix.image.tag | string | `"08cde6313a32d2382886444db86a7a6e6b12080c-amd64"` | tag for mautrix/discord bridge docker image |
+| bridges.discord_mautrix.securityContext.fsGroup | int | `1337` |  |
+| bridges.discord_mautrix.securityContext.runAsGroup | int | `1337` |  |
+| bridges.discord_mautrix.securityContext.runAsUser | int | `1337` |  |
+| bridges.discord_mautrix.service.bridge.port | int | `29334` |  |
+| bridges.discord_mautrix.service.type | string | `"ClusterIP"` |  |
 | bridges.hookshot.config.bot.avatar | string | `"mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d"` | Define profile avatar for the bot user |
 | bridges.hookshot.config.bot.displayname | string | `"Hookshot Bot"` | Define profile display name for the bot user |
 | bridges.hookshot.config.bridge.bindAddress | string | `"127.0.0.1"` |  |

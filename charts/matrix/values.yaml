@@ -2234,6 +2234,19 @@ bridges:
       tag: "08cde6313a32d2382886444db86a7a6e6b12080c-amd64"
       pullPolicy: IfNotPresent
 
+    service:
+      type: ClusterIP
+      bridge:
+        port: 29334
+
+    securityContext:
+      runAsUser: 1337
+      runAsGroup: 1337
+      fsGroup: 1337
+
+    # -- use an existingSecret for mautrix/discord bridge config.yaml
+    # if set, ignores everything under bridges.discord_mautrix.config
+    existingSecret: ""
 
     # templates out to config.yaml for the mautrix bridge
     config:
@@ -2274,8 +2287,8 @@ bridges:
       # Changing these values requires regeneration of the registration.
       appservice:
         # -- The address that the homeserver can use to connect to this appservice.
-        address: http://localhost:29334
-
+        # example is http://localhost:29334 but if not provided, we guess :)
+        address: ""
         # -- The hostname where this appservice should listen.
         hostname: 0.0.0.0
         # -- The port where this appservice should listen.
@@ -2284,7 +2297,7 @@ bridges:
         # Database config.
         database:
           # -- The database type. "sqlite3-fk-wal" and "postgres" are supported.
-          type: postgres
+          type: sqlite3-fk-wal
           # -- The database URI.
           #   SQLite: A raw file path is supported, but `file:<path>?_txlock=immediate` is recommended.
           #      https://github.com/mattn/go-sqlite3#connection-string
@@ -2292,7 +2305,7 @@ bridges:
           #       postgres://user:password@host/database?sslmode=disable
           #   To connect via Unix socket, use something like,
           #       postgres:///dbname?host=/var/run/postgresql
-          uri: postgres://user:password@host/database?sslmode=disable
+          uri: file:<path>?_txlock=immediate
           # -- Maximum number of connections. Mostly relevant for Postgres.
           max_open_conns: 20
           max_idle_conns: 2
@@ -2331,9 +2344,8 @@ bridges:
       # Bridge config
       bridge:
         # -- Localpart template of MXIDs for Discord users.
-        # defaults to discord_{{.}} if not set
         # {{.}} is replaced with the internal ID of the Discord user.
-        username_template: ""
+        username_template: "discord_{{.}}"
         # -- Displayname template for Discord users. This is also used as the room name in DMs if private_chat_portal_meta is enabled.
         # Available variables:
         #   .ID - Internal user ID
