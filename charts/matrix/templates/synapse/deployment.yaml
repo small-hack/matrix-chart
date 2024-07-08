@@ -24,6 +24,9 @@ spec:
         {{- if not .Values.bridges.hookshot.existingSecret.registration }}
         checksum/hookshot-registration: {{ include (print $.Template.BasePath "/bridge-hookshot/secret-registration.yaml") . | sha256sum }}
         {{- end }}
+        {{- if not .Values.bridges.discord_mautrix.existingSecret }}
+        checksum/discord-registration: {{ include (print $.Template.BasePath "/bridge-mautrix-discord/secret-registration.yaml") . | sha256sum }}
+        {{- end }}
         {{- if not .Values.matrix.homeserverOverride }}
         checksum/synapse-config: {{ include (print $.Template.BasePath "/synapse/initial-config-map.yaml") . | sha256sum }}
         {{- end }}
