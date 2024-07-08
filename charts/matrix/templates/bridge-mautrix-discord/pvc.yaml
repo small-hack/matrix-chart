@@ -1,4 +1,4 @@
-{{- if and .Values.bridges.discord_mautrix.enabled .Values.bridges.discord_mautrix.volume.existingClaim }}
+{{- if and .Values.bridges.discord_mautrix.enabled (not .Values.bridges.discord_mautrix.volume.existingClaim) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
