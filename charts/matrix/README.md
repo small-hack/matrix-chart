@@ -165,11 +165,9 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bridges.discord_mautrix.image.repository | string | `"dock.mau.dev/mautrix/discord"` | docker image repo for mautrix/discord bridge |
 | bridges.discord_mautrix.image.tag | string | `"08cde6313a32d2382886444db86a7a6e6b12080c-amd64"` | tag for mautrix/discord bridge docker image |
-| bridges.discord_mautrix.podSecurityContext.fsGroup | int | `1337` |  |
-| bridges.discord_mautrix.podSecurityContext.runAsUser | int | `1337` |  |
+| bridges.discord_mautrix.podSecurityContext | object | `{}` |  |
 | bridges.discord_mautrix.registration.sender_localpart | string | `"discord"` | I don't actually know what this does |
-| bridges.discord_mautrix.securityContext.runAsGroup | int | `1337` |  |
-| bridges.discord_mautrix.securityContext.runAsUser | int | `1337` |  |
+| bridges.discord_mautrix.securityContext | object | `{}` |  |
 | bridges.discord_mautrix.service.bridge.port | int | `29334` |  |
 | bridges.discord_mautrix.service.type | string | `"ClusterIP"` |  |
 | bridges.discord_mautrix.volume.accessMode | string | `"ReadWriteOnce"` |  |
