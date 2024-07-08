@@ -2244,6 +2244,10 @@ bridges:
       runAsGroup: 1337
       fsGroup: 1337
 
+    registration:
+      # -- I don't actually know what this does
+      sender_localpart: "discord"
+
     # -- use an existingSecret for mautrix/discord bridge config.yaml
     # if set, ignores everything under bridges.discord_mautrix.config
     existingSecret: ""

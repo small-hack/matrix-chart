@@ -19,6 +19,7 @@ spec:
       annotations:
         # re-roll deployment on config change
         checksum/discord-config: {{ include (print $.Template.BasePath "/bridge-mautrix-discord/config-secret.yaml") . | sha256sum }}
+        checksum/discord-registration: {{ include (print $.Template.BasePath "/bridge-mautrix-discord/secret-registration.yaml") . | sha256sum }}
       labels:
         app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-discord
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -48,6 +49,23 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      initContainers:
+        - name: "load-config"
+          image: "{{ .Values.bridges.discord_mautrix.image.repository }}:{{ .Values.bridges.discord_mautrix.image.tag }}"
+          imagePullPolicy: {{ .Values.bridges.discord_mautrix.image.pullPolicy }}
+          command: ["sh"]
+          args: ["-c", "cp /data/registration.yaml /bridges/discord.yaml"]
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: bridges
+              mountPath: /bridges
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
       containers:
         - name: "bridge-discord"
           image: "{{ .Values.bridges.discord_mautrix.image.repository }}:{{ .Values.bridges.discord_mautrix.image.tag }}"
@@ -74,8 +92,15 @@ spec:
           {{- end }}
       volumes:
         - name: data
-          secret:
-            secretName: {{ include "matrix.fullname" . }}-bridge-discord-config
+          projected:
+            sources:
+              - secret:
+                  name: {{ include "matrix.discord_mautrix.configSecret" . }}
+              - secret:
+                  name: {{ include "matrix.discord_mautrix.registrationSecret" . }}
+        - name: bridges
+          persistentVolumeClaim:
+            claimName: "{{ include "matrix.fullname" . }}-bridges"
         {{- with .Values.bridges.discord_mautrix.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
