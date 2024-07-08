@@ -111,6 +111,7 @@ spec:
         - name: "bridge-discord"
           image: "{{ .Values.bridges.discord_mautrix.image.repository }}:{{ .Values.bridges.discord_mautrix.image.tag }}"
           imagePullPolicy: {{ .Values.bridges.discord_mautrix.image.pullPolicy }}
+          command: ["mautrix-discord", "--no-update"]
           ports:
             - name: bridge
               containerPort: {{ .Values.bridges.discord_mautrix.config.appservice.port }}
