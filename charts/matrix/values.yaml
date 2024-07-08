@@ -2241,14 +2241,14 @@ bridges:
         port: 29334
 
     # security context for the init container and main container in the discord pod
-    securityContext:
-      runAsUser: 1337
-      runAsGroup: 1337
+    securityContext: {}
+    #  runAsUser: 1337
+    #  runAsGroup: 1337
 
     # security context for the entire mautrix/discord pod
-    podSecurityContext:
-      runAsUser: 1337
-      fsGroup: 1337
+    podSecurityContext: {}
+    #  runAsUser: 1337
+    #  fsGroup: 1337
 
     volume:
       # -- use an existing PVC claim instead of creating one fresh for the
