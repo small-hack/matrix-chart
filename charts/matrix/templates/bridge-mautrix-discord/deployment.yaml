@@ -18,7 +18,7 @@ spec:
     metadata:
       annotations:
         # re-roll deployment on config change
-        checksum/discord-config: {{ include (print $.Template.BasePath "/bridge-mautrix-discord/config-secret.yaml") . | sha256sum }}
+        checksum/discord-config: {{ include (print $.Template.BasePath "/bridge-mautrix-discord/secret-config.yaml") . | sha256sum }}
         checksum/discord-registration: {{ include (print $.Template.BasePath "/bridge-mautrix-discord/secret-registration.yaml") . | sha256sum }}
       labels:
         app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-discord
