@@ -54,8 +54,10 @@ spec:
           image: "{{ .Values.bridges.discord_mautrix.image.repository }}:{{ .Values.bridges.discord_mautrix.image.tag }}"
           imagePullPolicy: {{ .Values.bridges.discord_mautrix.image.pullPolicy }}
           command: ["sh"]
-          args: ["-c", "cp /data/registration.yaml /bridges/discord.yaml"]
+          args: ["-c", "cp /load/registration.yaml /bridges/discord.yaml && cp /load/registration.yaml /data/registration.yaml && cp /load/config.yaml /data/config.yaml"]
           volumeMounts:
+            - name: load
+              mountPath: /load
             - name: data
               mountPath: /data
             - name: bridges
@@ -91,7 +93,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
-        - name: data
+        - name: load
           projected:
             sources:
               - secret:
@@ -100,7 +102,14 @@ spec:
                   name: {{ include "matrix.discord_mautrix.registrationSecret" . }}
         - name: bridges
           persistentVolumeClaim:
+            {{- if not .Values.bridges.volume.existingClaim }}
             claimName: "{{ include "matrix.fullname" . }}-bridges"
+            {{- else -}}
+            claimName: {{ .Values.bridges.volume.existingClaim }}
+            {{- end }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "matrix.discord_mautrix.pvc" . }}
         {{- with .Values.bridges.discord_mautrix.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

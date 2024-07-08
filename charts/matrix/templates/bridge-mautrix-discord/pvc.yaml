@@ -1,0 +1,17 @@
+{{- if and .Values.bridges.discord_mautrix.enabled .Values.bridges.discord_mautrix.volume.existingClaim }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "matrix.discord_mautrix.pvc" . }}
+  labels:
+{{ include "matrix.labels" . | indent 4 }}
+spec:
+  {{- if .Values.bridges.discord_mautrix.volume.storageClass }}
+  storageClassName: {{ .Values.bridges.discord_mautrix.volume.storageClass }}
+  {{- end }}
+  accessModes:
+    - {{ .Values.bridges.discord_mautrix.volume.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.bridges.discord_mautrix.volume.capacity }}
+{{- end }}

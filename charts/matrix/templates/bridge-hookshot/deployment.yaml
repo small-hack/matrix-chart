@@ -125,5 +125,9 @@ spec:
                   name: {{ include "matrix.hookshot.registrationSecret" . }}
         - name: bridges
           persistentVolumeClaim:
+            {{- if not .Values.bridges.volume.existingClaim }}
             claimName: "{{ include "matrix.fullname" . }}-bridges"
+            {{- else -}}
+            claimName: {{ .Values.bridges.volume.existingClaim }}
+            {{- end }}
 {{- end }}
