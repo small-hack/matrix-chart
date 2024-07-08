@@ -2261,10 +2261,24 @@ bridges:
     registration:
       # -- I don't actually know what this does
       sender_localpart: "discord"
+      # -- Use an existing Kubernetes Secret to store your own generated appservice
+      # and homeserver tokens. If this is not set, we'll generate them for you.
+      # Setting this won't override the ENTIRE registration.yaml we generate for
+      # the synapse pod to authenticate mautrix/discord. It will only replaces the tokens.
+      # To replaces the ENTIRE registration.yaml, use
+      # bridges.discord_mautrix.existingSecret.registration
+      existingSecret: ""
+      existingSecretKeys:
+        # -- key in existingSecret for as_token (appservice token)
+        as_token: "as_token"
+        # -- key in existingSecret for hs_token (home server token)
+        hs_token: "hs_token"
 
     # -- use an existingSecret for mautrix/discord bridge config.yaml
     # if set, ignores everything under bridges.discord_mautrix.config
-    existingSecret: ""
+    existingSecret:
+      registration: ""
+      config: ""
 
     # -- extra volumes for the mautrix/discord deployment
     extraVolumes: []

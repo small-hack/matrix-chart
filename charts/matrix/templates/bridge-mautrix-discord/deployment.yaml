@@ -50,11 +50,33 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-        - name: "load-config"
-          image: "{{ .Values.bridges.discord_mautrix.image.repository }}:{{ .Values.bridges.discord_mautrix.image.tag }}"
+        - name: load-config
+          image: "mikefarah/yq:latest"
           imagePullPolicy: {{ .Values.bridges.discord_mautrix.image.pullPolicy }}
           command: ["sh"]
-          args: ["-c", "cp /load/registration.yaml /bridges/discord.yaml && cp /load/registration.yaml /data/registration.yaml && cp /load/config.yaml /data/config.yaml"]
+          args:
+           - "-ec"
+           - |-
+             cp /load/registration.yaml /data/registration.yaml && \
+             {{- if .Values.bridges.discord_mautrix.registration.existingSecret }}
+             yq eval -i '.as_token = env(AS_TOKEN)' /data/registration.yaml && \
+             yq eval -i '.hs_token = env(HS_TOKEN)' /data/registration.yaml && \
+             {{- end }}
+             cp /data/registration.yaml /bridges/discord.yaml && \
+             cp /load/config.yaml /data/config.yaml
+           {{- if .Values.bridges.discord_mautrix.registration.existingSecret }}
+           env:
+             - name: AS_TOKEN
+               valueFrom:
+                 secretKeyRef:
+                   name: {{ .Values.bridges.discord_mautrix.registration.existingSecret }}
+                   key: {{ .Values.bridges.discord_mautrix.registration.existingSecretKeys.as_token }}
+             - name: HS_TOKEN
+               valueFrom:
+                 secretKeyRef:
+                   name: {{ .Values.bridges.discord_mautrix.registration.existingSecret }}
+                   key: {{ .Values.bridges.discord_mautrix.registration.existingSecretKeys.hs_token }}
+           {{- end }}
           volumeMounts:
             - name: load
               mountPath: /load
