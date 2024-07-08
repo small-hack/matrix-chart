@@ -53,8 +53,8 @@ spec:
         - name: load-config
           image: "mikefarah/yq:latest"
           imagePullPolicy: {{ .Values.bridges.discord_mautrix.image.pullPolicy }}
-          command: ["sh"]
-          args:
+          command:
+           - "sh"
            - "-ec"
            - |
              cp /load/registration.yaml /data/registration.yaml && \
