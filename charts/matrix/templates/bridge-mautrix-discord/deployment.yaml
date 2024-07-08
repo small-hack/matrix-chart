@@ -51,10 +51,14 @@ spec:
       {{- end }}
       initContainers:
         - name: load-config
+          {{- if .Values.bridges.discord_mautrix.registration.existingSecret }}
           image: "mikefarah/yq:latest"
+          {{- else }}
+          image: "alpine:latest"
+          {{- end }}
           imagePullPolicy: {{ .Values.bridges.discord_mautrix.image.pullPolicy }}
           command:
-           - "sh"
+           - "/bin/sh"
            - "-ec"
            - |
              cp /load/registration.yaml /data/registration.yaml && \
@@ -64,19 +68,19 @@ spec:
              {{- end }}
              cp /data/registration.yaml /bridges/discord.yaml && \
              cp /load/config.yaml /data/config.yaml
-           {{- if .Values.bridges.discord_mautrix.registration.existingSecret }}
-           env:
-             - name: AS_TOKEN
-               valueFrom:
-                 secretKeyRef:
-                   name: {{ .Values.bridges.discord_mautrix.registration.existingSecret }}
-                   key: {{ .Values.bridges.discord_mautrix.registration.existingSecretKeys.as_token }}
-             - name: HS_TOKEN
-               valueFrom:
-                 secretKeyRef:
-                   name: {{ .Values.bridges.discord_mautrix.registration.existingSecret }}
-                   key: {{ .Values.bridges.discord_mautrix.registration.existingSecretKeys.hs_token }}
-           {{- end }}
+          {{ if .Values.bridges.discord_mautrix.registration.existingSecret }}
+          env:
+            - name: AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.discord_mautrix.registration.existingSecret }}
+                  key: {{ .Values.bridges.discord_mautrix.registration.existingSecretKeys.as_token }}
+            - name: HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.discord_mautrix.registration.existingSecret }}
+                  key: {{ .Values.bridges.discord_mautrix.registration.existingSecretKeys.hs_token }}
+          {{- end }}
           volumeMounts:
             - name: load
               mountPath: /load
