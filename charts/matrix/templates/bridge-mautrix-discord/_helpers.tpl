@@ -26,3 +26,4 @@
 {{- else -}}
 {{ template "matrix.fullname" . }}-discord-bridge
 {{- end -}}
+{{- end -}}
