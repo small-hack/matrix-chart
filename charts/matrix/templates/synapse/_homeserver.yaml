@@ -1262,12 +1262,12 @@ report_stats: {{ .Values.matrix.telemetry }}
 
 # A list of application service config files to use
 #
-{{- if or .Values.bridges.hookshot.enabled .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.irc.enabled }}
+{{- if or .Values.bridges.hookshot.enabled .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.discord_mautrix.enabled .Values.bridges.irc.enabled }}
 app_service_config_files:
   {{- if .Values.bridges.whatsapp.enabled }}
   - "/bridges/whatsapp.yaml"
   {{- end }}
-  {{- if .Values.bridges.discord.enabled }}
+  {{- if or .Values.bridges.discord.enabled .Values.bridges.discord_mautrix.enabled }}
   - "/bridges/discord.yaml"
   {{- end }}
   {{- if .Values.bridges.irc.enabled }}
