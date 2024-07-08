@@ -62,6 +62,9 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+           {{- with .Values.bridges.discord_mautrix.extraVolumeMounts }}
+             {{- toYaml . | nindent 12 }}
+           {{- end }}
           securityContext:
             capabilities:
               drop:
@@ -75,5 +78,8 @@ spec:
       volumes:
         - name: data
           secret:
-            name: {{ include "matrix.fullname" . }}-bridge-discord-config
+            secretName: {{ include "matrix.fullname" . }}-bridge-discord-config
+        {{- with .Values.bridges.discord_mautrix.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
 {{- end }}

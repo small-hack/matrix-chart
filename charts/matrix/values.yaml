@@ -2248,6 +2248,12 @@ bridges:
     # if set, ignores everything under bridges.discord_mautrix.config
     existingSecret: ""
 
+    # -- extra volumes for the mautrix/discord deployment
+    extraVolumes: []
+
+    # -- extra volumeMounts for the mautrix/discord deployment
+    extraVolumeMounts: []
+
     # templates out to config.yaml for the mautrix bridge
     config:
       # Homeserver details
@@ -2299,13 +2305,14 @@ bridges:
           # -- The database type. "sqlite3-fk-wal" and "postgres" are supported.
           type: sqlite3-fk-wal
           # -- The database URI.
-          #   SQLite: A raw file path is supported, but `file:<path>?_txlock=immediate` is recommended.
-          #      https://github.com/mattn/go-sqlite3#connection-string
-          #   Postgres: Connection string. For example,
-          #       postgres://user:password@host/database?sslmode=disable
-          #   To connect via Unix socket, use something like,
-          #       postgres:///dbname?host=/var/run/postgresql
-          uri: file:<path>?_txlock=immediate
+          # SQLite: A raw file path is supported, but recommended way is:
+          #   `file:<path>?_txlock=immediate`
+          #   https://github.com/mattn/go-sqlite3#connection-string
+          # Postgres: Connection string. For example,
+          #   postgres://user:password@host/database?sslmode=disable
+          # To connect via Unix socket, use something like,
+          #   postgres:///dbname?host=/var/run/postgresql
+          uri: file:/mautrixdiscord.db?_txlock=immediate
           # -- Maximum number of connections. Mostly relevant for Postgres.
           max_open_conns: 20
           max_idle_conns: 2

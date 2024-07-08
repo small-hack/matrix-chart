@@ -61,7 +61,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.config.appservice.database.max_idle_conns | int | `2` |  |
 | bridges.discord_mautrix.config.appservice.database.max_open_conns | int | `20` | Maximum number of connections. Mostly relevant for Postgres. |
 | bridges.discord_mautrix.config.appservice.database.type | string | `"sqlite3-fk-wal"` | The database type. "sqlite3-fk-wal" and "postgres" are supported. |
-| bridges.discord_mautrix.config.appservice.database.uri | string | `"file:<path>?_txlock=immediate"` | The database URI.   SQLite: A raw file path is supported, but `file:<path>?_txlock=immediate` is recommended.      https://github.com/mattn/go-sqlite3#connection-string   Postgres: Connection string. For example,       postgres://user:password@host/database?sslmode=disable   To connect via Unix socket, use something like,       postgres:///dbname?host=/var/run/postgresql |
+| bridges.discord_mautrix.config.appservice.database.uri | string | `"file:/mautrixdiscord.db?_txlock=immediate"` | The database URI. SQLite: A raw file path is supported, but recommended way is:   `file:<path>?_txlock=immediate`   https://github.com/mattn/go-sqlite3#connection-string Postgres: Connection string. For example,   postgres://user:password@host/database?sslmode=disable To connect via Unix socket, use something like,   postgres:///dbname?host=/var/run/postgresql |
 | bridges.discord_mautrix.config.appservice.ephemeral_events | bool | `true` | Whether or not to receive ephemeral events via appservice transactions. Requires MSC2409 support (i.e. Synapse 1.22+). |
 | bridges.discord_mautrix.config.appservice.hostname | string | `"0.0.0.0"` | The hostname where this appservice should listen. |
 | bridges.discord_mautrix.config.appservice.id | string | `"discord"` | The unique ID of this appservice. |
@@ -162,6 +162,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.config.logging.writers[1].type | string | `"file"` |  |
 | bridges.discord_mautrix.enabled | bool | `false` | Set to true to enable the Discord bridge. Learn more in the [docs](https://docs.mau.fi/bridges/go/discord/index.html). |
 | bridges.discord_mautrix.existingSecret | string | `""` | use an existingSecret for mautrix/discord bridge config.yaml if set, ignores everything under bridges.discord_mautrix.config |
+| bridges.discord_mautrix.extraVolumeMounts | list | `[]` | extra volumeMounts for the mautrix/discord deployment |
+| bridges.discord_mautrix.extraVolumes | list | `[]` | extra volumes for the mautrix/discord deployment |
 | bridges.discord_mautrix.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bridges.discord_mautrix.image.repository | string | `"dock.mau.dev/mautrix/discord"` | docker image repo for mautrix/discord bridge |
 | bridges.discord_mautrix.image.tag | string | `"08cde6313a32d2382886444db86a7a6e6b12080c-amd64"` | tag for mautrix/discord bridge docker image |
