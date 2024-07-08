@@ -374,7 +374,7 @@ bridge:
     {{- else }}
         "*": relay
         "{{ include "matrix.hostname" . }}": user
-        "{{ include "matrix.hostname" . }}": admin
+        "{{ .Values.bridges.discord_mautrix.admin_user }}{{ include "matrix.hostname" . }}": admin
     {{- end }}
 
 # Logging config. See https://github.com/tulir/zeroconfig for details.

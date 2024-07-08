@@ -2272,6 +2272,10 @@ bridges:
     # -- extra volumeMounts for the mautrix/discord deployment
     extraVolumeMounts: []
 
+    # -- optional: if set and permissions are not set below, we'll use this to
+    # template our our admin user. example value of "admin" would become @admin:matrix.example.com
+    admin_user: ""
+
     # templates out to config.yaml for the mautrix bridge
     config:
       # Homeserver details
