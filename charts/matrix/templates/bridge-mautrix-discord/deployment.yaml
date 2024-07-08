@@ -6,12 +6,9 @@ metadata:
   labels:
 {{ include "matrix.labels" . | indent 4 }}
 spec:
-  replicas: {{ .Values.bridges.discord_mautrix.replicaCount }}
+  replicas: 1
   strategy:
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 0
-    type: RollingUpdate
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-discord
