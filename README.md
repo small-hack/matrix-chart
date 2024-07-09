@@ -16,9 +16,17 @@ helm repo add matrix https://small-hack.github.io/matrix-chart
 # downloads the values.yaml locally
 helm show values matrix/matrix > values.yaml
 
+# You should then edit the values.yaml to your liking.
+
+## NOTE: The most important helm parameter is matrix.hostname
+## without it, this chart may not work!
+
 # install the chart
 helm install my-release-name matrix/matrix --values values.yaml
 ```
+
+**NOTE: The most important helm parameter is `matrix.hostname`. Without it, this chart may not work!**
+
 
 ## Current Features ✨
 
@@ -55,6 +63,64 @@ These features still need to be tested, but are technically baked into the chart
 * [Notes on using MAS (Matrix Authentication Service)](#notes-on-using-mas-matrix-authentication-service)
 * [About and Status](#about-and-status)
 
+
+## Ingress
+
+A previous version of this chart supported using the `synapse.ingress.host` parameter. This option has been removed. You must now set a `synapse.ingress.hosts`. Because of this, you must now also set `matrix.hostname` or certain functionality will not work. Example of how to setup ingress and hostname:
+
+```yaml
+matrix:
+  # used for setting up config files that require your homeserver hostname
+  # such as bridging between your matrix homeserver (synapse) and other services
+  # such as discord or WhatsApp
+  hostname: my-synapse-hostname.com
+
+synapse:
+  ingress:
+    className: "nginx"
+    annotations:
+      # required for TLS certs issued by cert-manager
+      cert-manager.io/cluster-issuer: letsencrypt-staging
+
+      # -- This annotation is required for the Nginx ingress provider. You can
+      # remove it if you use a different ingress provider
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        proxy_intercept_errors off;
+
+    hosts:
+      - host: "my-synapse-hostname.com"
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            # if mas.enabled is set to true, you want pathType for / to be Prefix
+            # pathType: Prefix
+
+          # if mas.enabled is set to true, you want to uncomment the following:
+          # - path: "/_matrix/client/(r0|v3)/(refresh|login|logout).*"
+          #   pathType: ImplementationSpecific
+          #   backend:
+          #     service:
+          #       value: release-name-mas
+          #       port:
+          #         name: http
+
+          # if bridges.hookshot.generic.enabled, you want to uncomment the following:
+          #  - path: /webhook
+          #   pathType: ImplementationSpecific
+          #   backend:
+          #     service:
+          #       value: release-name-bridge-hookshot
+          #       port:
+          #         name: http
+
+    # -- enable tls for synapse ingress
+    tls:
+      - secretName: "matrix-tls"
+        hosts:
+          - my-synapse-hostname
+```
+
+
 ## Databases
 
 You must select one of the following options:
@@ -77,6 +143,7 @@ I managed to finally get past that by adding the following to my values.yaml:
 
 ```yaml
 matrix:
+  hostname: my-synapse-hostname.com
   federation:
     enabled: true
 
@@ -98,6 +165,7 @@ Later on, I realized I could also use [`serve_server_wellknown`](https://element
 
 ```yaml
 matrix:
+  hostname: my-synapse-hostname.com
   federation:
     enabled: true
   serve_server_wellknown: true
@@ -109,6 +177,7 @@ If you'd like to get your [`trusted_key_servers`](https://element-hq.github.io/s
 
 ```yaml
 matrix:
+  hostname: my-synapse-hostname.com
   federation:
     enabled: true
   security:
@@ -140,6 +209,7 @@ To use [sliding sync](https://github.com/matrix-org/sliding-sync), which is requ
 
 ```yaml
 matrix:
+  hostname: my-synapse-hostname.com
   extra_well_known_client_content:
      "org.matrix.msc3575.proxy":
        "url": "https://your-sliding-sync-hostname.com"
@@ -183,6 +253,7 @@ MAS is currently the only way to use OIDC with [element-x]. If you're using MAS 
 
 ```yaml
 matrix:
+  hostname: my-synapse-hostname.com
   experimental_features:
     msc3861:
       # Likely needed if using OIDC on synapse and you want to allow usage of Element-X (the beta of element)

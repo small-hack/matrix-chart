@@ -646,9 +646,12 @@ synapse:
   ingress:
     # -- enable ingress for synapse, so the server is reachable outside the cluster
     enabled: true
+
     # -- @DEPRECATION: hostname for your synapse server, please use
-    # synapse.ingress.hosts instead. This will be removed in a future release
-    host: ""
+    # synapse.ingress.hosts for ingress instead. This has been removed in helm
+    # chart verison 13.0.0. You must also set matrix.hostname for all to work normally
+    # host: ""
+
     # -- ingressClassName for the k8s ingress
     className: "nginx"
     annotations:
@@ -660,8 +663,6 @@ synapse:
       nginx.ingress.kubernetes.io/configuration-snippet: |
         proxy_intercept_errors off;
 
-    # NOTE: you cannot use synapse.ingress.host AND synapse.ingress.hosts. You
-    # must pick one or the other. synapse.ingress.host will be deprecated in the future
     hosts:
       - host: "matrix.chart-example.local"
         paths:
@@ -2240,12 +2241,12 @@ bridges:
       bridge:
         port: 29334
 
-    # security context for the init container and main container in the discord pod
+    # -- security context for the init container and main container in the discord pod
     securityContext: {}
     #  runAsUser: 1337
     #  runAsGroup: 1337
 
-    # security context for the entire mautrix/discord pod
+    # -- security context for the entire mautrix/discord pod
     podSecurityContext: {}
     #  runAsUser: 1337
     #  fsGroup: 1337
@@ -2274,8 +2275,9 @@ bridges:
         # -- key in existingSecret for hs_token (home server token)
         hs_token: "hs_token"
 
-    # -- use an existingSecret for mautrix/discord bridge config.yaml
+    # -- use an existingSecret for mautrix/discord bridge config.yaml,
     # if set, ignores everything under bridges.discord_mautrix.config
+    # Cannot be used in combination with bridges.discord_mautrix.registration.existingSecret.
     existingSecret:
       registration: ""
       config: ""
@@ -2286,9 +2288,11 @@ bridges:
     # -- extra volumeMounts for the mautrix/discord deployment
     extraVolumeMounts: []
 
-    # -- optional: if set and permissions are not set below, we'll use this to
-    # template our our admin user. example value of "admin" would become @admin:matrix.example.com
-    admin_user: ""
+    # -- optional: if set and bridges.discord_mautrix.config.permissions are NOT
+    # set below, we'll use this list of admin users to template an admin user
+    # using your matrix host. You MUST also set the matrix.hostname parameter.
+    # example value of ["admin"] would become @admin:matrix.example.com
+    admin_users: []
 
     # templates out to config.yaml for the mautrix bridge
     config:

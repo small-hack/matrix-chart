@@ -14,7 +14,7 @@ homeserver:
     {{ if .Values.bridges.discord_mautrix.config.homeserver.domain }}
     domain: {{ .Values.bridges.discord_mautrix.config.homeserver.domain }}
     {{- else -}}
-    domain: {{ include "matrix.hostname" . }}
+    domain: {{ .Values.matrix.hostname }}
     {{- end }}
 
     # What software is the homeserver running?
@@ -373,8 +373,10 @@ bridge:
     {{- end }}
     {{- else }}
         "*": relay
-        "{{ include "matrix.hostname" . }}": user
-        "@{{ .Values.bridges.discord_mautrix.admin_user }}:{{ include "matrix.hostname" . }}": admin
+        "{{ .Values.matrix.hostname }}": user
+        {{- range .Values.bridges.discord_mautrix.admin_users }}
+        "@{{ . }}:{{ $.Values.matrix.hostname }}": admin
+        {{- end }}
     {{- end }}
 
 # Logging config. See https://github.com/tulir/zeroconfig for details.
