@@ -171,6 +171,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.registration.existingSecretKeys.as_token | string | `"as_token"` | key in existingSecret for as_token (appservice token) |
 | bridges.discord_mautrix.registration.existingSecretKeys.hs_token | string | `"hs_token"` | key in existingSecret for hs_token (home server token) |
 | bridges.discord_mautrix.registration.sender_localpart | string | `"discord"` | I don't actually know what this does |
+| bridges.discord_mautrix.revisionHistoryLimit | int | `2` | set the revisionHistoryLimit to decide how many replicaSets are kept when you change a deployment |
 | bridges.discord_mautrix.securityContext | object | `{}` | security context for the init container and main container in the discord pod |
 | bridges.discord_mautrix.service.bridge.port | int | `29334` |  |
 | bridges.discord_mautrix.service.type | string | `"ClusterIP"` |  |
@@ -247,6 +248,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.registration.url | string | `""` | This should match the bridges.hookshot.config.bridge.port in your config file |
 | bridges.hookshot.replicaCount | int | `1` | hookshot bridge pod replicas |
 | bridges.hookshot.resources | object | `{}` | resources limits/requests for the hookshot bridge pod |
+| bridges.hookshot.revisionHistoryLimit | int | `2` | set the revisionHistoryLimit to decide how many replicaSets are kept when you change a deployment |
 | bridges.hookshot.securityContext.fsGroup | int | `1000` |  |
 | bridges.hookshot.securityContext.runAsGroup | int | `1000` |  |
 | bridges.hookshot.securityContext.runAsUser | int | `1000` |  |
@@ -763,6 +765,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.probes.startup.timeoutSeconds | int | `5` | startup probe seconds before timing out |
 | synapse.replicaCount | int | `1` | replica count of the synapse pods |
 | synapse.resources | object | `{}` | resource requests and limits for synapse |
+| synapse.revisionHistoryLimit | int | `2` | set the revisionHistoryLimit to decide how many replicaSets are kept when you change a deployment |
 | synapse.securityContext | object | `{"allowPrivilegeEscalation":false,"readOnlyRootFilesystem":false,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | securityContext for the synapse CONTAINER ONLY Does not work by default in all cloud providers, disable by default |
 | synapse.securityContext.allowPrivilegeEscalation | bool | `false` | AllowPrivilegeEscalation controls whether a process can gain more privileges than its parent process. This bool directly controls if the no_new_privs flag will be set on the container process. AllowPrivilegeEscalation is true always when the container is: 1) run as Privileged 2) has CAP_SYS_ADMIN Note that this field cannot be set when spec.os.name is windows. |
 | synapse.securityContext.readOnlyRootFilesystem | bool | `false` | Whether this container has a read-only root filesystem. Default is false. Note that this field cannot be set when spec.os.name is windows. |
