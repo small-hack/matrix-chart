@@ -43,26 +43,39 @@ helm install my-release-name matrix/matrix --values values.yaml
 - Use s3 to store media using [element-hq/synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider/tree/main)
 - Use [matrix-sliding-sync-chart](https://github.com/small-hack/matrix-sliding-sync-chart) as a sub chart for using [element-x] which requires [matrix-org/sliding-sync](https://github.com/matrix-org/sliding-sync)
 - Use existing Kubernetes secrets and existing Persistent Volume Claims
+- [mautrix/discord](https://github.com/mautrix/discord) Discord bridge for syncing between matrix and Discord
 
-### ⚠️ Optional Features (Untested Since Fork)
+#### ⚠️ Untested Features
 
 These features still need to be tested, but are technically baked into the chart from the fork:
 
 - Use of lightweight Exim relay
-- [Half-Shot/matrix-appservice-discord](https://github.com/Half-Shot/matrix-appservice-discord) Discord bridge
 - [matrix-org/matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) IRC bridge
 - [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge
 
 # Notes
 
 * [Databases](#databases)
+* [Ingress](#ingress)
 * [Federation](#federation)
     * [Federation not Working](#federation-not-working)
     * [Addiing Trusted Key Servers from an existing Secret](#addiing-trusted-key-servers-from-an-existing-secret)
 * [Notes on using Matrix Sliding Sync](#notes-on-using-matrix-sliding-sync)
 * [Notes on using MAS (Matrix Authentication Service)](#notes-on-using-mas-matrix-authentication-service)
+* [Bridges](#bridges)
+    * [Discord](#discord)
 * [About and Status](#about-and-status)
 
+## Databases
+
+You must select one of the following options:
+
+- Use the [Bitnami PostgreSQL subchart](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) (set `postgresql.enabled` to `true`)
+- Use your own external database, which can also be PostgreSQL. (set `externalDatabase.enabled` to `true`)
+
+> [!NOTE]
+>
+> You cannot enable both `externalDatabase` and `postgresql`. You must select _one_.
 
 ## Ingress
 
@@ -119,18 +132,6 @@ synapse:
         hosts:
           - my-synapse-hostname
 ```
-
-
-## Databases
-
-You must select one of the following options:
-
-- Use the [Bitnami PostgreSQL subchart](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) (set `postgresql.enabled` to `true`)
-- Use your own external database, which can also be PostgreSQL. (set `externalDatabase.enabled` to `true`)
-
-> [!NOTE]
->
-> You cannot enable both `externalDatabase` and `postgresql`. You must select _one_.
 
 
 ## Federation
@@ -408,6 +409,86 @@ mas:
               template: "{{ user.email }}"
               set_email_verification: always
 ```
+
+## Bridges
+
+We've only recently started adding/testing [bridges](https://matrix.org/ecosystem/bridges/) to this stack, so there may be some bugs, but so far, we've got the discord bridge upgraded. The rest of the bridges are in a beta/alpha state and although we want to support them, we haven't had the time to test them out since the major fork. If you find something wrong with them, please feel free to submit an Issue or Pull Request.
+
+### Discord
+
+We previously had the halfshot/discord bridge as a part of this stack, but as of July 2024 the image was no longer being updated and hadn't been updated in 3 years, see: [#589](https://github.com/small-hack/matrix-chart/issues/589) for more info. Instead we now offer the [mautrix/discord](https://github.com/mautrix/discord) bridge. You can read their docs [here](https://docs.mau.fi/bridges/go/discord/index.html).
+
+Here's how we got it mostly working on our end via the values.yaml:
+
+```yaml
+matrix:
+  hostname: my-synapse-hostname.com
+
+bridges:
+  discord_mautrix:
+    enabled: true
+    # this just keeps the replicasets from getting
+    # out of control, feel free to set to 10 to
+    # keep more history for rollbacks
+    revisionHistoryLimit: 1
+
+    # -- extra volumes for the mautrix/discord deployment
+    # we created this separately from the chart
+    extraVolumes:
+      - name: sqllite
+        persistentVolumeClaim:
+          claimName: mautrix-discord-bridge-sqlite
+
+    extraVolumeMounts:
+      - name: sqllite
+        mountPath: /sql
+
+    admin_users:
+      - friend
+      - admin
+
+    config:
+      # Homeserver details
+      homeserver:
+        address: "https://my-synapse-hostname.com"
+        domain: "my-synapse-hostname.com"
+
+      appservice:
+        # Database config - we used sqllite because it's easy
+        database:
+          type: sqlite3-fk-wal
+          uri: file:/sql/mautrixdiscord.db?_txlock=immediate
+
+      bridge:
+        encryption:
+          # -- Allow encryption, work in group chat rooms with e2ee enabled
+          allow: true
+          # -- Default to encryption, force-enable encryption in all portals the bridge creates
+          # This will cause the bridge bot to be in private chats for the encryption to work properly.
+          default: true
+          # -- Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
+          appservice: true
+```
+
+Example PVC for the sqllite file to persist:
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mautrix-discord-bridge-sqlite
+  namespace: matrix
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: local-path
+```
+
+After you set this up, you'll still need to authenticate the matrix bot (mautrix/discord) with your Discord bot. For that, you'll need to follow the instructions in the [mautrix discord docs](https://docs.mau.fi/bridges/go/discord/authentication.html).
+
 
 ## About and Status
 
