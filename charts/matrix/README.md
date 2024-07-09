@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 12.1.0](https://img.shields.io/badge/Version-12.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.109.0](https://img.shields.io/badge/AppVersion-v1.109.0-informational?style=flat-square)
+![Version: 13.0.0](https://img.shields.io/badge/Version-13.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.109.0](https://img.shields.io/badge/AppVersion-v1.109.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -51,7 +51,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord.typingNotifications | bool | `true` | Set to false to disable typing notifications (only for Discord to Matrix) |
 | bridges.discord.users.nickname | string | `":nick"` | Nickname of bridged Discord users Available vars:   :nick     - user's Discord nickname   :username - user's Discord username   :tag      - user's 4 digit Discord tag   :id       - user's Discord developer ID (long) |
 | bridges.discord.users.username | string | `":username#:tag"` | Username of bridged Discord users Available vars:   :username - user's Discord username   :tag      - user's 4 digit Discord tag   :id       - user's Discord developer ID (long) |
-| bridges.discord_mautrix.admin_user | string | `""` | optional: if set and permissions are not set below, we'll use this to template our our admin user. example value of "admin" would become @admin:matrix.example.com |
+| bridges.discord_mautrix.admin_users | list | `[]` | optional: if set and bridges.discord_mautrix.config.permissions are NOT set below, we'll use this list of admin users to template an admin user using your matrix host. You MUST also set the matrix.hostname parameter. example value of ["admin"] would become @admin:matrix.example.com |
 | bridges.discord_mautrix.config.appservice.address | string | `""` | The address that the homeserver can use to connect to this appservice. example is http://localhost:29334 but if not provided, we guess :) |
 | bridges.discord_mautrix.config.appservice.async_transactions | bool | `false` | Should incoming events be handled asynchronously? This may be necessary for large public instances with lots of messages going through. However, messages will not be guaranteed to be bridged in the same order they were sent in. |
 | bridges.discord_mautrix.config.appservice.bot.avatar | string | `"mxc://maunium.net/nIdEykemnwdisvHbpxflpDlC"` | Display avatar for bot. Set to "remove" to remove display avatar. |
@@ -160,18 +160,18 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.config.logging.writers[1].max_size | int | `100` |  |
 | bridges.discord_mautrix.config.logging.writers[1].type | string | `"file"` |  |
 | bridges.discord_mautrix.enabled | bool | `false` | Set to true to enable the Discord bridge. Learn more in the [mautrix bridge docs](https://docs.mau.fi/bridges/go/discord/index.html). |
-| bridges.discord_mautrix.existingSecret | object | `{"config":"","registration":""}` | use an existingSecret for mautrix/discord bridge config.yaml if set, ignores everything under bridges.discord_mautrix.config |
+| bridges.discord_mautrix.existingSecret | object | `{"config":"","registration":""}` | use an existingSecret for mautrix/discord bridge config.yaml, if set, ignores everything under bridges.discord_mautrix.config Cannot be used in combination with bridges.discord_mautrix.registration.existingSecret. |
 | bridges.discord_mautrix.extraVolumeMounts | list | `[]` | extra volumeMounts for the mautrix/discord deployment |
 | bridges.discord_mautrix.extraVolumes | list | `[]` | extra volumes for the mautrix/discord deployment |
 | bridges.discord_mautrix.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bridges.discord_mautrix.image.repository | string | `"dock.mau.dev/mautrix/discord"` | docker image repo for mautrix/discord bridge |
 | bridges.discord_mautrix.image.tag | string | `"08cde6313a32d2382886444db86a7a6e6b12080c-amd64"` | tag for mautrix/discord bridge docker image |
-| bridges.discord_mautrix.podSecurityContext | object | `{}` |  |
+| bridges.discord_mautrix.podSecurityContext | object | `{}` | security context for the entire mautrix/discord pod |
 | bridges.discord_mautrix.registration.existingSecret | string | `""` | Use an existing Kubernetes Secret to store your own generated appservice and homeserver tokens. If this is not set, we'll generate them for you. Setting this won't override the ENTIRE registration.yaml we generate for the synapse pod to authenticate mautrix/discord. It will only replaces the tokens. To replaces the ENTIRE registration.yaml, use bridges.discord_mautrix.existingSecret.registration |
 | bridges.discord_mautrix.registration.existingSecretKeys.as_token | string | `"as_token"` | key in existingSecret for as_token (appservice token) |
 | bridges.discord_mautrix.registration.existingSecretKeys.hs_token | string | `"hs_token"` | key in existingSecret for hs_token (home server token) |
 | bridges.discord_mautrix.registration.sender_localpart | string | `"discord"` | I don't actually know what this does |
-| bridges.discord_mautrix.securityContext | object | `{}` |  |
+| bridges.discord_mautrix.securityContext | object | `{}` | security context for the init container and main container in the discord pod |
 | bridges.discord_mautrix.service.bridge.port | int | `29334` |  |
 | bridges.discord_mautrix.service.type | string | `"ClusterIP"` |  |
 | bridges.discord_mautrix.volume.accessMode | string | `"ReadWriteOnce"` |  |
@@ -740,7 +740,6 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | This annotation is required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
 | synapse.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
 | synapse.ingress.enabled | bool | `true` | enable ingress for synapse, so the server is reachable outside the cluster |
-| synapse.ingress.host | string | `""` | @DEPRECATION: hostname for your synapse server, please use synapse.ingress.hosts instead. This will be removed in a future release |
 | synapse.ingress.hosts[0].host | string | `"matrix.chart-example.local"` |  |
 | synapse.ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | synapse.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
@@ -840,4 +839,4 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | volumes.synapseConfig.storageClass | string | `""` | Storage class (optional) |
 
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)
+Autogenerated from chart metadata using [helm-docs v1.13.1](https://github.com/norwoodj/helm-docs/releases/v1.13.1)
