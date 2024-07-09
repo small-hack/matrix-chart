@@ -6,6 +6,7 @@ metadata:
   labels:
 {{ include "matrix.labels" . | indent 4 }}
 spec:
+  revisionHistoryLimit: {{ .Values.bridges.discord_mautrix.revisionHistoryLimit }}
   replicas: 1
   strategy:
     type: Recreate

@@ -700,6 +700,10 @@ synapse:
   # -- replica count of the synapse pods
   replicaCount: 1
 
+  # -- set the revisionHistoryLimit to decide how many replicaSets are
+  # kept when you change a deployment
+  revisionHistoryLimit: 2
+
   # -- resource requests and limits for synapse
   resources: {}
 
@@ -1860,6 +1864,10 @@ bridges:
     # -- hookshot bridge pod replicas
     replicaCount: 1
 
+    # -- set the revisionHistoryLimit to decide how many replicaSets are
+    # kept when you change a deployment
+    revisionHistoryLimit: 2
+
     # -- resources limits/requests for the hookshot bridge pod
     resources: {}
 
@@ -2228,6 +2236,10 @@ bridges:
     # -- Set to true to enable the Discord bridge. Learn more in the
     # [mautrix bridge docs](https://docs.mau.fi/bridges/go/discord/index.html).
     enabled: false
+
+    # -- set the revisionHistoryLimit to decide how many replicaSets are
+    # kept when you change a deployment
+    revisionHistoryLimit: 2
 
     image:
       # -- docker image repo for mautrix/discord bridge

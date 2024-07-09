@@ -7,6 +7,7 @@ metadata:
 {{ include "matrix.synapse.labels" . | indent 4}}
 spec:
   replicas: {{ .Values.synapse.replicaCount }}
+  revisionHistoryLimit: {{ .Values.synapse.revisionHistoryLimit }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "matrix.name" . }}-synapse
