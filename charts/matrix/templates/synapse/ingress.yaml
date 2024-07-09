@@ -16,31 +16,6 @@ spec:
   ingressClassName: {{ .Values.synapse.ingress.className }}
   {{- end }}
   rules:
-  {{- if .Values.synapse.ingress.host }}{{/* this method will be deprecated in the future */}}
-    - host: {{ .Values.synapse.ingress.host }}
-      http:
-        paths:
-          - path: "/"
-            {{- if .Values.mas.enabled }}
-            pathType: Prefix
-            {{- else }}
-            pathType: ImplementationSpecific
-            {{- end }}
-            backend:
-              service:
-                name: {{ $fullname }}
-                port:
-                  number: {{ $svcPort }}
-          {{- if .Values.mas.enabled }}
-          - path: "/_matrix/client/(r0|v3)/(refresh|login|logout).*"
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                value: {{ template "matrix-authentication-service.fullname" .Subcharts.mas }}
-                port:
-                  name: http
-          {{- end }}{{/* end if mas is enabled */}}
-  {{- else -}}
     {{- range .Values.synapse.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
@@ -61,7 +36,6 @@ spec:
               {{- end }}{{/* end checking for backend key */}}
           {{- end }}{{/* end range paths */}}
     {{- end }}{{/* end range hosts */}}
-  {{- end }}{{/* end if old host method of ingress from old chart */}}
   {{- with .Values.synapse.ingress.tls }}
   tls:
     {{- range . }}
