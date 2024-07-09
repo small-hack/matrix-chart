@@ -74,8 +74,8 @@ spec:
              echo "registration hs token afterwards:" && \
              yq .hs_token /data/registration.yaml && \
 
-             yq eval -i '.as_token = env(AS_TOKEN)' /data/config.yaml && \
-             yq eval -i '.hs_token = env(HS_TOKEN)' /data/config.yaml && \
+             yq eval -i '.appservice.as_token = env(AS_TOKEN)' /data/config.yaml && \
+             yq eval -i '.appservice.hs_token = env(HS_TOKEN)' /data/config.yaml && \
 
              echo "config as token afterwards:" && \
              yq .as_token /data/config.yaml && \
