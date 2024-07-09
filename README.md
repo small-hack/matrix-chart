@@ -466,8 +466,6 @@ bridges:
           # -- Default to encryption, force-enable encryption in all portals the bridge creates
           # This will cause the bridge bot to be in private chats for the encryption to work properly.
           default: true
-          # -- Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
-          appservice: true
 ```
 
 Example PVC for the sqllite file to persist:
