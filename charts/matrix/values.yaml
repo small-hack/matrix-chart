@@ -701,7 +701,9 @@ synapse:
   replicaCount: 1
 
   # -- set the revisionHistoryLimit to decide how many replicaSets are
-  # kept when you change a deployment
+  # kept when you change a deployment. Explicitly setting this field to 0,
+  # will result in cleaning up all the history of your Deployment thus that
+  # Deployment will not be able to roll back.
   revisionHistoryLimit: 2
 
   # -- resource requests and limits for synapse
@@ -1865,7 +1867,9 @@ bridges:
     replicaCount: 1
 
     # -- set the revisionHistoryLimit to decide how many replicaSets are
-    # kept when you change a deployment
+    # kept when you change a deployment. Explicitly setting this field to 0,
+    # will result in cleaning up all the history of your Deployment thus that
+    # Deployment will not be able to roll back.
     revisionHistoryLimit: 2
 
     # -- resources limits/requests for the hookshot bridge pod
@@ -2238,7 +2242,9 @@ bridges:
     enabled: false
 
     # -- set the revisionHistoryLimit to decide how many replicaSets are
-    # kept when you change a deployment
+    # kept when you change a deployment. Explicitly setting this field to 0,
+    # will result in cleaning up all the history of your Deployment thus that
+    # Deployment will not be able to roll back.
     revisionHistoryLimit: 2
 
     image:
