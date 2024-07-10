@@ -6,6 +6,10 @@
 {{- randAlphaNum 64 -}}
 {{- end -}}
 
+{{- define "matrix.alertmanager.webhook_secret" -}}
+{{- randAlphaNum 64 -}}
+{{- end -}}
+
 {{/* registration secret name */}}
 {{- define "matrix.alertmanager.registrationSecret" -}}
 {{- if .Values.bridges.alertmanager.existingSecret.registration -}}

@@ -76,7 +76,7 @@ spec:
               value: {{ .Values.bridges.alertmanager.config.app_port }}
 
             - name: APP_ALERTMANAGER_SECRET
-              value: {{ .Values.bridges.alertmanager.config.app_alertmanager_secret }}
+              value: {{ .Values.bridges.alertmanager.config.app_alertmanager_secret | default "matrix.alertmanager.webhook_secret" }}
 
             - name: MATRIX_HOMESERVER_URL
               value: {{ .Values.bridges.alertmanager.config.matrix_homeserver_url | default (include "matrix.baseUrl" .) }}
