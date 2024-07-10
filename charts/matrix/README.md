@@ -30,6 +30,28 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | bridges.affinity | bool | `false` | Recommended to leave this disabled to allow bridges to be scheduled on separate nodes. Set this to true to reduce latency between the homeserver and bridges, or if your cloud provider does not allow the ReadWriteMany access mode (see below) |
+| bridges.alertmanager.config.alertmanager_url | string | `""` | set to enable silence link, e.g. https://alertmanager.example.com |
+| bridges.alertmanager.config.app_alertmanager_secret | string | `"<secret key for the webhook events>"` | I don't know what this is |
+| bridges.alertmanager.config.app_port | int | `3000` | appservice port? |
+| bridges.alertmanager.config.grafana_datasource | string | `""` | grafana data source, e.g. default |
+| bridges.alertmanager.config.grafana_url | string | `""` | set to enable Grafana links, e.g. https://grafana.example.com |
+| bridges.alertmanager.config.matrix_homeserver_url | string | `nil` | your homeserver url, e.g. https://homeserver.tld |
+| bridges.alertmanager.config.matrix_rooms | object | `{}` | map of rooms to send alerts to. where the key is the reciever in alert manager and the value is the room in matrix. |
+| bridges.alertmanager.config.matrix_user | string | `""` | user in matrix for the the alertmanager bot e.g. @alertmanager:homeserver.tld |
+| bridges.alertmanager.config.mention_room | bool | `false` | Set this to true to make firing alerts do a `@room` mention. NOTE! Bot should also have enough power in the room for this to be useful. |
+| bridges.alertmanager.enabled | bool | `false` |  |
+| bridges.alertmanager.encryption | bool | `false` |  |
+| bridges.alertmanager.existingSecret.registration | string | `""` |  |
+| bridges.alertmanager.image.pullPolicy | string | `"IfNotPresent"` | hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always" |
+| bridges.alertmanager.image.repository | string | `"jaywink/matrix-alertmanager"` | hookshot bridge docker image |
+| bridges.alertmanager.image.tag | string | `"latest"` | hookshot bridge docker image tag |
+| bridges.alertmanager.registration.id | string | `"alertmanager"` |  |
+| bridges.alertmanager.registration.rate_limited | bool | `false` |  |
+| bridges.alertmanager.registration.sender_localpart | string | `"alertmanager"` |  |
+| bridges.alertmanager.registration.url | string | `""` |  |
+| bridges.alertmanager.replicaCount | int | `1` | hookshot bridge pod replicas |
+| bridges.alertmanager.revisionHistoryLimit | int | `2` | set the revisionHistoryLimit to decide how many replicaSets are kept when you change a deployment. Explicitly setting this field to 0, will result in cleaning up all the history of your Deployment thus that Deployment will not be able to roll back. |
+| bridges.alertmanager.service.type | string | `"ClusterIP"` | service type for the hookshot bridge |
 | bridges.discord.auth.botToken | string | `""` | Discord bot token for authentication |
 | bridges.discord.auth.clientId | string | `""` | Discord bot clientID for authentication |
 | bridges.discord.channelName | string | `"[Discord] :guild :name"` |  |
