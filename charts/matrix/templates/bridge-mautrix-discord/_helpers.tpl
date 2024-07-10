@@ -17,8 +17,8 @@
 
 {{/* registration secret name */}}
 {{- define "matrix.discord_mautrix.registrationSecret" -}}
-{{- if .Values.bridges.discord_mautrix.existingSecret.config -}}
-{{ .Values.bridges.discord_mautrix.existingSecret.config }}
+{{- if .Values.bridges.discord_mautrix.existingSecret.registration -}}
+{{ .Values.bridges.discord_mautrix.existingSecret.registration }}
 {{- else -}}
 {{ template "matrix.fullname" . }}-discord-registration
 {{- end -}}

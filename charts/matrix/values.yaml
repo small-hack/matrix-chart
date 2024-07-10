@@ -1847,6 +1847,63 @@ mail:
 #  Bridges to synapse, for services such as Discord, Webhooks, IRC, and RSS
 ############################################################################
 bridges:
+  alertmanager:
+    enabled: false
+    image:
+      # -- hookshot bridge docker image
+      repository: "jaywink/matrix-alertmanager"
+      # -- hookshot bridge docker image tag
+      tag: "latest"
+      # -- hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always"
+      pullPolicy: IfNotPresent
+
+    service:
+      # -- service type for the hookshot bridge
+      type: ClusterIP
+
+    # -- hookshot bridge pod replicas
+    replicaCount: 1
+
+    # -- set the revisionHistoryLimit to decide how many replicaSets are
+    # kept when you change a deployment. Explicitly setting this field to 0,
+    # will result in cleaning up all the history of your Deployment thus that
+    # Deployment will not be able to roll back.
+    revisionHistoryLimit: 2
+
+    existingSecret:
+      registration: ""
+
+    registration:
+      id: "alertmanager"
+      url: ""
+      rate_limited: false
+      sender_localpart: "alertmanager"
+
+    encryption: false
+
+    config:
+      # -- appservice port?
+      app_port: 3000
+      # -- I don't know what this is
+      app_alertmanager_secret: <secret key for the webhook events>
+      # -- your homeserver url, e.g. https://homeserver.tld
+      matrix_homeserver_url:
+      # -- map of rooms to send alerts to. where the key is the reciever in alert manager
+      # and the value is the room in matrix.
+      matrix_rooms: {}
+      # receiver1: !8dsagh8lfdsk:syanpseserver.com
+      # -- user in matrix for the the alertmanager bot e.g. @alertmanager:homeserver.tld
+      matrix_user: ""
+      # -- Set this to true to make firing alerts do a `@room` mention.
+      # NOTE! Bot should also have enough power in the room for this to be useful.
+      mention_room: false
+      # -- set to enable Grafana links, e.g. https://grafana.example.com
+      grafana_url: ""
+      # -- grafana data source, e.g. default
+      grafana_datasource: ""
+      # -- set to enable silence link, e.g. https://alertmanager.example.com
+      alertmanager_url: ""
+
   # see: https://matrix-org.github.io/matrix-hookshot/latest/setup/sample-configuration.html
   hookshot:
     # -- enable the [hookshot](https://matrix-org.github.io/matrix-hookshot) bridge
