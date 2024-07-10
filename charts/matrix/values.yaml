@@ -1890,9 +1890,10 @@ bridges:
       matrix_homeserver_url: ""
       # -- map of rooms to send alerts to. where the key is the reciever in alert manager
       # and the value is the room in matrix.
-      matrix_rooms: {}
+      matrix_rooms: ""
       # receiver1: !8dsagh8lfdsk:syanpseserver.com
-      # -- user in matrix for the the alertmanager bot e.g. @alertmanager:homeserver.tld
+      # -- user in matrix for the the alertmanager bot e.g. alertmanager
+      # which becomes @alertmanager:homeserver.tld
       matrix_user: ""
       # -- Set this to true to make firing alerts do a `@room` mention.
       # NOTE! Bot should also have enough power in the room for this to be useful.

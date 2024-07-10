@@ -79,7 +79,7 @@ spec:
               value: {{ .Values.bridges.alertmanager.config.app_alertmanager_secret }}
 
             - name: MATRIX_HOMESERVER_URL
-              value: {{ .Values.bridges.alertmanager.config.matrix_homeserver_url }}
+              value: {{ .Values.bridges.alertmanager.config.matrix_homeserver_url | default (include "matrix.baseUrl" .) }}
 
             - name: MATRIX_ROOMS
               value: {{ .Values.bridges.alertmanager.config.matrix_rooms }}
@@ -88,10 +88,11 @@ spec:
               value: {{ include "matrix.alertmanager.as_token" . }}
 
             - name: MATRIX_USER
-              value: {{ .Values.bridges.alertmanager.config.matrix_user }}
+              value: "@{{ .Values.bridges.alertmanager.config.matrix_user }}:{{ .Values.matrix.serverName }}"
 
             - name: MENTION_ROOM
               value: {{ .Values.bridges.alertmanager.config.mention_room | quote }}
+
             {{- if .Values.bridges.alertmanager.config.grafana_url }}
             - name: GRAFANA_URL
               value: {{ .Values.bridges.alertmanager.config.grafana_url }}
@@ -99,6 +100,7 @@ spec:
             - name: GRAFANA_DATASOURCE
               value: {{ .Values.bridges.alertmanager.config.grafana_datasource }}
             {{- end }}
+
             {{- if .Values.bridges.alertmanager.config.alertmanager_url }}
             - name: ALERTMANAGER_URL
               value: {{ .Values.bridges.alertmanager.config.alertmanager_url }}
