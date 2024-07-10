@@ -7,20 +7,24 @@ metadata:
 {{ include "matrix.labels" . | indent 4 }}
 spec:
   type: {{ .Values.bridges.hookshot.service.type }}
+  selector:
+    app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-hookshot
+    app.kubernetes.io/instance: {{ .Release.Name }}
   ports:
+    {{- if .Values.bridges.hookshot.config.generic.enabled }}
     - port: {{ .Values.bridges.hookshot.service.webhook.port }}
       targetPort: webhook
       protocol: TCP
       name: webhook
+    {{- end }}
+    {{- if .Values.bridges.hookshot.config.metrics.enabled }}
     - port: {{ .Values.bridges.hookshot.service.metrics.port }}
       targetPort: metrics
       protocol: TCP
       name: metrics
+    {{- end }}
     - port: {{ .Values.bridges.hookshot.service.appservice.port }}
       targetPort: appservice
       protocol: TCP
       name: appservice
-  selector:
-    app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-hookshot
-    app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}

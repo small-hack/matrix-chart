@@ -64,7 +64,7 @@ spec:
       {{- end }}
       initContainers:
         - name: "load-config"
-          image: "{{ .Values.bridges.hookshot.image.repository }}:{{ .Values.bridges.hookshot.image.tag }}"
+          image: "alpine:latest"
           imagePullPolicy: {{ .Values.bridges.hookshot.image.pullPolicy }}
           command: ["sh"]
           args: ["-c", "cp /data/registration.yml /bridges/hookshot.yaml"]
@@ -84,12 +84,16 @@ spec:
           image: "{{ .Values.bridges.hookshot.image.repository }}:{{ .Values.bridges.hookshot.image.tag }}"
           imagePullPolicy: {{ .Values.bridges.hookshot.image.pullPolicy }}
           ports:
+            {{- if .Values.bridges.hookshot.config.generic.enabled }}
             - name: webhook
               containerPort: {{ .Values.bridges.hookshot.service.webhook.port }}
               protocol: TCP
+            {{- end }}
+            {{- if .Values.bridges.hookshot.config.metrics.enabled }}
             - name: metrics
               containerPort: {{ .Values.bridges.hookshot.service.metrics.port }}
               protocol: TCP
+            {{- end }}
             - name: appservice
               containerPort: {{ .Values.bridges.hookshot.service.appservice.port }}
               protocol: TCP
