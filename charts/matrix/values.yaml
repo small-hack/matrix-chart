@@ -1886,7 +1886,7 @@ bridges:
         port: 9001
       appservice:
         # -- appservice service port for the hookshot bridge
-        port: 9002
+        port: 9993
 
     securityContext:
       runAsUser: 1000

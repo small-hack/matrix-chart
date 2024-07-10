@@ -8,10 +8,6 @@ metadata:
 spec:
   type: {{ .Values.bridges.hookshot.service.type }}
   ports:
-    - port: {{ .Values.bridges.hookshot.config.bridge.port }}
-      targetPort: bridge
-      protocol: TCP
-      name: bridge
     - port: {{ .Values.bridges.hookshot.service.webhook.port }}
       targetPort: webhook
       protocol: TCP
