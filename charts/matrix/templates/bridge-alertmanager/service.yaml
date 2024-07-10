@@ -9,9 +9,13 @@ spec:
   type: {{ .Values.bridges.alertmanager.service.type }}
   ports:
     - port: {{ .Values.bridges.alertmanager.config.app_port }}
-      targetPort: bridge
+      targetPort: appservice
       protocol: TCP
       name: bridge
+    - port: 80
+      targetPort: appservice
+      protocol: TCP
+      name: http
   selector:
     app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-alertmanager
     app.kubernetes.io/instance: {{ .Release.Name }}
