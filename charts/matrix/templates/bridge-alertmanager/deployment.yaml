@@ -73,7 +73,7 @@ spec:
           imagePullPolicy: {{ .Values.bridges.alertmanager.image.pullPolicy }}
           env:
             - name: APP_PORT
-              value: {{ .Values.bridges.alertmanager.config.app_port }}
+              value: {{ .Values.bridges.alertmanager.config.app_port | quote }}
 
             - name: APP_ALERTMANAGER_SECRET
               value: {{ .Values.bridges.alertmanager.config.app_alertmanager_secret | default "matrix.alertmanager.webhook_secret" }}
