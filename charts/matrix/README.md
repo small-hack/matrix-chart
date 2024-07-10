@@ -36,8 +36,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.alertmanager.config.grafana_datasource | string | `""` | grafana data source, e.g. default |
 | bridges.alertmanager.config.grafana_url | string | `""` | set to enable Grafana links, e.g. https://grafana.example.com |
 | bridges.alertmanager.config.matrix_homeserver_url | string | `""` | your homeserver url, e.g. https://homeserver.tld |
-| bridges.alertmanager.config.matrix_rooms | object | `{}` | map of rooms to send alerts to. where the key is the reciever in alert manager and the value is the room in matrix. |
-| bridges.alertmanager.config.matrix_user | string | `""` | user in matrix for the the alertmanager bot e.g. @alertmanager:homeserver.tld |
+| bridges.alertmanager.config.matrix_rooms | string | `""` | map of rooms to send alerts to. where the key is the reciever in alert manager and the value is the room in matrix. |
+| bridges.alertmanager.config.matrix_user | string | `""` | user in matrix for the the alertmanager bot e.g. alertmanager which becomes @alertmanager:homeserver.tld |
 | bridges.alertmanager.config.mention_room | bool | `false` | Set this to true to make firing alerts do a `@room` mention. NOTE! Bot should also have enough power in the room for this to be useful. |
 | bridges.alertmanager.enabled | bool | `false` |  |
 | bridges.alertmanager.encryption | bool | `false` |  |
