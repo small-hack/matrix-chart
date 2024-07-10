@@ -54,7 +54,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.admin_users | list | `[]` | optional: if set and bridges.discord_mautrix.config.permissions are NOT set below, we'll use this list of admin users to template an admin user using your matrix host. You MUST also set the matrix.hostname parameter. example value of ["admin"] would become @admin:matrix.example.com |
 | bridges.discord_mautrix.config.appservice.address | string | `""` | The address that the homeserver can use to connect to this appservice. example is http://localhost:29334 but if not provided, we guess :) |
 | bridges.discord_mautrix.config.appservice.async_transactions | bool | `false` | Should incoming events be handled asynchronously? This may be necessary for large public instances with lots of messages going through. However, messages will not be guaranteed to be bridged in the same order they were sent in. |
-| bridges.discord_mautrix.config.appservice.bot.avatar | string | `"mxc://maunium.net/nIdEykemnwdisvHbpxflpDlC"` | Display avatar for bot. Set to "remove" to remove display avatar. |
+| bridges.discord_mautrix.config.appservice.bot.avatar | string | `"remove"` | Display avatar for bot. Set to "remove" to remove display avatar. example: mxc://maunium.net/nIdEykemnwdisvHbpxflpDlC |
 | bridges.discord_mautrix.config.appservice.bot.displayname | string | `"Discord bridge bot"` | Display name for bot. Set to "remove" to remove display name. |
 | bridges.discord_mautrix.config.appservice.bot.username | string | `"discordbot"` | Username of the appservice bot. |
 | bridges.discord_mautrix.config.appservice.database.max_conn_idle_time | string | `nil` | Maximum connection idle time before its closed. Disabled if null. Parsed with https://pkg.go.dev/time#ParseDuration |
@@ -179,7 +179,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.volume.capacity | string | `"1Gi"` |  |
 | bridges.discord_mautrix.volume.existingClaim | string | `""` | use an existing PVC claim instead of creating one fresh for the discord_mautrix /data volume |
 | bridges.discord_mautrix.volume.storageClass | string | `"local-path"` |  |
-| bridges.hookshot.config.bot.avatar | string | `"mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d"` | Define profile avatar for the bot user |
+| bridges.hookshot.config.bot.avatar | string | `""` | optional: Define profile avatar for the bot user example: mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d |
 | bridges.hookshot.config.bot.displayname | string | `"Hookshot Bot"` | Define profile display name for the bot user |
 | bridges.hookshot.config.bridge.bindAddress | string | `"127.0.0.1"` |  |
 | bridges.hookshot.config.bridge.domain | string | `""` | if not set, defaults to matrix.serverName |
@@ -275,7 +275,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.volume.capacity | string | `"1Mi"` | Capacity of the shared volume for storing bridge/appservice registration files. Note: 1Mi should be enough but some cloud providers may set a minimum PVC size of 1Gi, adjust as necessary |
 | bridges.volume.existingClaim | string | `""` | name of an existing persistent volume claim to use for bridges |
 | bridges.volume.storageClass | string | `""` | Storage class (optional) |
-| bridges.whatsapp.bot.avatar | string | `"mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"` | avatar of the WhatsApp bridge bot |
+| bridges.whatsapp.bot.avatar | string | `""` | avatar of the WhatsApp bridge bot example: mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr |
 | bridges.whatsapp.bot.displayName | string | `"WhatsApp bridge bot"` | display name of the WhatsApp bridge bot |
 | bridges.whatsapp.bot.username | string | `"whatsappbot"` | Username of the WhatsApp bridge bot |
 | bridges.whatsapp.callNotices | bool | `true` | Send notifications for incoming calls |
