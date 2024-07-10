@@ -1878,6 +1878,19 @@ bridges:
       url: ""
       rate_limited: false
       sender_localpart: "alertmanager"
+      as_token: ""
+      # -- Use an existing Kubernetes Secret to store your own generated appservice
+      # and homeserver tokens. If this is not set, we'll generate them for you.
+      # Setting this won't override the ENTIRE registration.yaml we generate for
+      # the synapse pod to authenticate mautrix/discord. It will only replaces the tokens.
+      # To replaces the ENTIRE registration.yaml, use
+      # bridges.alertmanager.existingSecret.registration
+      existingSecret: ""
+      existingSecretKeys:
+        # -- key in existingSecret for as_token (appservice token)
+        as_token: "as_token"
+        # -- key in existingSecret for hs_token (home server token)
+        hs_token: "hs_token"
 
     encryption: false
 
@@ -1976,7 +1989,6 @@ bridges:
       url: ""
       sender_localpart: "hookshot"
       rate_limited: false
-
 
     config:
       bridge:

@@ -22,11 +22,14 @@ spec:
       {{- if and (not .Values.bridges.hookshot.existingSecret.registration) (not .Values.matrix.homeserverOverride) }}
       annotations:
         # re-roll deployment on config change
-        {{- if not .Values.bridges.hookshot.existingSecret.registration }}
+        {{- if and (not .Values.bridges.hookshot.existingSecret.registration) .Values.bridges.hookshot.enabled }}
         checksum/hookshot-registration: {{ include (print $.Template.BasePath "/bridge-hookshot/secret-registration.yaml") . | sha256sum }}
         {{- end }}
-        {{- if not .Values.bridges.discord_mautrix.existingSecret }}
+        {{- if and (not .Values.bridges.discord_mautrix.existingSecret) .Values.bridges.discord_mautrix.enabled }}
         checksum/discord-registration: {{ include (print $.Template.BasePath "/bridge-mautrix-discord/secret-registration.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if and (not .Values.bridges.alertmanager.existingSecret) .Values.bridges.alertmanager.enabled }}
+        checksum/alertmanager-registration: {{ include (print $.Template.BasePath "/bridge-alertmanager/secret-registration.yaml") . | sha256sum }}
         {{- end }}
         {{- if not .Values.matrix.homeserverOverride }}
         checksum/synapse-config: {{ include (print $.Template.BasePath "/synapse/initial-config-map.yaml") . | sha256sum }}
@@ -411,7 +414,7 @@ spec:
             - name: extra-packages
               mountPath: /data/extra_pip_packages
             {{- end }}
-            {{- if or .Values.bridges.hookshot.enabled .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.discord_mautrix.enabled .Values.bridges.irc.enabled }}
+            {{- if or .Values.bridges.hookshot.enabled .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.discord_mautrix.enabled .Values.bridges.irc.enabled .Values.bridges.alertmanager.enabled }}
             - name: bridges
               mountPath: /bridges
               readOnly: true
@@ -496,7 +499,7 @@ spec:
             {{ else }}
             claimName: {{ .Values.volumes.media.existingClaim }}
             {{- end }}
-        {{- if or .Values.bridges.hookshot.enabled .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.discord_mautrix.enabled .Values.bridges.irc.enabled }}
+        {{- if or .Values.bridges.hookshot.enabled .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.discord_mautrix.enabled .Values.bridges.irc.enabled .Values.bridges.alertmanager.enabled }}
         - name: bridges
           persistentVolumeClaim:
             {{- if not .Values.bridges.volume.existingClaim }}

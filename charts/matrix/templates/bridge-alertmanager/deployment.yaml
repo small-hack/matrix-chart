@@ -51,13 +51,36 @@ spec:
       {{- end }}
       initContainers:
         - name: load-config
+          {{- if .Values.bridges.alertmanager.registration.existingSecret }}
+          image: "mikefarah/yq:latest"
+          {{- else }}
           image: "alpine:latest"
+          {{- end }}
           imagePullPolicy: {{ .Values.bridges.alertmanager.image.pullPolicy }}
           command:
            - "/bin/sh"
            - "-c"
            - |
-             cp /data/registration.yaml /bridges/alertmanager.yaml
+             cp /data/registration.yaml /tmp/registration.yaml && \
+             {{- if .Values.bridges.alertmanager.registration.existingSecret }}
+             echo "Starting yq of registration.yaml" && \
+             yq eval -i '.as_token = env(AS_TOKEN)' /tmp/registration.yaml && \
+             yq eval -i '.hs_token = env(HS_TOKEN)' /tmp/registration.yaml && \
+             {{- end }}
+             cp /tmp/registration.yaml /bridges/alertmanager.yaml
+          {{ if .Values.bridges.alertmanager.registration.existingSecret }}
+          env:
+            - name: AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.alertmanager.registration.existingSecret }}
+                  key: {{ .Values.bridges.alertmanager.registration.existingSecretKeys.as_token }}
+            - name: HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.alertmanager.registration.existingSecret }}
+                  key: {{ .Values.bridges.alertmanager.registration.existingSecretKeys.hs_token }}
+          {{- end }}
           volumeMounts:
             - name: data
               mountPath: /data
@@ -84,8 +107,16 @@ spec:
             - name: MATRIX_ROOMS
               value: {{ .Values.bridges.alertmanager.config.matrix_rooms }}
 
+            {{- if .Values.bridges.alertmanager.registration.existingSecret }}
             - name: MATRIX_TOKEN
-              value: {{ include "matrix.alertmanager.as_token" . }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.alertmanager.registration.existingSecret }}
+                  key: {{ .Values.bridges.alertmanager.registration.existingSecretKeys.as_token }}
+            {{- else -}}
+            - name: MATRIX_TOKEN
+              value: {{ .Values.bridges.alertmanager.registration.as_token }}
+            {{- end }}
 
             - name: MATRIX_USER
               value: "@{{ .Values.bridges.alertmanager.config.matrix_user }}:{{ .Values.matrix.serverName }}"
@@ -109,9 +140,6 @@ spec:
             - name: appservice
               containerPort: {{ .Values.bridges.alertmanager.config.app_port }}
               protocol: TCP
-          volumeMounts:
-            - name: data
-              mountPath: /data
            {{- with .Values.bridges.alertmanager.extraVolumeMounts }}
              {{- toYaml . | nindent 12 }}
            {{- end }}
