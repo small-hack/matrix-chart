@@ -68,7 +68,7 @@ spec:
              yq eval -i '.hs_token = env(HS_TOKEN)' /tmp/registration.yaml && \
              {{- end }}
              cp /tmp/registration.yaml /bridges/alertmanager.yaml
-          {{ if .Values.bridges.alertmanager.registration.existingSecret }}
+          {{- if .Values.bridges.alertmanager.registration.existingSecret }}
           env:
             - name: AS_TOKEN
               valueFrom:
