@@ -252,7 +252,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.securityContext.fsGroup | int | `1000` |  |
 | bridges.hookshot.securityContext.runAsGroup | int | `1000` |  |
 | bridges.hookshot.securityContext.runAsUser | int | `1000` |  |
-| bridges.hookshot.service.appservice.port | int | `9002` | appservice service port for the hookshot bridge |
+| bridges.hookshot.service.appservice.port | int | `9993` | appservice service port for the hookshot bridge |
 | bridges.hookshot.service.metrics.port | int | `9001` | metrics service port for the hookshot bridge |
 | bridges.hookshot.service.type | string | `"ClusterIP"` | service type for the hookshot bridge |
 | bridges.hookshot.service.webhook.port | int | `9000` | webhook service port for the hookshot bridge |
