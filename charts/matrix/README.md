@@ -31,11 +31,11 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 |-----|------|---------|-------------|
 | bridges.affinity | bool | `false` | Recommended to leave this disabled to allow bridges to be scheduled on separate nodes. Set this to true to reduce latency between the homeserver and bridges, or if your cloud provider does not allow the ReadWriteMany access mode (see below) |
 | bridges.alertmanager.config.alertmanager_url | string | `""` | set to enable silence link, e.g. https://alertmanager.example.com |
-| bridges.alertmanager.config.app_alertmanager_secret | string | `"<secret key for the webhook events>"` | I don't know what this is |
+| bridges.alertmanager.config.app_alertmanager_secret | string | `""` | secret key for the webhook events, I don't know what this is |
 | bridges.alertmanager.config.app_port | int | `3000` | appservice port? |
 | bridges.alertmanager.config.grafana_datasource | string | `""` | grafana data source, e.g. default |
 | bridges.alertmanager.config.grafana_url | string | `""` | set to enable Grafana links, e.g. https://grafana.example.com |
-| bridges.alertmanager.config.matrix_homeserver_url | string | `nil` | your homeserver url, e.g. https://homeserver.tld |
+| bridges.alertmanager.config.matrix_homeserver_url | string | `""` | your homeserver url, e.g. https://homeserver.tld |
 | bridges.alertmanager.config.matrix_rooms | object | `{}` | map of rooms to send alerts to. where the key is the reciever in alert manager and the value is the room in matrix. |
 | bridges.alertmanager.config.matrix_user | string | `""` | user in matrix for the the alertmanager bot e.g. @alertmanager:homeserver.tld |
 | bridges.alertmanager.config.mention_room | bool | `false` | Set this to true to make firing alerts do a `@room` mention. NOTE! Bot should also have enough power in the room for this to be useful. |
