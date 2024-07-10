@@ -2067,8 +2067,9 @@ bridges:
       bot:
         # -- Define profile display name for the bot user
         displayname: Hookshot Bot
-        # -- Define profile avatar for the bot user
-        avatar: mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d
+        # -- optional: Define profile avatar for the bot user
+        # example: mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d
+        avatar: ""
 
       # -- (Optional) Define additional bot users for specific services
       serviceBots: []
@@ -2157,7 +2158,8 @@ bridges:
       displayName: "WhatsApp bridge bot"
 
       # -- avatar of the WhatsApp bridge bot
-      avatar: "mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
+      # example: mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr
+      avatar: ""
 
     # -- Permissions for using the bridge.
     # Permitted values:
@@ -2390,7 +2392,8 @@ bridges:
           # -- Display name for bot. Set to "remove" to remove display name.
           displayname: Discord bridge bot
           # -- Display avatar for bot. Set to "remove" to remove display avatar.
-          avatar: mxc://maunium.net/nIdEykemnwdisvHbpxflpDlC
+          # example: mxc://maunium.net/nIdEykemnwdisvHbpxflpDlC
+          avatar: "remove"
 
         # -- Whether or not to receive ephemeral events via appservice transactions.
         # Requires MSC2409 support (i.e. Synapse 1.22+).
