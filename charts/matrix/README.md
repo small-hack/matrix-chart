@@ -42,9 +42,9 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.alertmanager.enabled | bool | `false` |  |
 | bridges.alertmanager.encryption | bool | `false` |  |
 | bridges.alertmanager.existingSecret.registration | string | `""` |  |
-| bridges.alertmanager.image.pullPolicy | string | `"IfNotPresent"` | hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always" |
-| bridges.alertmanager.image.repository | string | `"jessebot/matrix-alertmanager-bot"` | hookshot bridge docker image |
-| bridges.alertmanager.image.tag | string | `"0.8.2"` | hookshot bridge docker image tag |
+| bridges.alertmanager.image.pullPolicy | string | `"IfNotPresent"` | alertmanager bridge docker image pull policy. If tag is "latest", set tag to "Always" |
+| bridges.alertmanager.image.repository | string | `"jessebot/matrix-alertmanager-bot"` | alertmanager bridge docker image |
+| bridges.alertmanager.image.tag | string | `"0.9.0"` | alertmanager bridge docker image tag |
 | bridges.alertmanager.registration.as_token | string | `""` |  |
 | bridges.alertmanager.registration.existingSecret | string | `""` | Use an existing Kubernetes Secret to store your own generated appservice and homeserver tokens. If this is not set, we'll generate them for you. Setting this won't override the ENTIRE registration.yaml we generate for the synapse pod to authenticate mautrix/discord. It will only replaces the tokens. To replaces the ENTIRE registration.yaml, use bridges.alertmanager.existingSecret.registration |
 | bridges.alertmanager.registration.existingSecretKeys.as_token | string | `"as_token"` | key in existingSecret for as_token (appservice token) |
@@ -53,9 +53,9 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.alertmanager.registration.rate_limited | bool | `false` |  |
 | bridges.alertmanager.registration.sender_localpart | string | `"alertmanager"` |  |
 | bridges.alertmanager.registration.url | string | `""` |  |
-| bridges.alertmanager.replicaCount | int | `1` | hookshot bridge pod replicas |
+| bridges.alertmanager.replicaCount | int | `1` | alertmanager bridge pod replicas |
 | bridges.alertmanager.revisionHistoryLimit | int | `2` | set the revisionHistoryLimit to decide how many replicaSets are kept when you change a deployment. Explicitly setting this field to 0, will result in cleaning up all the history of your Deployment thus that Deployment will not be able to roll back. |
-| bridges.alertmanager.service.type | string | `"ClusterIP"` | service type for the hookshot bridge |
+| bridges.alertmanager.service.type | string | `"ClusterIP"` | service type for the alertmanager bridge |
 | bridges.discord.auth.botToken | string | `""` | Discord bot token for authentication |
 | bridges.discord.auth.clientId | string | `""` | Discord bot clientID for authentication |
 | bridges.discord.channelName | string | `"[Discord] :guild :name"` |  |
