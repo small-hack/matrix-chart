@@ -1850,18 +1850,18 @@ bridges:
   alertmanager:
     enabled: false
     image:
-      # -- hookshot bridge docker image
+      # -- alertmanager bridge docker image
       repository: "jessebot/matrix-alertmanager-bot"
-      # -- hookshot bridge docker image tag
-      tag: "0.8.2"
-      # -- hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always"
+      # -- alertmanager bridge docker image tag
+      tag: "0.9.0"
+      # -- alertmanager bridge docker image pull policy. If tag is "latest", set tag to "Always"
       pullPolicy: IfNotPresent
 
     service:
-      # -- service type for the hookshot bridge
+      # -- service type for the alertmanager bridge
       type: ClusterIP
 
-    # -- hookshot bridge pod replicas
+    # -- alertmanager bridge pod replicas
     replicaCount: 1
 
     # -- set the revisionHistoryLimit to decide how many replicaSets are
