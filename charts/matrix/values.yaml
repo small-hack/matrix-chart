@@ -1851,9 +1851,9 @@ bridges:
     enabled: false
     image:
       # -- hookshot bridge docker image
-      repository: "jaywink/matrix-alertmanager"
+      repository: "jessebot/matrix-alertmanager-bot"
       # -- hookshot bridge docker image tag
-      tag: "latest"
+      tag: "0.8.2"
       # -- hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always"
       pullPolicy: IfNotPresent
 
