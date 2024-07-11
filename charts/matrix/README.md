@@ -43,8 +43,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.alertmanager.encryption | bool | `false` |  |
 | bridges.alertmanager.existingSecret.registration | string | `""` |  |
 | bridges.alertmanager.image.pullPolicy | string | `"IfNotPresent"` | hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always" |
-| bridges.alertmanager.image.repository | string | `"jaywink/matrix-alertmanager"` | hookshot bridge docker image |
-| bridges.alertmanager.image.tag | string | `"latest"` | hookshot bridge docker image tag |
+| bridges.alertmanager.image.repository | string | `"jessebot/matrix-alertmanager-bot"` | hookshot bridge docker image |
+| bridges.alertmanager.image.tag | string | `"0.8.2"` | hookshot bridge docker image tag |
 | bridges.alertmanager.registration.as_token | string | `""` |  |
 | bridges.alertmanager.registration.existingSecret | string | `""` | Use an existing Kubernetes Secret to store your own generated appservice and homeserver tokens. If this is not set, we'll generate them for you. Setting this won't override the ENTIRE registration.yaml we generate for the synapse pod to authenticate mautrix/discord. It will only replaces the tokens. To replaces the ENTIRE registration.yaml, use bridges.alertmanager.existingSecret.registration |
 | bridges.alertmanager.registration.existingSecretKeys.as_token | string | `"as_token"` | key in existingSecret for as_token (appservice token) |
