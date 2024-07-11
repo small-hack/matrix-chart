@@ -1853,7 +1853,7 @@ bridges:
       # -- alertmanager bridge docker image
       repository: "jessebot/matrix-alertmanager-bot"
       # -- alertmanager bridge docker image tag
-      tag: "0.10.1-dev"
+      tag: "0.10.0"
       # -- alertmanager bridge docker image pull policy. If tag is "latest", set tag to "Always"
       pullPolicy: IfNotPresent
 
