@@ -2024,12 +2024,15 @@ bridges:
           bindAddress: 0.0.0.0
           resources:
             - webhooks
-
         - port: 9001
-          bindAddress: 127.0.0.1
+          bindAddress: 0.0.0.0
           resources:
             - metrics
             - provisioning
+        # - port: 9002
+        #   bindAddress: 0.0.0.0
+        #   resources:
+        #     - widgets
 
       # https://matrix-org.github.io/matrix-hookshot/latest/setup/github.html
       github:
