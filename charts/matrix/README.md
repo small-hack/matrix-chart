@@ -247,7 +247,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.config.listeners[0].bindAddress | string | `"0.0.0.0"` |  |
 | bridges.hookshot.config.listeners[0].port | int | `9000` |  |
 | bridges.hookshot.config.listeners[0].resources[0] | string | `"webhooks"` |  |
-| bridges.hookshot.config.listeners[1].bindAddress | string | `"127.0.0.1"` |  |
+| bridges.hookshot.config.listeners[1].bindAddress | string | `"0.0.0.0"` |  |
 | bridges.hookshot.config.listeners[1].port | int | `9001` |  |
 | bridges.hookshot.config.listeners[1].resources[0] | string | `"metrics"` |  |
 | bridges.hookshot.config.listeners[1].resources[1] | string | `"provisioning"` |  |
