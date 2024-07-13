@@ -206,7 +206,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.volume.existingClaim | string | `""` | use an existing PVC claim instead of creating one fresh for the discord_mautrix /data volume |
 | bridges.discord_mautrix.volume.storageClass | string | `"local-path"` |  |
 | bridges.hookshot.config.bot.avatar | string | `""` | optional: Define profile avatar for the bot user example: mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d |
-| bridges.hookshot.config.bot.displayname | string | `"Hookshot Bot"` | Define profile display name for the bot user |
+| bridges.hookshot.config.bot.displayname | string | `""` | Define profile display name for the bot user |
 | bridges.hookshot.config.bridge.bindAddress | string | `"127.0.0.1"` |  |
 | bridges.hookshot.config.bridge.domain | string | `""` | if not set, defaults to matrix.serverName |
 | bridges.hookshot.config.bridge.mediaUrl | string | `""` | example is https://example.com, but if left blank, we don't include it |
@@ -218,6 +218,11 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.config.feeds.pollConcurrency | int | `4` |  |
 | bridges.hookshot.config.feeds.pollIntervalSeconds | int | `600` | specifies how often each feed will be checked for updates. It may be checked less often if under exceptional load, but it will never be checked more often than every pollIntervalSeconds |
 | bridges.hookshot.config.feeds.pollTimeoutSeconds | int | `30` |  |
+| bridges.hookshot.config.figma.enabled | Optional | `false` | Configure this to enable Figma support |
+| bridges.hookshot.config.figma.instances.your-instance.accessToken | string | `"your-personal-access-token"` |  |
+| bridges.hookshot.config.figma.instances.your-instance.passcode | string | `"your-webhook-passcode"` |  |
+| bridges.hookshot.config.figma.instances.your-instance.teamId | string | `"your-team-id"` |  |
+| bridges.hookshot.config.figma.publicUrl | string | `"https://example.com/hookshot/"` |  |
 | bridges.hookshot.config.generic.allowJsTransformationFunctions | bool | `false` | will allow users to write short transformation snippets in code, and thus is unsafe in untrusted environments |
 | bridges.hookshot.config.generic.enableHttpGet | bool | `false` | means that webhooks can be triggered by GET requests, in addition to POST and PUT. This was previously on by default, but is now disabled due to concerns mentioned in docs. |
 | bridges.hookshot.config.generic.enabled | bool | `false` | enable support for generic webhook events via the hookshot bridge, see [docs](https://matrix-org.github.io/matrix-hookshot/latest/setup/webhooks.html) for more info |
@@ -253,12 +258,21 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.config.metrics.enabled | bool | `false` | enable Prometheus metrics support from hookshot to Prometheus, see [docs](https://matrix-org.github.io/matrix-hookshot/latest/metrics.html) |
 | bridges.hookshot.config.passFile | string | `"/data/passkey.pem"` | A passkey used to encrypt tokens stored inside the bridge. |
 | bridges.hookshot.config.permissions | Optional | `[]` | Permissions for using the bridge. See [docs](https://matrix-org.github.io/matrix-hookshot/latest/setup.html#permissions) |
+| bridges.hookshot.config.provisioning.enabled | Optional | `false` | Provisioning API for integration managers |
+| bridges.hookshot.config.provisioning.secret | string | `"!secretToken"` |  |
 | bridges.hookshot.config.queue | Optional | `{"redisUri":""}` | Message queue configuration options for large scale deployments. |
 | bridges.hookshot.config.queue.redisUri | string | `""` | For encryption to work, this must not be configured. example value: redis://localhost:6379 |
 | bridges.hookshot.config.sentry | Optional | `{"dsn":"","environment":""}` | Configure Sentry error reporting |
 | bridges.hookshot.config.sentry.dsn | string | `""` | example value: https://examplePublicKey@o0.ingest.sentry.io/0 |
 | bridges.hookshot.config.sentry.environment | string | `""` | example value: production |
 | bridges.hookshot.config.serviceBots | Optional | `[]` | Define additional bot users for specific services |
+| bridges.hookshot.config.widgets.addToAdminRooms | bool | `false` | The admin room feature is still very barebones so while it's included here for completeness, most instances should leave addToAdminRooms off (as it is by default). This flag will add an "admin room" widget to user admin rooms. |
+| bridges.hookshot.config.widgets.branding.widgetTitle | string | `"Hookshot Configuration"` |  |
+| bridges.hookshot.config.widgets.disallowedIpRanges | list | `[]` | which IP ranges should be disallowed when resolving homeserver IP addresses (for security reasons). Unless you know what you are doing, it is recommended to not include this key. The default blocked IPs are listed below for your convenience. In addition to setting up the widgets config, you must bind a listener for the widgets resource in your listeners config. |
+| bridges.hookshot.config.widgets.enabled | Optional | `false` | EXPERIMENTAL support for complimentary widgets |
+| bridges.hookshot.config.widgets.openIdOverrides | object | `{}` | allows you to configure the correct federation endpoints for a given set of Matrix server names. This is useful if you are testing/developing Hookshot in a local dev environment. Production environments should not use this configuration (as their Matrix server name should be resolvable). The config takes a mapping of Matrix server name => base path for federation. E.g. if your server name was my-local-server and your federation was readable via http://localhost/_matrix/federation, you would put configure my-local-server: "http://localhost" |
+| bridges.hookshot.config.widgets.publicUrl | string | `"https://example.com/widgetapi/v1/static/"` | should be set to the publicly reachable address for the widget public content. By default, Hookshot hosts this content on the widgets listener under /widgetapi/v1/static. |
+| bridges.hookshot.config.widgets.roomSetupWidget | object | `{"addOnInvite":false}` | The room setup feature is more complete, supporting generic webhook configuration (with more options coming soon). This can be enabled by setting roomSetupWidget to an object. You can add the widget by saying !hookshot setup-widget in any room. When addOnInvite is true, the bridge will add a widget to rooms when the bot is invited, and the room has no existing connections. |
 | bridges.hookshot.enabled | bool | `false` | enable the [hookshot](https://matrix-org.github.io/matrix-hookshot) bridge |
 | bridges.hookshot.encryption | bool | `false` | if you'd like to enable encryption in your registration.yml |
 | bridges.hookshot.existingConfigMap | string | `""` | use the name of an existing ConfigMap for hookshot bridge. If set, ignores entire bridges.hookshot.config section |
