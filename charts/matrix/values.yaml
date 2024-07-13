@@ -2094,6 +2094,16 @@ bridges:
         # -- (Optional) Aggregate comments by waiting this many miliseconds before posting them to Matrix. Defaults to 5000 (5 seconds)
         commentDebounceMs: 5000
 
+      figma:
+        # -- (Optional) Configure this to enable Figma support
+        enabled: false
+        publicUrl: https://example.com/hookshot/
+        instances:
+          your-instance:
+            teamId: your-team-id
+            accessToken: your-personal-access-token
+            passcode: your-webhook-passcode
+
       generic:
         # -- enable support for generic webhook events via the hookshot bridge,
         # see [docs](https://matrix-org.github.io/matrix-hookshot/latest/setup/webhooks.html) for more info
@@ -2133,10 +2143,16 @@ bridges:
         pollIntervalSeconds: 600
         pollTimeoutSeconds: 30
 
+
+      provisioning:
+        # -- (Optional) Provisioning API for integration managers
+        enabled: false
+        secret: "!secretToken"
+
       # (Optional) Define profile information for the bot user
       bot:
         # -- Define profile display name for the bot user
-        displayname: Hookshot Bot
+        displayname: ""
         # -- optional: Define profile avatar for the bot user
         # example: mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d
         avatar: ""
@@ -2165,6 +2181,69 @@ bridges:
         # -- For encryption to work, this must not be configured.
         # example value: redis://localhost:6379
         redisUri: ""
+
+      widgets:
+        # -- (Optional) EXPERIMENTAL support for complimentary widgets
+        enabled: false
+        # -- The admin room feature is still very barebones so while it's
+        # included here for completeness, most instances should leave
+        # addToAdminRooms off (as it is by default). This flag will add an
+        # "admin room" widget to user admin rooms.
+        addToAdminRooms: false
+        # -- which IP ranges should be disallowed when resolving homeserver IP
+        # addresses (for security reasons). Unless you know what you are doing,
+        # it is recommended to not include this key. The default blocked IPs are
+        # listed below for your convenience. In addition to setting up the widgets
+        # config, you must bind a listener for the widgets resource in your listeners config.
+        disallowedIpRanges: []
+        #  - 127.0.0.0/8
+        #  - 10.0.0.0/8
+        #  - 172.16.0.0/12
+        #  - 192.168.0.0/16
+        #  - 100.64.0.0/10
+        #  - 192.0.0.0/24
+        #  - 169.254.0.0/16
+        #  - 192.88.99.0/24
+        #  - 198.18.0.0/15
+        #  - 192.0.2.0/24
+        #  - 198.51.100.0/24
+        #  - 203.0.113.0/24
+        #  - 224.0.0.0/4
+        #  - ::1/128
+        #  - fe80::/10
+        #  - fc00::/7
+        #  - 2001:db8::/32
+        #  - ff00::/8
+        #  - fec0::/10
+
+        # -- The room setup feature is more complete, supporting generic webhook
+        # configuration (with more options coming soon). This can be enabled by
+        # setting roomSetupWidget to an object. You can add the widget by saying
+        # !hookshot setup-widget in any room. When addOnInvite is true, the bridge
+        # will add a widget to rooms when the bot is invited, and the room has
+        # no existing connections.
+        roomSetupWidget:
+          addOnInvite: false
+        # -- should be set to the publicly reachable address for the widget
+        # public content. By default, Hookshot hosts this content on the widgets
+        # listener under /widgetapi/v1/static.
+        publicUrl: https://example.com/widgetapi/v1/static/
+        branding:
+          # allows you to change the strings used for various bits of widget UI.
+          # At the moment you can: Set widgetTitle to change the title of the
+          # widget that is created.
+          widgetTitle: Hookshot Configuration
+        # -- allows you to configure the correct federation endpoints for a
+        # given set of Matrix server names. This is useful if you are
+        # testing/developing Hookshot in a local dev environment. Production
+        # environments should not use this configuration (as their Matrix server
+        # name should be resolvable). The config takes a mapping of Matrix server
+        # name => base path for federation. E.g. if your server name was
+        # my-local-server and your federation was readable via
+        # http://localhost/_matrix/federation,
+        # you would put configure my-local-server: "http://localhost"
+        openIdOverrides: {}
+        #  my-local-server: "http://localhost"
 
       # -- (Optional) Configure Sentry error reporting
       sentry:
