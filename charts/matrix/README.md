@@ -33,10 +33,10 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.alertmanager.config.alertmanager_url | string | `""` | set to enable silence link, e.g. https://alertmanager.example.com |
 | bridges.alertmanager.config.app_alertmanager_secret | string | `""` | secret key for the webhook events, I don't know what this is |
 | bridges.alertmanager.config.app_port | int | `3000` | appservice port? |
-| bridges.alertmanager.config.bot.avatar_url | string | `""` | mxc:// avatar to set for the bot user |
-| bridges.alertmanager.config.bot.display_name | string | `""` | display name to set for the bot user |
+| bridges.alertmanager.config.bot.avatar_url | string | `""` | optional: mxc:// avatar to set for the bot user |
+| bridges.alertmanager.config.bot.display_name | string | `""` | optional: display name to set for the bot user |
 | bridges.alertmanager.config.bot.mention_room | bool | `false` | Set this to true to make firing alerts do a `@room` mention. NOTE! Bot should also have enough power in the room for this to be useful. |
-| bridges.alertmanager.config.bot.rooms | string | `""` | map of rooms to send alerts to. where the key is the reciever in alert manager and the value is the room in matrix. |
+| bridges.alertmanager.config.bot.rooms | string | `""` | rooms to send alerts to, separated by a | Each entry contains the receiver name (from alertmanager) and the internal id (not the public alias) of the Matrix channel to forward to. |
 | bridges.alertmanager.config.bot.user | string | `""` | user in matrix for the the alertmanager bot e.g. alertmanager which becomes @alertmanager:homeserver.tld |
 | bridges.alertmanager.config.grafana_datasource | string | `""` | grafana data source, e.g. default |
 | bridges.alertmanager.config.grafana_url | string | `""` | set to enable Grafana links, e.g. https://grafana.example.com |
@@ -49,12 +49,12 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.alertmanager.image.tag | string | `"0.11.0"` | alertmanager bridge docker image tag |
 | bridges.alertmanager.registration.as_token | string | `""` |  |
 | bridges.alertmanager.registration.existingSecret | string | `""` | Use an existing Kubernetes Secret to store your own generated appservice and homeserver tokens. If this is not set, we'll generate them for you. Setting this won't override the ENTIRE registration.yaml we generate for the synapse pod to authenticate mautrix/discord. It will only replaces the tokens. To replaces the ENTIRE registration.yaml, use bridges.alertmanager.existingSecret.registration |
-| bridges.alertmanager.registration.existingSecretKeys.as_token | string | `"as_token"` | key in existingSecret for as_token (appservice token) |
+| bridges.alertmanager.registration.existingSecretKeys.as_token | string | `"as_token"` | key in existingSecret for as_token (application service token). If provided and existingSecret is set, ignores bridges.alertmanager.registration.as_token |
 | bridges.alertmanager.registration.existingSecretKeys.hs_token | string | `"hs_token"` | key in existingSecret for hs_token (home server token) |
-| bridges.alertmanager.registration.id | string | `"alertmanager"` |  |
-| bridges.alertmanager.registration.rate_limited | bool | `false` |  |
-| bridges.alertmanager.registration.sender_localpart | string | `"alertmanager"` |  |
-| bridges.alertmanager.registration.url | string | `""` |  |
+| bridges.alertmanager.registration.id | string | `"alertmanager"` | name of the application service |
+| bridges.alertmanager.registration.rate_limited | bool | `false` | should this bot be rate limited? |
+| bridges.alertmanager.registration.sender_localpart | string | `"alertmanager"` | localpart of the user associated with the application service. Events will be sent to the AS if this user is the target of the event, or is a joined member of the room where the event occurred. |
+| bridges.alertmanager.registration.url | string | `""` | url of the alertmanager service. if not provided, we will template it for you like http://matrix-alertmanager-service:3000 |
 | bridges.alertmanager.replicaCount | int | `1` | alertmanager bridge pod replicas |
 | bridges.alertmanager.revisionHistoryLimit | int | `2` | set the revisionHistoryLimit to decide how many replicaSets are kept when you change a deployment. Explicitly setting this field to 0, will result in cleaning up all the history of your Deployment thus that Deployment will not be able to roll back. |
 | bridges.alertmanager.service.type | string | `"ClusterIP"` | service type for the alertmanager bridge |
