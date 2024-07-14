@@ -1873,11 +1873,23 @@ bridges:
     existingSecret:
       registration: ""
 
+    # this section is for registering the application service with matrix
+    # read more about application services here:
+    # https://spec.matrix.org/v1.11/application-service-api/
     registration:
+      # -- name of the application service
       id: "alertmanager"
+      # -- url of the alertmanager service. if not provided, we will template it
+      # for you like http://matrix-alertmanager-service:3000
       url: ""
+      # -- should this bot be rate limited?
       rate_limited: false
+      # -- localpart of the user associated with the application service.
+      # Events will be sent to the AS if this user is the target of the event,
+      # or is a joined member of the room where the event occurred.
       sender_localpart: "alertmanager"
+      # A secret token that the application service will use to authenticate
+      # requests to the homeserver.
       as_token: ""
       # -- Use an existing Kubernetes Secret to store your own generated appservice
       # and homeserver tokens. If this is not set, we'll generate them for you.
@@ -1887,7 +1899,8 @@ bridges:
       # bridges.alertmanager.existingSecret.registration
       existingSecret: ""
       existingSecretKeys:
-        # -- key in existingSecret for as_token (appservice token)
+        # -- key in existingSecret for as_token (application service token). If
+        # provided and existingSecret is set, ignores bridges.alertmanager.registration.as_token
         as_token: "as_token"
         # -- key in existingSecret for hs_token (home server token)
         hs_token: "hs_token"
@@ -1906,13 +1919,13 @@ bridges:
         # -- user in matrix for the the alertmanager bot e.g. alertmanager
         # which becomes @alertmanager:homeserver.tld
         user: ""
-        # -- display name to set for the bot user
+        # -- optional: display name to set for the bot user
         display_name: ""
-        # -- mxc:// avatar to set for the bot user
+        # -- optional: mxc:// avatar to set for the bot user
         avatar_url: ""
-        # TODO: fix this
-        # -- map of rooms to send alerts to. where the key is the reciever in alert manager
-        # and the value is the room in matrix.
+        # -- rooms to send alerts to, separated by a |
+        # Each entry contains the receiver name (from alertmanager) and the
+        # internal id (not the public alias) of the Matrix channel to forward to.
         rooms: ""
         # -- Set this to true to make firing alerts do a `@room` mention.
         # NOTE! Bot should also have enough power in the room for this to be useful.
