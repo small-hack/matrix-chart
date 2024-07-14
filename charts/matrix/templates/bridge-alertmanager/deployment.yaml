@@ -58,8 +58,8 @@ spec:
           {{- end }}
           imagePullPolicy: {{ .Values.bridges.alertmanager.image.pullPolicy }}
           command:
-            - "/bin/sh"
-            - "-c"
+            - /bin/sh
+            - -ec
             - |
               cp /data/registration.yaml /tmp/registration.yaml && \
               {{- if .Values.bridges.alertmanager.registration.existingSecret }}
@@ -113,7 +113,7 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.bridges.alertmanager.registration.existingSecret }}
                   key: {{ .Values.bridges.alertmanager.registration.existingSecretKeys.as_token }}
-            {{- else -}}
+            {{- else }}
             - name: MATRIX_TOKEN
               value: {{ .Values.bridges.alertmanager.registration.as_token }}
             {{- end }}
@@ -121,19 +121,19 @@ spec:
             - name: MATRIX_USER
               value: "@{{ .Values.bridges.alertmanager.config.bot.user }}:{{ .Values.matrix.serverName }}"
 
-            {{- if .Values.bridges.alertmanager.config.bot.display_name }}
+            {{- with .Values.bridges.alertmanager.config.bot.display_name }}
             - name: MATRIX_DISPLAY_NAME
-              value: {{ .Values.bridges.alertmanager.config.bot.display_name }}
+              value: {{ . }}
             {{- end }}
 
-            {{- if .Values.bridges.alertmanager.config.bot.avatar }}
+            {{- with .Values.bridges.alertmanager.config.bot.avatar }}
             - name: MATRIX_AVATAR
-              value: {{ .Values.bridges.alertmanager.config.bot.avatar }}
+              value: {{ . }}
             {{- end }}
 
-            {{- if .Values.bridges.alertmanager.config.bot.mention_room }}
+            {{- with .Values.bridges.alertmanager.config.bot.mention_room }}
             - name: MENTION_ROOM
-              value: {{ .Values.bridges.alertmanager.config.bot.mention_room | quote }}
+              value: {{ . | quote }}
             {{- end }}
 
             {{- if .Values.bridges.alertmanager.config.grafana_url }}
