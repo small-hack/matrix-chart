@@ -33,12 +33,14 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.alertmanager.config.alertmanager_url | string | `""` | set to enable silence link, e.g. https://alertmanager.example.com |
 | bridges.alertmanager.config.app_alertmanager_secret | string | `""` | secret key for the webhook events, I don't know what this is |
 | bridges.alertmanager.config.app_port | int | `3000` | appservice port? |
+| bridges.alertmanager.config.bot.avatar | string | `""` | mxc:// avatar to set for the bot user |
+| bridges.alertmanager.config.bot.display_name | string | `""` | display name to set for the bot user |
+| bridges.alertmanager.config.bot.mention_room | bool | `false` | Set this to true to make firing alerts do a `@room` mention. NOTE! Bot should also have enough power in the room for this to be useful. |
+| bridges.alertmanager.config.bot.rooms | string | `""` | map of rooms to send alerts to. where the key is the reciever in alert manager and the value is the room in matrix. |
+| bridges.alertmanager.config.bot.user | string | `""` | user in matrix for the the alertmanager bot e.g. alertmanager which becomes @alertmanager:homeserver.tld |
 | bridges.alertmanager.config.grafana_datasource | string | `""` | grafana data source, e.g. default |
 | bridges.alertmanager.config.grafana_url | string | `""` | set to enable Grafana links, e.g. https://grafana.example.com |
 | bridges.alertmanager.config.matrix_homeserver_url | string | `""` | your homeserver url, e.g. https://homeserver.tld |
-| bridges.alertmanager.config.matrix_rooms | string | `""` | map of rooms to send alerts to. where the key is the reciever in alert manager and the value is the room in matrix. |
-| bridges.alertmanager.config.matrix_user | string | `""` | user in matrix for the the alertmanager bot e.g. alertmanager which becomes @alertmanager:homeserver.tld |
-| bridges.alertmanager.config.mention_room | bool | `false` | Set this to true to make firing alerts do a `@room` mention. NOTE! Bot should also have enough power in the room for this to be useful. |
 | bridges.alertmanager.enabled | bool | `false` |  |
 | bridges.alertmanager.encryption | bool | `false` |  |
 | bridges.alertmanager.existingSecret.registration | string | `""` |  |
