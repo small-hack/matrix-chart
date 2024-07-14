@@ -1901,16 +1901,23 @@ bridges:
       app_alertmanager_secret: ""
       # -- your homeserver url, e.g. https://homeserver.tld
       matrix_homeserver_url: ""
-      # -- map of rooms to send alerts to. where the key is the reciever in alert manager
-      # and the value is the room in matrix.
-      matrix_rooms: ""
-      # receiver1: !8dsagh8lfdsk:syanpseserver.com
-      # -- user in matrix for the the alertmanager bot e.g. alertmanager
-      # which becomes @alertmanager:homeserver.tld
-      matrix_user: ""
-      # -- Set this to true to make firing alerts do a `@room` mention.
-      # NOTE! Bot should also have enough power in the room for this to be useful.
-      mention_room: false
+
+      bot:
+        # -- user in matrix for the the alertmanager bot e.g. alertmanager
+        # which becomes @alertmanager:homeserver.tld
+        user: ""
+        # -- display name to set for the bot user
+        display_name: ""
+        # -- mxc:// avatar to set for the bot user
+        avatar: ""
+        # TODO: fix this
+        # -- map of rooms to send alerts to. where the key is the reciever in alert manager
+        # and the value is the room in matrix.
+        rooms: ""
+        # -- Set this to true to make firing alerts do a `@room` mention.
+        # NOTE! Bot should also have enough power in the room for this to be useful.
+        mention_room: false
+
       # -- set to enable Grafana links, e.g. https://grafana.example.com
       grafana_url: ""
       # -- grafana data source, e.g. default
