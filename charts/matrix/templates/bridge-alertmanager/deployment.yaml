@@ -126,8 +126,8 @@ spec:
               value: {{ . }}
             {{- end }}
 
-            {{- with .Values.bridges.alertmanager.config.bot.avatar }}
-            - name: MATRIX_AVATAR
+            {{- with .Values.bridges.alertmanager.config.bot.avatar_url }}
+            - name: MATRIX_AVATAR_URL
               value: {{ . }}
             {{- end }}
 
