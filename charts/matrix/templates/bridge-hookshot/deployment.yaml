@@ -64,21 +64,95 @@ spec:
       {{- end }}
       initContainers:
         - name: "load-config"
+          {{- if .Values.bridges.hookshot.registration.existingSecret }}
+          image: "mikefarah/yq:latest"
+          {{- else }}
           image: "alpine:latest"
+          {{- end }}
           imagePullPolicy: {{ .Values.bridges.hookshot.image.pullPolicy }}
-          command: ["sh"]
-          args: ["-c", "cp /data/registration.yml /bridges/hookshot.yaml"]
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              cp /load/registration.yaml /data/registration.yaml && \
+              cp /load/config.yml /data/config.yml && \
+              {{- if .Values.bridges.hookshot.registration.existingSecret }}
+              echo "Starting yq of registration.yaml" && \
+              yq eval -i '.as_token = env(AS_TOKEN)' /data/registration.yaml && \
+              yq eval -i '.hs_token = env(HS_TOKEN)' /data/registration.yaml && \
+              {{- end }}
+              {{- if .Values.bridges.hookshot.config.github.existingSecret }}
+              {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.auth_id }}
+              yq eval -i '.github.auth.id = env(APP_ID)' /data/config.yml && \
+              {{- end }}
+              {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.webhook_secret }}
+              yq eval -i '.github.auth.id = env(WEBHOOK_SECRET)' /data/config.yml && \
+              {{- end }}
+              {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.oauth_client_id }}
+              yq eval -i '.github.auth.id = env(OAUTH_CLIENT_ID)' /data/config.yml && \
+              {{- end }}
+              {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.oauth_client_secret }}
+              yq eval -i '.github.auth.id = env(OAUTH_CLIENT_SECRET)' /data/config.yml && \
+              {{- end }}
+              {{- end }}{{/* end if github.existingSecret */}}
+              cp /data/registration.yaml /bridges/hookshot.yaml
+          {{- if or .Values.bridges.hookshot.registration.existingSecret .Values.bridges.hookshot.config.github.existingSecret }}
+          env:
+           {{- if .Values.bridges.hookshot.registration.existingSecret }}
+            - name: AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.hookshot.registration.existingSecret }}
+                  key: {{ .Values.bridges.hookshot.registration.existingSecretKeys.as_token }}
+            - name: HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.hookshot.registration.existingSecret }}
+                  key: {{ .Values.bridges.hookshot.registration.existingSecretKeys.hs_token }}
+            {{- end }}{{/* end if registration.existingSecret */}}
+           {{- with .Values.bridges.hookshot.config.github.existingSecretKeys.auth_id }}
+            - name: APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret.auth_id }}
+                  key: {{ . }}
+           {{- end }}{{/* with config.github.existingSecretKeys.auth_id */}}
+           {{- with .Values.bridges.hookshot.config.github.existingSecretKeys.webhook_secret }}
+            - name: WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret.webhook_secret }}
+                  key: {{ . }}
+           {{- end }}{{/* with config.github.existingSecretKeys.webhook_secret */}}
+           {{- with .Values.bridges.hookshot.config.github.existingSecretKeys.oauth_client_id }}
+            - name: OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret.oauth_client_id }}
+                  key: {{ . }}
+           {{- end }}{{/* with config.github.existingSecretKeys.oauth_client_id */}}
+           {{- with .Values.bridges.hookshot.config.github.existingSecretKeys.oauth_client_secret }}
+            - name: OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret.oauth_client_secret }}
+                  key: {{ . }}
+           {{- end }}{{/* with config.github.existingSecretKeys.oauth_client_secret */}}
+          {{- end }}{{/* end if existing secret for github or registration */}}
           volumeMounts:
-            - name: data
-              mountPath: /data
+            - name: load
+              mountPath: /load
             - name: bridges
               mountPath: /bridges
+          {{- with .Values.bridges.hookshot.securityContext }}
           securityContext:
+            {{- toYaml . | nindent 12 }}
             capabilities:
               drop:
                 - ALL
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
+          {{- end }}
       containers:
         - name: "bridge-hookshot"
           image: "{{ .Values.bridges.hookshot.image.repository }}:{{ .Values.bridges.hookshot.image.tag }}"
@@ -111,7 +185,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
-        - name: data
+        - name: load
           projected:
             sources:
               {{- if not .Values.bridges.hookshot.existingSecret.config }}

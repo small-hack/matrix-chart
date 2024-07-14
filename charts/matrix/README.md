@@ -209,10 +209,10 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.volume.storageClass | string | `"local-path"` |  |
 | bridges.hookshot.config.bot.avatar | string | `""` | optional: Define profile avatar for the bot user example: mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d |
 | bridges.hookshot.config.bot.displayname | string | `""` | Define profile display name for the bot user |
-| bridges.hookshot.config.bridge.bindAddress | string | `"127.0.0.1"` |  |
+| bridges.hookshot.config.bridge.bindAddress | string | `"0.0.0.0"` | this probably shouldn't change since we're using docker |
 | bridges.hookshot.config.bridge.domain | string | `""` | if not set, defaults to matrix.serverName |
 | bridges.hookshot.config.bridge.mediaUrl | string | `""` | example is https://example.com, but if left blank, we don't include it |
-| bridges.hookshot.config.bridge.port | int | `9993` |  |
+| bridges.hookshot.config.bridge.port | int | `9993` | the port to run the application service on |
 | bridges.hookshot.config.bridge.url | string | `""` | url in example is http://localhost:8008, but if not set, we use matrix.baseUrl |
 | bridges.hookshot.config.cache | Optional | `{"redisUri":""}` | Cache options for large scale deployments. |
 | bridges.hookshot.config.cache.redisUri | string | `""` | For encryption to work, this must be configured. example value: redis://localhost:6379 |
@@ -237,6 +237,12 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.config.github.defaultOptions | Optional | `{"hotlinkIssues":{"prefix":"#"},"showIssueRoomLink":false}` | Default options for GitHub connections. see docs for more: https://matrix-org.github.io/matrix-hookshot/latest/usage/room_configuration/github_repo.html#configuration |
 | bridges.hookshot.config.github.enabled | bool | `false` | enable GitHub support in the hookshot bridge |
 | bridges.hookshot.config.github.enterpriseUrl | string | `""` | If you are using an on-premise / enterprise edition of GitHub, you need provide the base URL in enterpriseUrl. You do not need to specify the /api/... path in the URL |
+| bridges.hookshot.config.github.existingSecret | string | `""` | grab sensitive values for github from an existing Kubernetes secret |
+| bridges.hookshot.config.github.existingSecretKeys.auth_id | string | `""` | key in existing Kubernetes secret for GitHub auth.id which is the GitHub App ID |
+| bridges.hookshot.config.github.existingSecretKeys.oauth_client_id | string | `""` | key in existing Kubernetes secret for GitHub oauth client id |
+| bridges.hookshot.config.github.existingSecretKeys.oauth_client_secret | string | `""` | key in existing Kubernetes secret for GitHub oauth client secret |
+| bridges.hookshot.config.github.existingSecretKeys.privateKey | string | `""` | key in existin Kubernetes secret for GitHub privatekey |
+| bridges.hookshot.config.github.existingSecretKeys.webhook_secret | string | `""` | key in existing Kubernetes secret for GitHub webhook secret |
 | bridges.hookshot.config.github.oauth | object | `{"client_id":"","client_secret":"","redirect_uri":""}` | oauth section should include both the Client ID and Client Secret on the GitHub App page. The redirect_uri value must be the public path to /oauth on the webhooks path. E.g. if your load balancer points https://example.com/hookshot to the bridge webhooks listener, you should use the path https://example.com/hookshot/oauth. This value MUST exactly match the Callback URL on the GitHub App page. |
 | bridges.hookshot.config.github.userIdPrefix | Optional | `"_github_"` | Prefix used when creating ghost users for GitHub accounts. |
 | bridges.hookshot.config.github.webhook.secret | string | `""` | Webhook settings for the GitHub app. example showed value secrettoken |
@@ -285,6 +291,9 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.image.repository | string | `"halfshot/matrix-hookshot"` | hookshot bridge docker image |
 | bridges.hookshot.image.tag | string | `"5.4.1"` | hookshot bridge docker image tag |
 | bridges.hookshot.passkey | string | `""` | If bridges.hookshot.passkey AND bridges.hookshot.existingSecret.passkey are BOTH empty strings, we will generate a passkey for you. To Generate yourself: openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 |
+| bridges.hookshot.registration.existingSecret | string | `""` |  |
+| bridges.hookshot.registration.existingSecretKeys.as_token | string | `"as_token"` | key in existingSecret for as_token (application service token) |
+| bridges.hookshot.registration.existingSecretKeys.hs_token | string | `"hs_token"` | key in existingSecret for hs_token (home server token) |
 | bridges.hookshot.registration.rate_limited | bool | `false` |  |
 | bridges.hookshot.registration.sender_localpart | string | `"hookshot"` |  |
 | bridges.hookshot.registration.url | string | `""` | This should match the bridges.hookshot.config.bridge.port in your config file |
@@ -884,4 +893,4 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | volumes.synapseConfig.storageClass | string | `""` | Storage class (optional) |
 
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)
+Autogenerated from chart metadata using [helm-docs v1.13.1](https://github.com/norwoodj/helm-docs/releases/v1.13.1)

@@ -2009,6 +2009,14 @@ bridges:
       url: ""
       sender_localpart: "hookshot"
       rate_limited: false
+      # To replace the ENTIRE registration.yaml, use
+      # bridges.hookshot.existingSecret.registration
+      existingSecret: ""
+      existingSecretKeys:
+        # -- key in existingSecret for as_token (application service token)
+        as_token: "as_token"
+        # -- key in existingSecret for hs_token (home server token)
+        hs_token: "hs_token"
 
     config:
       bridge:
@@ -2018,8 +2026,10 @@ bridges:
         url: ""
         # -- example is https://example.com, but if left blank, we don't include it
         mediaUrl: ""
+        # -- the port to run the application service on
         port: 9993
-        bindAddress: 127.0.0.1
+        # -- this probably shouldn't change since we're using docker
+        bindAddress: 0.0.0.0
 
       # -- A passkey used to encrypt tokens stored inside the bridge.
       passFile: /data/passkey.pem
@@ -2058,6 +2068,20 @@ bridges:
       github:
         # -- enable GitHub support in the hookshot bridge
         enabled: false
+        # -- grab sensitive values for github from an existing Kubernetes secret
+        existingSecret: ""
+        existingSecretKeys:
+          # -- key in existing Kubernetes secret for GitHub auth.id which is the GitHub App ID
+          auth_id: ""
+          # -- key in existing Kubernetes secret for GitHub webhook secret
+          webhook_secret: ""
+          # -- key in existing Kubernetes secret for GitHub oauth client id
+          oauth_client_id: ""
+          # -- key in existing Kubernetes secret for GitHub oauth client secret
+          oauth_client_secret: ""
+          # -- key in existin Kubernetes secret for GitHub privatekey
+          privateKey: ""
+
         # -- If you are using an on-premise / enterprise edition of GitHub,
         # you need provide the base URL in enterpriseUrl. You do not need to
         # specify the /api/... path in the URL
