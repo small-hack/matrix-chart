@@ -58,16 +58,16 @@ spec:
           {{- end }}
           imagePullPolicy: {{ .Values.bridges.alertmanager.image.pullPolicy }}
           command:
-           - "/bin/sh"
-           - "-c"
-           - |
-             cp /data/registration.yaml /tmp/registration.yaml && \
-             {{- if .Values.bridges.alertmanager.registration.existingSecret }}
-             echo "Starting yq of registration.yaml" && \
-             yq eval -i '.as_token = env(AS_TOKEN)' /tmp/registration.yaml && \
-             yq eval -i '.hs_token = env(HS_TOKEN)' /tmp/registration.yaml && \
-             {{- end }}
-             cp /tmp/registration.yaml /bridges/alertmanager.yaml
+            - "/bin/sh"
+            - "-c"
+            - |
+              cp /data/registration.yaml /tmp/registration.yaml && \
+              {{- if .Values.bridges.alertmanager.registration.existingSecret }}
+              echo "Starting yq of registration.yaml" && \
+              yq eval -i '.as_token = env(AS_TOKEN)' /tmp/registration.yaml && \
+              yq eval -i '.hs_token = env(HS_TOKEN)' /tmp/registration.yaml && \
+              {{- end }}
+              cp /tmp/registration.yaml /bridges/alertmanager.yaml
           {{- if .Values.bridges.alertmanager.registration.existingSecret }}
           env:
             - name: AS_TOKEN
@@ -102,7 +102,7 @@ spec:
               value: {{ .Values.bridges.alertmanager.config.app_alertmanager_secret | default "matrix.alertmanager.webhook_secret" }}
 
             - name: MATRIX_HOMESERVER_URL
-              value: {{ .Values.bridges.alertmanager.config.matrix_homeserver_url | default (include "matrix.baseUrl" .) }}
+              value: {{ .Values.bridges.alertmanager.config.homeserver_url | default (include "matrix.baseUrl" .) }}
 
             - name: MATRIX_ROOMS
               value: {{ .Values.bridges.alertmanager.config.bot.rooms }}
@@ -121,18 +121,20 @@ spec:
             - name: MATRIX_USER
               value: "@{{ .Values.bridges.alertmanager.config.bot.user }}:{{ .Values.matrix.serverName }}"
 
-            {{- with .Values.bridges.alertmanager.config.bot.display_name }}"
+            {{- if .Values.bridges.alertmanager.config.bot.display_name }}
             - name: MATRIX_DISPLAY_NAME
-              value: "{{ . }}"
+              value: {{ .Values.bridges.alertmanager.config.bot.display_name }}
             {{- end }}
 
-            {{- with .Values.bridges.alertmanager.config.bot.avatar }}"
-            - name: MATRIX_DISPLAY_NAME
-              value: "{{ . }}"
+            {{- if .Values.bridges.alertmanager.config.bot.avatar }}
+            - name: MATRIX_AVATAR
+              value: {{ .Values.bridges.alertmanager.config.bot.avatar }}
             {{- end }}
 
+            {{- if .Values.bridges.alertmanager.config.bot.mention_room }}
             - name: MENTION_ROOM
               value: {{ .Values.bridges.alertmanager.config.bot.mention_room | quote }}
+            {{- end }}
 
             {{- if .Values.bridges.alertmanager.config.grafana_url }}
             - name: GRAFANA_URL
