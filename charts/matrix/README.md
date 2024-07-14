@@ -40,7 +40,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.alertmanager.config.bot.user | string | `""` | user in matrix for the the alertmanager bot e.g. alertmanager which becomes @alertmanager:homeserver.tld |
 | bridges.alertmanager.config.grafana_datasource | string | `""` | grafana data source, e.g. default |
 | bridges.alertmanager.config.grafana_url | string | `""` | set to enable Grafana links, e.g. https://grafana.example.com |
-| bridges.alertmanager.config.matrix_homeserver_url | string | `""` | your homeserver url, e.g. https://homeserver.tld |
+| bridges.alertmanager.config.homeserver_url | string | `""` | your homeserver url, e.g. https://homeserver.tld |
 | bridges.alertmanager.enabled | bool | `false` |  |
 | bridges.alertmanager.encryption | bool | `false` |  |
 | bridges.alertmanager.existingSecret.registration | string | `""` |  |
