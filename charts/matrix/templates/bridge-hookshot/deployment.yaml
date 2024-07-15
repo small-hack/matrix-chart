@@ -95,7 +95,7 @@ spec:
               {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.oauth_client_secret }}
               yq eval -i '.github.auth.id = env(OAUTH_CLIENT_SECRET)' /data/config.yml && \
               {{- end }}
-              {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.privateKey }}
+              {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.private_key }}
               cp /load/github-key.pem /data/github-key.pem && \
               {{- end }}
               {{- end }}{{/* end if github.existingSecret */}}
@@ -205,11 +205,11 @@ spec:
                   name: {{ include "matrix.hookshot.passkeySecret" . }}
               - secret:
                   name: {{ include "matrix.hookshot.registrationSecret" . }}
-              {{- if and .Values.bridges.hookshot.config.github.existingSecret .Values.bridges.config.hookshot.config.github.existingSecretKeys.privateKey }}
+              {{- if and .Values.bridges.hookshot.config.github.existingSecret .Values.bridges.hookshot.config.github.existingSecretKeys.private_key }}
               - secret:
                   name: {{ .Values.bridges.hookshot.config.github.existingSecret }}
                   items:
-                    - key: {{ .Values.bridges.hookshot.config.github.existingSecretKeys.privateKey }}
+                    - key: {{ .Values.bridges.hookshot.config.github.existingSecretKeys.private_key }}
                       path: github-key.pem
               {{- end }}
         - name: data

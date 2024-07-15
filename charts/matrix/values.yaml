@@ -2080,7 +2080,7 @@ bridges:
           # -- key in existing Kubernetes secret for GitHub oauth client secret
           oauth_client_secret: ""
           # -- key in existin Kubernetes secret for GitHub privatekey
-          privateKey: ""
+          private_key: ""
 
         # -- If you are using an on-premise / enterprise edition of GitHub,
         # you need provide the base URL in enterpriseUrl. You do not need to
