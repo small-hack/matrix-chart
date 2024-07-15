@@ -118,28 +118,28 @@ spec:
             - name: APP_ID
               valueFrom:
                 secretKeyRef:
-                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret.auth_id }}
+                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret }}
                   key: {{ . }}
            {{- end }}{{/* with config.github.existingSecretKeys.auth_id */}}
            {{- with .Values.bridges.hookshot.config.github.existingSecretKeys.webhook_secret }}
             - name: WEBHOOK_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret.webhook_secret }}
+                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret }}
                   key: {{ . }}
            {{- end }}{{/* with config.github.existingSecretKeys.webhook_secret */}}
            {{- with .Values.bridges.hookshot.config.github.existingSecretKeys.oauth_client_id }}
             - name: OAUTH_CLIENT_ID
               valueFrom:
                 secretKeyRef:
-                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret.oauth_client_id }}
+                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret }}
                   key: {{ . }}
            {{- end }}{{/* with config.github.existingSecretKeys.oauth_client_id */}}
            {{- with .Values.bridges.hookshot.config.github.existingSecretKeys.oauth_client_secret }}
             - name: OAUTH_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret.oauth_client_secret }}
+                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret }}
                   key: {{ . }}
            {{- end }}{{/* with config.github.existingSecretKeys.oauth_client_secret */}}
           {{- end }}{{/* end if existing secret for github or registration */}}
