@@ -150,6 +150,8 @@ spec:
               mountPath: /data
             - name: bridges
               mountPath: /bridges
+            - name: stratch
+              mountPath: /tmp
           {{- with .Values.bridges.hookshot.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
@@ -215,6 +217,9 @@ spec:
         - name: data
           emptyDir:
             sizeLimit: 500Mi
+        - name: scratch
+          emptyDir:
+            sizeLimit: 10Mi
         - name: bridges
           persistentVolumeClaim:
             {{- if not .Values.bridges.volume.existingClaim }}
