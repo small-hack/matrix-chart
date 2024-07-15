@@ -76,6 +76,7 @@ spec:
             - |
               cp /load/registration.yaml /data/registration.yaml && \
               cp /load/config.yml /data/config.yml && \
+              cp /load/passkey.pem /data/passkey.pem && \
               {{- if .Values.bridges.hookshot.registration.existingSecret }}
               echo "Starting yq of registration.yaml" && \
               yq eval -i '.as_token = env(AS_TOKEN)' /data/registration.yaml && \
@@ -93,6 +94,9 @@ spec:
               {{- end }}
               {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.oauth_client_secret }}
               yq eval -i '.github.auth.id = env(OAUTH_CLIENT_SECRET)' /data/config.yml && \
+              {{- end }}
+              {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.privateKey }}
+              cp /load/github-key.pem /data/github-key.pem && \
               {{- end }}
               {{- end }}{{/* end if github.existingSecret */}}
               cp /data/registration.yaml /bridges/hookshot.yaml
@@ -142,6 +146,8 @@ spec:
           volumeMounts:
             - name: load
               mountPath: /load
+            - name: data
+              mountPath: /data
             - name: bridges
               mountPath: /bridges
           {{- with .Values.bridges.hookshot.securityContext }}
@@ -199,6 +205,16 @@ spec:
                   name: {{ include "matrix.hookshot.passkeySecret" . }}
               - secret:
                   name: {{ include "matrix.hookshot.registrationSecret" . }}
+              {{- if and .Values.bridges.hookshot.config.github.existingSecret .Values.bridges.config.hookshot.config.github.existingSecretKeys.privateKey }}
+              - secret:
+                  name: {{ .Values.bridges.hookshot.config.github.existingSecret }}
+                  items:
+                    - key: {{ .Values.bridges.hookshot.config.github.existingSecretKeys.privateKey }}
+                      path: github-key.pem
+              {{- end }}
+        - name: data
+          emptyDir:
+            sizeLimit: 500Mi
         - name: bridges
           persistentVolumeClaim:
             {{- if not .Values.bridges.volume.existingClaim }}
