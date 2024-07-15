@@ -31,13 +31,13 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 |-----|------|---------|-------------|
 | bridges.affinity | bool | `false` | Recommended to leave this disabled to allow bridges to be scheduled on separate nodes. Set this to true to reduce latency between the homeserver and bridges, or if your cloud provider does not allow the ReadWriteMany access mode (see below) |
 | bridges.alertmanager.config.alertmanager_url | string | `""` | set to enable silence link, e.g. https://alertmanager.example.com |
-| bridges.alertmanager.config.app_alertmanager_secret | string | `""` | secret key for the webhook events, I don't know what this is |
-| bridges.alertmanager.config.app_port | int | `3000` | appservice port? |
+| bridges.alertmanager.config.app_alertmanager_secret | string | `""` | secret key for the alertmanager webhook config URL |
+| bridges.alertmanager.config.app_port | int | `3000` | alertmanager's container port |
 | bridges.alertmanager.config.bot.avatar_url | string | `""` | optional: mxc:// avatar to set for the bot user |
 | bridges.alertmanager.config.bot.display_name | string | `""` | optional: display name to set for the bot user |
 | bridges.alertmanager.config.bot.mention_room | bool | `false` | Set this to true to make firing alerts do a `@room` mention. NOTE! Bot should also have enough power in the room for this to be useful. |
 | bridges.alertmanager.config.bot.rooms | string | `""` | rooms to send alerts to, separated by a | Each entry contains the receiver name (from alertmanager) and the internal id (not the public alias) of the Matrix channel to forward to. |
-| bridges.alertmanager.config.bot.user | string | `""` | user in matrix for the the alertmanager bot e.g. alertmanager which becomes @alertmanager:homeserver.tld |
+| bridges.alertmanager.config.bot.user | string | `"alertmanager"` | user in matrix for the the alertmanager bot e.g. alertmanager which becomes @alertmanager:homeserver.tld |
 | bridges.alertmanager.config.grafana_datasource | string | `""` | grafana data source, e.g. default |
 | bridges.alertmanager.config.grafana_url | string | `""` | set to enable Grafana links, e.g. https://grafana.example.com |
 | bridges.alertmanager.config.homeserver_url | string | `""` | your homeserver url, e.g. https://homeserver.tld |
