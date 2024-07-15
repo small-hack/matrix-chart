@@ -2458,7 +2458,7 @@ bridges:
       # -- docker image repo for mautrix/discord bridge
       repository: "dock.mau.dev/mautrix/discord"
       # -- tag for mautrix/discord bridge docker image
-      tag: "08cde6313a32d2382886444db86a7a6e6b12080c-amd64"
+      tag: "8d01c30014978e2360d5cb102e96542ecb2402b6-amd64"
       pullPolicy: IfNotPresent
 
     service:
