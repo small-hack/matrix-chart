@@ -64,8 +64,10 @@ These features still need to be tested, but are technically baked into the chart
 * [Notes on using Matrix Sliding Sync](#notes-on-using-matrix-sliding-sync)
 * [Notes on using MAS (Matrix Authentication Service)](#notes-on-using-mas-matrix-authentication-service)
 * [Bridges](#bridges)
+    * [Alertmanager](#alertmanager)
     * [Discord](#discord)
 * [About and Status](#about-and-status)
+
 
 ## Databases
 
