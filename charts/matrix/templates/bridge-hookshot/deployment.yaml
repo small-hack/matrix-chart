@@ -74,13 +74,13 @@ spec:
             - /bin/sh
             - -ec
             - |
-              cp /load/registration.yaml /data/registration.yaml && \
+              cp /load/registration.yml /data/registration.yml && \
               cp /load/config.yml /data/config.yml && \
               cp /load/passkey.pem /data/passkey.pem && \
               {{- if .Values.bridges.hookshot.registration.existingSecret }}
-              echo "Starting yq of registration.yaml" && \
-              yq eval -i '.as_token = env(AS_TOKEN)' /data/registration.yaml && \
-              yq eval -i '.hs_token = env(HS_TOKEN)' /data/registration.yaml && \
+              echo "Starting yq of registration.yml" && \
+              yq eval -i '.as_token = env(AS_TOKEN)' /data/registration.yml && \
+              yq eval -i '.hs_token = env(HS_TOKEN)' /data/registration.yml && \
               {{- end }}
               {{- if .Values.bridges.hookshot.config.github.existingSecret }}
               {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.auth_id }}
@@ -99,7 +99,7 @@ spec:
               cp /load/github-key.pem /data/github-key.pem && \
               {{- end }}
               {{- end }}{{/* end if github.existingSecret */}}
-              cp /data/registration.yaml /bridges/hookshot.yaml
+              cp /data/registration.yml /bridges/hookshot.yaml
           {{- if or .Values.bridges.hookshot.registration.existingSecret .Values.bridges.hookshot.config.github.existingSecret }}
           env:
            {{- if .Values.bridges.hookshot.registration.existingSecret }}
