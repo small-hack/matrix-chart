@@ -241,7 +241,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.config.github.existingSecretKeys.auth_id | string | `""` | key in existing Kubernetes secret for GitHub auth.id which is the GitHub App ID |
 | bridges.hookshot.config.github.existingSecretKeys.oauth_client_id | string | `""` | key in existing Kubernetes secret for GitHub oauth client id |
 | bridges.hookshot.config.github.existingSecretKeys.oauth_client_secret | string | `""` | key in existing Kubernetes secret for GitHub oauth client secret |
-| bridges.hookshot.config.github.existingSecretKeys.privateKey | string | `""` | key in existin Kubernetes secret for GitHub privatekey |
+| bridges.hookshot.config.github.existingSecretKeys.private_key | string | `""` | key in existin Kubernetes secret for GitHub privatekey |
 | bridges.hookshot.config.github.existingSecretKeys.webhook_secret | string | `""` | key in existing Kubernetes secret for GitHub webhook secret |
 | bridges.hookshot.config.github.oauth | object | `{"client_id":"","client_secret":"","redirect_uri":""}` | oauth section should include both the Client ID and Client Secret on the GitHub App page. The redirect_uri value must be the public path to /oauth on the webhooks path. E.g. if your load balancer points https://example.com/hookshot to the bridge webhooks listener, you should use the path https://example.com/hookshot/oauth. This value MUST exactly match the Callback URL on the GitHub App page. |
 | bridges.hookshot.config.github.userIdPrefix | Optional | `"_github_"` | Prefix used when creating ghost users for GitHub accounts. |
