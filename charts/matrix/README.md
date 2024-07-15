@@ -287,12 +287,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.image.repository | string | `"halfshot/matrix-hookshot"` | hookshot bridge docker image |
 | bridges.hookshot.image.tag | string | `"5.4.1"` | hookshot bridge docker image tag |
 | bridges.hookshot.passkey | string | `""` | If bridges.hookshot.passkey AND bridges.hookshot.existingSecret.passkey are BOTH empty strings, we will generate a passkey for you. To Generate yourself: openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 |
-| bridges.hookshot.podSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| bridges.hookshot.podSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| bridges.hookshot.podSecurityContext.fsGroup | int | `1000` |  |
-| bridges.hookshot.podSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
-| bridges.hookshot.podSecurityContext.runAsGroup | int | `1000` |  |
-| bridges.hookshot.podSecurityContext.runAsUser | int | `1000` |  |
+| bridges.hookshot.podSecurityContext | object | `{}` | hookshot pod security context |
 | bridges.hookshot.registration.existingSecret | string | `""` |  |
 | bridges.hookshot.registration.existingSecretKeys.as_token | string | `"as_token"` | key in existingSecret for as_token (application service token) |
 | bridges.hookshot.registration.existingSecretKeys.hs_token | string | `"hs_token"` | key in existingSecret for hs_token (home server token) |
@@ -302,8 +297,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.replicaCount | int | `1` | hookshot bridge pod replicas |
 | bridges.hookshot.resources | object | `{}` | resources limits/requests for the hookshot bridge pod |
 | bridges.hookshot.revisionHistoryLimit | int | `2` | set the revisionHistoryLimit to decide how many replicaSets are kept when you change a deployment. Explicitly setting this field to 0, will result in cleaning up all the history of your Deployment thus that Deployment will not be able to roll back. |
-| bridges.hookshot.securityContext.runAsGroup | int | `1000` |  |
-| bridges.hookshot.securityContext.runAsUser | int | `1000` |  |
+| bridges.hookshot.securityContext | object | `{}` | hookshot container securityContext |
 | bridges.hookshot.service.appservice.port | int | `9993` | appservice service port for the hookshot bridge |
 | bridges.hookshot.service.metrics.port | int | `9001` | metrics service port for the hookshot bridge |
 | bridges.hookshot.service.type | string | `"ClusterIP"` | service type for the hookshot bridge |
