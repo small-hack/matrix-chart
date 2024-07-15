@@ -150,7 +150,7 @@ spec:
               mountPath: /data
             - name: bridges
               mountPath: /bridges
-            - name: stratch
+            - name: scratch
               mountPath: /tmp
           {{- with .Values.bridges.hookshot.securityContext }}
           securityContext:
