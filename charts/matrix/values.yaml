@@ -646,9 +646,12 @@ synapse:
   ingress:
     # -- enable ingress for synapse, so the server is reachable outside the cluster
     enabled: true
+
     # -- @DEPRECATION: hostname for your synapse server, please use
-    # synapse.ingress.hosts instead. This will be removed in a future release
-    host: ""
+    # synapse.ingress.hosts for ingress instead. This has been removed in helm
+    # chart verison 13.0.0. You must also set matrix.hostname for all to work normally
+    # host: ""
+
     # -- ingressClassName for the k8s ingress
     className: "nginx"
     annotations:
@@ -660,8 +663,6 @@ synapse:
       nginx.ingress.kubernetes.io/configuration-snippet: |
         proxy_intercept_errors off;
 
-    # NOTE: you cannot use synapse.ingress.host AND synapse.ingress.hosts. You
-    # must pick one or the other. synapse.ingress.host will be deprecated in the future
     hosts:
       - host: "matrix.chart-example.local"
         paths:
@@ -679,6 +680,15 @@ synapse:
           #       port:
           #         name: http
 
+          # if bridges.hookshot.generic.enabled, you want to uncomment the following:
+          #  - path: /webhook
+          #   pathType: ImplementationSpecific
+          #   backend:
+          #     service:
+          #       value: release-name-bridge-hookshot
+          #       port:
+          #         name: http
+
     # -- enable tls for synapse ingress
     tls: []
     # to enable tls for synapse remove the [] on the line above and uncomment the
@@ -689,6 +699,12 @@ synapse:
 
   # -- replica count of the synapse pods
   replicaCount: 1
+
+  # -- set the revisionHistoryLimit to decide how many replicaSets are
+  # kept when you change a deployment. Explicitly setting this field to 0,
+  # will result in cleaning up all the history of your Deployment thus that
+  # Deployment will not be able to roll back.
+  revisionHistoryLimit: 2
 
   # -- resource requests and limits for synapse
   resources: {}
@@ -1827,7 +1843,479 @@ mail:
       username: "username"
       password: "password"
 
+############################################################################
+#  Bridges to synapse, for services such as Discord, Webhooks, IRC, and RSS
+############################################################################
 bridges:
+  alertmanager:
+    enabled: false
+    image:
+      # -- alertmanager bridge docker image
+      repository: "jessebot/matrix-alertmanager-bot"
+      # -- alertmanager bridge docker image tag
+      tag: "0.11.0"
+      # -- alertmanager bridge docker image pull policy. If tag is "latest", set tag to "Always"
+      pullPolicy: IfNotPresent
+
+    service:
+      # -- service type for the alertmanager bridge
+      type: ClusterIP
+
+    # -- alertmanager bridge pod replicas
+    replicaCount: 1
+
+    # -- set the revisionHistoryLimit to decide how many replicaSets are
+    # kept when you change a deployment. Explicitly setting this field to 0,
+    # will result in cleaning up all the history of your Deployment thus that
+    # Deployment will not be able to roll back.
+    revisionHistoryLimit: 2
+
+    existingSecret:
+      registration: ""
+
+    # this section is for registering the application service with matrix
+    # read more about application services here:
+    # https://spec.matrix.org/v1.11/application-service-api/
+    registration:
+      # -- name of the application service
+      id: "alertmanager"
+      # -- url of the alertmanager service. if not provided, we will template it
+      # for you like http://matrix-alertmanager-service:3000
+      url: ""
+      # -- should this bot be rate limited?
+      rate_limited: false
+      # -- localpart of the user associated with the application service.
+      # Events will be sent to the AS if this user is the target of the event,
+      # or is a joined member of the room where the event occurred.
+      sender_localpart: "alertmanager"
+      # A secret token that the application service will use to authenticate
+      # requests to the homeserver.
+      as_token: ""
+      # -- Use an existing Kubernetes Secret to store your own generated appservice
+      # and homeserver tokens. If this is not set, we'll generate them for you.
+      # Setting this won't override the ENTIRE registration.yaml we generate for
+      # the synapse pod to authenticate mautrix/discord. It will only replaces the tokens.
+      # To replaces the ENTIRE registration.yaml, use
+      # bridges.alertmanager.existingSecret.registration
+      existingSecret: ""
+      existingSecretKeys:
+        # -- key in existingSecret for as_token (application service token). If
+        # provided and existingSecret is set, ignores bridges.alertmanager.registration.as_token
+        as_token: "as_token"
+        # -- key in existingSecret for hs_token (home server token)
+        hs_token: "hs_token"
+
+    encryption: false
+
+    config:
+      # -- alertmanager's container port
+      app_port: 3000
+      # -- secret key for the alertmanager webhook config URL
+      app_alertmanager_secret: ""
+      # -- your homeserver url, e.g. https://homeserver.tld
+      homeserver_url: ""
+
+      bot:
+        # -- user in matrix for the the alertmanager bot e.g. alertmanager
+        # which becomes @alertmanager:homeserver.tld
+        user: "alertmanager"
+        # -- optional: display name to set for the bot user
+        display_name: ""
+        # -- optional: mxc:// avatar to set for the bot user
+        avatar_url: ""
+        # -- rooms to send alerts to, separated by a |
+        # Each entry contains the receiver name (from alertmanager) and the
+        # internal id (not the public alias) of the Matrix channel to forward to.
+        rooms: ""
+        # -- Set this to true to make firing alerts do a `@room` mention.
+        # NOTE! Bot should also have enough power in the room for this to be useful.
+        mention_room: false
+
+      # -- set to enable Grafana links, e.g. https://grafana.example.com
+      grafana_url: ""
+      # -- grafana data source, e.g. default
+      grafana_datasource: ""
+      # -- set to enable silence link, e.g. https://alertmanager.example.com
+      alertmanager_url: ""
+
+  # see: https://matrix-org.github.io/matrix-hookshot/latest/setup/sample-configuration.html
+  hookshot:
+    # -- enable the [hookshot](https://matrix-org.github.io/matrix-hookshot) bridge
+    enabled: false
+
+    # -- if you'd like to enable encryption in your registration.yml
+    encryption: false
+
+    image:
+      # -- hookshot bridge docker image
+      repository: "halfshot/matrix-hookshot"
+      # -- hookshot bridge docker image tag
+      tag: "5.4.1"
+      # -- hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always"
+      pullPolicy: IfNotPresent
+
+    # -- hookshot bridge pod replicas
+    replicaCount: 1
+
+    # -- set the revisionHistoryLimit to decide how many replicaSets are
+    # kept when you change a deployment. Explicitly setting this field to 0,
+    # will result in cleaning up all the history of your Deployment thus that
+    # Deployment will not be able to roll back.
+    revisionHistoryLimit: 2
+
+    # -- resources limits/requests for the hookshot bridge pod
+    resources: {}
+
+    service:
+      # -- service type for the hookshot bridge
+      type: ClusterIP
+      webhook:
+        # -- webhook service port for the hookshot bridge
+        port: 9000
+      metrics:
+        # -- metrics service port for the hookshot bridge
+        port: 9001
+      appservice:
+        # -- appservice service port for the hookshot bridge
+        port: 9993
+
+    # -- hookshot pod security context
+    podSecurityContext: {}
+
+    # -- hookshot container securityContext
+    securityContext: {}
+    #  runAsUser: 1000
+    #  runAsGroup: 1000
+    #  capabilities:
+    #    drop:
+    #      - ALL
+    #  readOnlyRootFilesystem: true
+    #  allowPrivilegeEscalation: false
+
+
+    # -- If bridges.hookshot.passkey AND bridges.hookshot.existingSecret.passkey are
+    # BOTH empty strings, we will generate a passkey for you. To Generate yourself:
+    # openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
+    passkey: ""
+
+    # -- use the name of an existing ConfigMap for hookshot bridge. If set, ignores
+    # entire bridges.hookshot.config section
+    existingConfigMap: ""
+
+    # optionally use existing kubernetes Secrets for passkey.pem, registration.yml, config.yml
+    existingSecret:
+      # -- optionally use existing kubernetes Secret for passkey.pem, ignores hookshot.passkey
+      passkey: ""
+      # -- optionally use existing kubernetes Secret for registration
+      registration: ""
+      # -- optionally use existing kubernetes Secret for config.yml, ignores hookshot.config
+      config: ""
+
+    # this file config is used to register the hookshot service with synapse
+    # if you don't provide any of these parameters, we will guess them
+    registration:
+      # -- This should match the bridges.hookshot.config.bridge.port in your config file
+      url: ""
+      sender_localpart: "hookshot"
+      rate_limited: false
+      # To replace the ENTIRE registration.yaml, use
+      # bridges.hookshot.existingSecret.registration
+      existingSecret: ""
+      existingSecretKeys:
+        # -- key in existingSecret for as_token (application service token)
+        as_token: "as_token"
+        # -- key in existingSecret for hs_token (home server token)
+        hs_token: "hs_token"
+
+    config:
+      bridge:
+        # -- if not set, defaults to matrix.serverName
+        domain: ""
+        # -- url in example is http://localhost:8008, but if not set, we use matrix.baseUrl
+        url: ""
+        # -- example is https://example.com, but if left blank, we don't include it
+        mediaUrl: ""
+        # -- the port to run the application service on
+        port: 9993
+        # -- this probably shouldn't change since we're using docker
+        bindAddress: 0.0.0.0
+
+      # -- A passkey used to encrypt tokens stored inside the bridge.
+      passFile: /data/passkey.pem
+
+      logging:
+        # -- log severity level. Options: debug, info, warn, error
+        level: info
+        # -- enable text colors in logging
+        colorize: true
+        # -- enable json formatted logging
+        json: false
+        # -- logging timestamp format
+        timestampFormat: HH:mm:ss:SSS
+
+      listeners:
+        # HTTP Listener configuration.
+        # Bind resource endpoints to ports and addresses.
+        # 'port' must be specified. Each listener must listen on a unique port.
+        # 'bindAddress' will default to '127.0.0.1' if not specified, which may not be suited to Docker environments.
+        # 'resources' may be any of webhooks, metrics, provisioning
+        - port: 9000
+          bindAddress: 0.0.0.0
+          resources:
+            - webhooks
+        - port: 9001
+          bindAddress: 0.0.0.0
+          resources:
+            - metrics
+            - provisioning
+        # - port: 9002
+        #   bindAddress: 0.0.0.0
+        #   resources:
+        #     - widgets
+
+      # https://matrix-org.github.io/matrix-hookshot/latest/setup/github.html
+      github:
+        # -- enable GitHub support in the hookshot bridge
+        enabled: false
+        # -- grab sensitive values for github from an existing Kubernetes secret
+        existingSecret: ""
+        existingSecretKeys:
+          # -- key in existing Kubernetes secret for GitHub auth.id which is the GitHub App ID
+          auth_id: ""
+          # -- key in existing Kubernetes secret for GitHub webhook secret
+          webhook_secret: ""
+          # -- key in existing Kubernetes secret for GitHub oauth client id
+          oauth_client_id: ""
+          # -- key in existing Kubernetes secret for GitHub oauth client secret
+          oauth_client_secret: ""
+          # -- key in existin Kubernetes secret for GitHub privatekey
+          private_key: ""
+
+        # -- If you are using an on-premise / enterprise edition of GitHub,
+        # you need provide the base URL in enterpriseUrl. You do not need to
+        # specify the /api/... path in the URL
+        enterpriseUrl: ""
+        auth:
+          # -- App ID for the GitHub App, e.g. 123
+          id: ""
+          # -- privateKeyFile can be generated by clicking "Generate a private key"
+          # under the Private keys section on the GitHub app page.
+          privateKeyFile: /data/github-key.pem
+
+        webhook:
+          # -- Webhook settings for the GitHub app. example showed value secrettoken
+          secret: ""
+
+        # -- oauth section should include both the Client ID and Client Secret
+        # on the GitHub App page. The redirect_uri value must be the public path
+        # to /oauth on the webhooks path. E.g. if your load balancer points
+        # https://example.com/hookshot to the bridge webhooks listener, you should
+        # use the path https://example.com/hookshot/oauth. This value MUST exactly
+        # match the Callback URL on the GitHub App page.
+        oauth:
+          client_id: ""
+          client_secret: ""
+          redirect_uri: ""
+
+        # -- (Optional) Default options for GitHub connections. see docs for more:
+        # https://matrix-org.github.io/matrix-hookshot/latest/usage/room_configuration/github_repo.html#configuration
+        defaultOptions:
+          showIssueRoomLink: false
+          hotlinkIssues:
+            prefix: "#"
+
+        # -- (Optional) Prefix used when creating ghost users for GitHub accounts.
+        userIdPrefix: _github_
+
+      # https://matrix-org.github.io/matrix-hookshot/latest/setup/gitlab.html
+      gitlab:
+        # -- enable GitLab support in the hookshot bridge
+        enabled: false
+
+        # -- gitlab instances to use
+        instances: {}
+        # gitlab.com:
+        #   url: https://gitlab.com
+
+        webhook:
+          # -- example showed value of secrettoken
+          secret: ""
+          # -- example showed https://example.com/hookshot/
+          publicUrl: ""
+
+        # -- (Optional) Prefix used when creating ghost users for GitLab accounts.
+        # docs suggest: "_gitlab_"
+        userIdPrefix: ""
+
+        # -- (Optional) Aggregate comments by waiting this many miliseconds before posting them to Matrix. Defaults to 5000 (5 seconds)
+        commentDebounceMs: 5000
+
+      figma:
+        # -- (Optional) Configure this to enable Figma support
+        enabled: false
+        publicUrl: https://example.com/hookshot/
+        instances:
+          your-instance:
+            teamId: your-team-id
+            accessToken: your-personal-access-token
+            passcode: your-webhook-passcode
+
+      generic:
+        # -- enable support for generic webhook events via the hookshot bridge,
+        # see [docs](https://matrix-org.github.io/matrix-hookshot/latest/setup/webhooks.html) for more info
+        enabled: false
+        # -- configure Hookshot to send outgoing requests to other services when
+        # a message appears on Matrix
+        outbound: false
+        # -- means that webhooks can be triggered by GET requests, in addition to
+        # POST and PUT. This was previously on by default, but is now disabled
+        # due to concerns mentioned in docs.
+        enableHttpGet: false
+        # -- describes the public facing URL of your webhook handler. For instance,
+        # if your load balancer redirected webhook requests from
+        # https://example.com/mywebhookspath to the bridge (on /webhook), an
+        # example webhook URL would look like: https://example.com/mywebhookspath/abcdef.
+        urlPrefix: ""
+        # -- create a specific user for each new webhook connection in a room.
+        # For example, a connection with a name like example for a prefix of
+        # webhook_ will create a user called @webhook_example:example.com. If you
+        # enable this option, you need to configure the user to be part of your
+        # registration file
+        userIdPrefix: ""
+        # -- will allow users to write short transformation snippets in code,
+        # and thus is unsafe in untrusted environments
+        allowJsTransformationFunctions: false
+        # -- causes the bridge to wait until the webhook is processed before
+        # sending a response. Some services prefer you always respond with a 200
+        # as soon as the webhook has entered processing (false) while others
+        # prefer to know if the resulting Matrix message has been sent (true)
+        waitForComplete: false
+
+      feeds:
+        # -- enable RSS/Atom feed support
+        enabled: false
+        pollConcurrency: 4
+        # -- specifies how often each feed will be checked for updates. It may be checked less often if under exceptional load, but it will never be checked more often than every pollIntervalSeconds
+        pollIntervalSeconds: 600
+        pollTimeoutSeconds: 30
+
+
+      provisioning:
+        # -- (Optional) Provisioning API for integration managers
+        enabled: false
+        secret: "!secretToken"
+
+      # (Optional) Define profile information for the bot user
+      bot:
+        # -- Define profile display name for the bot user
+        displayname: ""
+        # -- optional: Define profile avatar for the bot user
+        # example: mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d
+        avatar: ""
+
+      # -- (Optional) Define additional bot users for specific services
+      serviceBots: []
+      #  - localpart: feeds
+      #    displayname: Feeds
+      #    avatar: ./assets/feeds_avatar.png
+      #    prefix: "!feeds"
+      #    service: feeds
+
+      metrics:
+        # -- enable Prometheus metrics support from hookshot to Prometheus, see
+        # [docs](https://matrix-org.github.io/matrix-hookshot/latest/metrics.html)
+        enabled: false
+
+      # -- (Optional) Cache options for large scale deployments.
+      cache:
+        # -- For encryption to work, this must be configured.
+        # example value: redis://localhost:6379
+        redisUri: ""
+
+      # -- (Optional) Message queue configuration options for large scale deployments.
+      queue:
+        # -- For encryption to work, this must not be configured.
+        # example value: redis://localhost:6379
+        redisUri: ""
+
+      widgets:
+        # -- (Optional) EXPERIMENTAL support for complimentary widgets
+        enabled: false
+        # -- The admin room feature is still very barebones so while it's
+        # included here for completeness, most instances should leave
+        # addToAdminRooms off (as it is by default). This flag will add an
+        # "admin room" widget to user admin rooms.
+        addToAdminRooms: false
+        # -- which IP ranges should be disallowed when resolving homeserver IP
+        # addresses (for security reasons). Unless you know what you are doing,
+        # it is recommended to not include this key. The default blocked IPs are
+        # listed below for your convenience. In addition to setting up the widgets
+        # config, you must bind a listener for the widgets resource in your listeners config.
+        disallowedIpRanges: []
+        #  - 127.0.0.0/8
+        #  - 10.0.0.0/8
+        #  - 172.16.0.0/12
+        #  - 192.168.0.0/16
+        #  - 100.64.0.0/10
+        #  - 192.0.0.0/24
+        #  - 169.254.0.0/16
+        #  - 192.88.99.0/24
+        #  - 198.18.0.0/15
+        #  - 192.0.2.0/24
+        #  - 198.51.100.0/24
+        #  - 203.0.113.0/24
+        #  - 224.0.0.0/4
+        #  - ::1/128
+        #  - fe80::/10
+        #  - fc00::/7
+        #  - 2001:db8::/32
+        #  - ff00::/8
+        #  - fec0::/10
+
+        # -- The room setup feature is more complete, supporting generic webhook
+        # configuration (with more options coming soon). This can be enabled by
+        # setting roomSetupWidget to an object. You can add the widget by saying
+        # !hookshot setup-widget in any room. When addOnInvite is true, the bridge
+        # will add a widget to rooms when the bot is invited, and the room has
+        # no existing connections.
+        roomSetupWidget:
+          addOnInvite: false
+        # -- should be set to the publicly reachable address for the widget
+        # public content. By default, Hookshot hosts this content on the widgets
+        # listener under /widgetapi/v1/static.
+        publicUrl: https://example.com/widgetapi/v1/static/
+        branding:
+          # allows you to change the strings used for various bits of widget UI.
+          # At the moment you can: Set widgetTitle to change the title of the
+          # widget that is created.
+          widgetTitle: Hookshot Configuration
+        # -- allows you to configure the correct federation endpoints for a
+        # given set of Matrix server names. This is useful if you are
+        # testing/developing Hookshot in a local dev environment. Production
+        # environments should not use this configuration (as their Matrix server
+        # name should be resolvable). The config takes a mapping of Matrix server
+        # name => base path for federation. E.g. if your server name was
+        # my-local-server and your federation was readable via
+        # http://localhost/_matrix/federation,
+        # you would put configure my-local-server: "http://localhost"
+        openIdOverrides: {}
+        #  my-local-server: "http://localhost"
+
+      # -- (Optional) Configure Sentry error reporting
+      sentry:
+        # -- example value: https://examplePublicKey@o0.ingest.sentry.io/0
+        dsn: ""
+        # -- example value: production
+        environment: ""
+
+      # -- (Optional) Permissions for using the bridge. See
+      # [docs](https://matrix-org.github.io/matrix-hookshot/latest/setup.html#permissions)
+      permissions: []
+      #  - actor: example.com
+      #    services:
+      #      - service: "*"
+      #        level: admin
+
   irc:
     # -- Set to true to enable the IRC bridge
     enabled: false
@@ -1875,7 +2363,8 @@ bridges:
       displayName: "WhatsApp bridge bot"
 
       # -- avatar of the WhatsApp bridge bot
-      avatar: "mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
+      # example: mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr
+      avatar: ""
 
     # -- Permissions for using the bridge.
     # Permitted values:
@@ -1954,8 +2443,468 @@ bridges:
       type: ClusterIP
       port: 29318
 
+  discord_mautrix:
+    # -- Set to true to enable the Discord bridge. Learn more in the
+    # [mautrix bridge docs](https://docs.mau.fi/bridges/go/discord/index.html).
+    enabled: false
+
+    # -- set the revisionHistoryLimit to decide how many replicaSets are
+    # kept when you change a deployment. Explicitly setting this field to 0,
+    # will result in cleaning up all the history of your Deployment thus that
+    # Deployment will not be able to roll back.
+    revisionHistoryLimit: 2
+
+    image:
+      # -- docker image repo for mautrix/discord bridge
+      repository: "dock.mau.dev/mautrix/discord"
+      # -- tag for mautrix/discord bridge docker image
+      tag: "08cde6313a32d2382886444db86a7a6e6b12080c-amd64"
+      pullPolicy: IfNotPresent
+
+    service:
+      type: ClusterIP
+      bridge:
+        port: 29334
+
+    # -- security context for the init container and main container in the discord pod
+    securityContext: {}
+    #  runAsUser: 1337
+    #  runAsGroup: 1337
+
+    # -- security context for the entire mautrix/discord pod
+    podSecurityContext: {}
+    #  runAsUser: 1337
+    #  fsGroup: 1337
+
+    registration:
+      # -- I don't actually know what this does
+      sender_localpart: "discord"
+      # -- Use an existing Kubernetes Secret to store your own generated appservice
+      # and homeserver tokens. If this is not set, we'll generate them for you.
+      # Setting this won't override the ENTIRE registration.yaml we generate for
+      # the synapse pod to authenticate mautrix/discord. It will only replaces the tokens.
+      # To replaces the ENTIRE registration.yaml, use
+      # bridges.discord_mautrix.existingSecret.registration
+      existingSecret: ""
+      existingSecretKeys:
+        # -- key in existingSecret for as_token (appservice token)
+        as_token: "as_token"
+        # -- key in existingSecret for hs_token (home server token)
+        hs_token: "hs_token"
+
+    # -- use an existingSecret for mautrix/discord bridge config.yaml,
+    # if set, ignores everything under bridges.discord_mautrix.config
+    # Cannot be used in combination with bridges.discord_mautrix.registration.existingSecret.
+    existingSecret:
+      registration: ""
+      config: ""
+
+    # -- extra volumes for the mautrix/discord deployment
+    extraVolumes: []
+
+    # -- extra volumeMounts for the mautrix/discord deployment
+    extraVolumeMounts: []
+
+    # -- optional: if set and bridges.discord_mautrix.config.permissions are NOT
+    # set below, we'll use this list of admin users to template an admin user
+    # using your matrix host. You MUST also set the matrix.hostname parameter.
+    # example value of ["admin"] would become @admin:matrix.example.com
+    admin_users: []
+
+    # templates out to config.yaml for the mautrix bridge
+    config:
+      # Homeserver details
+      homeserver:
+        # -- The address that this appservice can use to connect to the homeserver.
+        # this would be something like https://matrix.example.com, but if not set,
+        # we'll try to guess the correct homeserver url :)
+        address: ""
+        # Publicly accessible base URL for media, used for avatars in relay mode.
+        # If not set, the connection address above will be used.
+        public_address: null
+        # -- domain of the homeserver (also known as server_name, used for MXIDs, etc).
+        # if not provided, we'll try to guess the correct one, but if your server is
+        # https://matrix.example.com, it's probably example.com
+        domain: ""
+
+        # -- What software is the homeserver running? Standard Matrix homeservers
+        # like Synapse, Dendrite and Conduit should just use "standard" here.
+        software: standard
+        # -- The URL to push real-time bridge status to. If set, the bridge
+        # will make POST requests to this URL whenever a user's discord connection state changes.
+        # The bridge will use the appservice as_token to authorize requests.
+        status_endpoint: null
+        # -- Endpoint for reporting per-message status.
+        message_send_checkpoint_endpoint: null
+        # -- Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246?
+        async_media: false
+
+        # -- Should the bridge use a websocket for connecting to the homeserver?
+        # The server side is currently not documented anywhere and is only implemented by mautrix-wsproxy,
+        # mautrix-asmux (deprecated), and hungryserv (proprietary).
+        websocket: false
+        # -- How often should the websocket be pinged? Pinging will be disabled if this is zero.
+        ping_interval_seconds: 0
+
+      # Application service host/registration related details.
+      # Changing these values requires regeneration of the registration.
+      appservice:
+        # -- The address that the homeserver can use to connect to this appservice.
+        # example is http://localhost:29334 but if not provided, we guess :)
+        address: ""
+        # -- The hostname where this appservice should listen.
+        hostname: 0.0.0.0
+        # -- The port where this appservice should listen.
+        port: 29334
+
+        # Database config.
+        database:
+          # -- The database type. "sqlite3-fk-wal" and "postgres" are supported.
+          type: sqlite3-fk-wal
+          # -- The database URI.
+          # SQLite: A raw file path is supported, but recommended way is:
+          #   `file:<path>?_txlock=immediate`
+          #   https://github.com/mattn/go-sqlite3#connection-string
+          # Postgres: Connection string. For example,
+          #   postgres://user:password@host/database?sslmode=disable
+          # To connect via Unix socket, use something like,
+          #   postgres:///dbname?host=/var/run/postgresql
+          uri: file:/mautrixdiscord.db?_txlock=immediate
+          # -- Maximum number of connections. Mostly relevant for Postgres.
+          max_open_conns: 20
+          max_idle_conns: 2
+          # -- Maximum connection idle time before its closed. Disabled if null.
+          # Parsed with https://pkg.go.dev/time#ParseDuration
+          max_conn_idle_time: null
+          # -- Maximum connection lifetime before its closed. Disabled if null.
+          # Parsed with https://pkg.go.dev/time#ParseDuration
+          max_conn_lifetime: null
+
+        # -- The unique ID of this appservice.
+        id: discord
+        # Appservice bot details.
+        bot:
+          # -- Username of the appservice bot.
+          username: discordbot
+          # -- Display name for bot. Set to "remove" to remove display name.
+          displayname: Discord bridge bot
+          # -- Display avatar for bot. Set to "remove" to remove display avatar.
+          # example: mxc://maunium.net/nIdEykemnwdisvHbpxflpDlC
+          avatar: "remove"
+
+        # -- Whether or not to receive ephemeral events via appservice transactions.
+        # Requires MSC2409 support (i.e. Synapse 1.22+).
+        ephemeral_events: true
+
+        # -- Should incoming events be handled asynchronously?
+        # This may be necessary for large public instances with lots of messages going through.
+        # However, messages will not be guaranteed to be bridged in the same order they were sent in.
+        async_transactions: false
+
+        ## Authentication tokens for AS <-> HS communication. Autogenerated; do not modify.
+        # as_token: "This value is generated when generating the registration"
+        ## Authentication tokens for AS <-> HS communication. Autogenerated; do not modify.
+        # hs_token: "This value is generated when generating the registration"
+
+      # Bridge config
+      bridge:
+        # -- Localpart template of MXIDs for Discord users.
+        # {{.}} is replaced with the internal ID of the Discord user.
+        username_template: "{{`discord_{{.}}`}}"
+        # -- Displayname template for Discord users. This is also used as the room name in DMs if private_chat_portal_meta is enabled.
+        # Available variables:
+        #   .ID - Internal user ID
+        #   .Username - Legacy display/username on Discord
+        #   .GlobalName - New displayname on Discord
+        #   .Discriminator - The 4 numbers after the name on Discord
+        #   .Bot - Whether the user is a bot
+        #   .System - Whether the user is an official system user
+        #   .Webhook - Whether the user is a webhook and is not an application
+        #   .Application - Whether the user is an application
+        displayname_template: '{{or .GlobalName .Username}}{{if .Bot}} (bot){{end}}'
+        # -- Displayname template for Discord channels (bridged as rooms, or spaces when type=4).
+        # Available variables:
+        #   .Name - Channel name, or user displayname (pre-formatted with displayname_template) in DMs.
+        #   .ParentName - Parent channel name (used for categories).
+        #   .GuildName - Guild name.
+        #   .NSFW - Whether the channel is marked as NSFW.
+        #   .Type - Channel type (see values at https://github.com/bwmarrin/discordgo/blob/v0.25.0/structs.go#L251-L267)
+        channel_name_template: '{{if or (eq .Type 3) (eq .Type 4)}}{{.Name}}{{else}}#{{.Name}}{{end}}'
+        # -- Displayname template for Discord guilds (bridged as spaces).
+        # Available variables:
+        #   .Name - Guild name
+        guild_name_template: '{{.Name}}'
+        # -- Whether to explicitly set the avatar and room name for private chat portal rooms.
+        # If set to `default`, this will be enabled in encrypted rooms and disabled in unencrypted rooms.
+        # If set to `always`, all DM rooms will have explicit names and avatars set.
+        # If set to `never`, DM rooms will never have names and avatars set.
+        private_chat_portal_meta: default
+
+        portal_message_buffer: 128
+
+        # -- Number of private channel portals to create on bridge startup.
+        # Other portals will be created when receiving messages.
+        startup_private_channel_create_limit: 5
+        # -- Should the bridge send a read receipt from the bridge bot when a message has been sent to Discord?
+        delivery_receipts: false
+        # -- Whether the bridge should send the message status as a custom com.beeper.message_send_status event.
+        message_status_events: false
+        # -- Whether the bridge should send error notices via m.notice events when a message fails to bridge.
+        message_error_notices: true
+        # -- Should the bridge use space-restricted join rules instead of invite-only for guild rooms?
+        # This can avoid unnecessary invite events in guild rooms when members are synced in.
+        restricted_rooms: true
+        # -- Should the bridge automatically join the user to threads on Discord when the thread is opened on Matrix?
+        # This only works with clients that support thread read receipts (MSC3771 added in Matrix v1.4).
+        autojoin_thread_on_open: true
+        # -- Should inline fields in Discord embeds be bridged as HTML tables to Matrix?
+        # Tables aren't supported in all clients, but are the only way to emulate the Discord inline field UI.
+        embed_fields_as_tables: true
+        # -- Should guild channels be muted when the portal is created? This only meant for single-user instances,
+        # it won't mute it for all users if there are multiple Matrix users in the same Discord guild.
+        mute_channels_on_create: false
+        # -- Should the bridge update the m.direct account data event when double puppeting is enabled.
+        # Note that updating the m.direct event is not atomic (except with mautrix-asmux)
+        # and is therefore prone to race conditions.
+        sync_direct_chat_list: false
+        # -- Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
+        # This field will automatically be changed back to false after it, except if the config file is not writable.
+        resend_bridge_info: false
+        # -- Should incoming custom emoji reactions be bridged as mxc:// URIs?
+        # If set to false, custom emoji reactions will be bridged as the shortcode instead, and the image won't be available.
+        custom_emoji_reactions: true
+        # -- Should the bridge attempt to completely delete portal rooms when a channel is deleted on Discord?
+        # If true, the bridge will try to kick Matrix users from the room. Otherwise, the bridge only makes ghosts leave.
+        delete_portal_on_channel_delete: false
+        # -- Should the bridge delete all portal rooms when you leave a guild on Discord?
+        # This only applies if the guild has no other Matrix users on this bridge instance.
+        delete_guild_on_leave: true
+        # -- Whether or not created rooms should have federation enabled.
+        # If false, created portal rooms will never be federated.
+        federate_rooms: true
+        # -- Prefix messages from webhooks with the profile info? This can be used along with a custom displayname_template
+        # to better handle webhooks that change their name all the time (like ones used by bridges).
+        prefix_webhook_messages: false
+        # -- Bridge webhook avatars?
+        enable_webhook_avatars: true
+        # -- Should the bridge upload media to the Discord CDN directly before sending the message when using a user token,
+        # like the official client does? The other option is sending the media in the message send request as a form part
+        # (which is always used by bots and webhooks).
+        use_discord_cdn_upload: true
+        # -- Should mxc uris copied from Discord be cached?
+        # This can be `never` to never cache, `unencrypted` to only cache unencrypted mxc uris, or `always` to cache everything.
+        # If you have a media repo that generates non-unique mxc uris, you should set this to never.
+        cache_media: unencrypted
+        # -- Settings for converting Discord media to custom mxc:// URIs instead of reuploading.
+        # More details can be found at https://docs.mau.fi/bridges/go/discord/direct-media.html
+        direct_media:
+          # -- Should custom mxc:// URIs be used instead of reuploading media?
+          enabled: false
+          # -- The server name to use for the custom mxc:// URIs.
+          # This server name will effectively be a real Matrix server, it just won't implement anything other than media.
+          # You must either set up .well-known delegation from this domain to the bridge, or proxy the domain directly to the bridge.
+          server_name: discord-media.example.com
+          # -- Optionally a custom .well-known response. This defaults to `server_name:443`
+          well_known_response:
+          # -- The bridge supports MSC3860 media download redirects and will use them if the requester supports it.
+          # Optionally, you can force redirects and not allow proxying at all by setting this to false.
+          allow_proxy: true
+          # -- Matrix server signing key to make the federation tester pass, same format as synapse's .signing.key file.
+          server_key: generate
+        # Settings for converting animated stickers.
+        animated_sticker:
+          # -- Format to which animated stickers should be converted.
+          # disable - No conversion, send as-is (lottie JSON)
+          # png - converts to non-animated png (fastest)
+          # gif - converts to animated gif
+          # webm - converts to webm video, requires ffmpeg executable with vp9 codec and webm container support
+          # webp - converts to animated webp, requires ffmpeg executable with webp codec/container support
+          target: webp
+          # Arguments for converter. All converters take width and height.
+          args:
+            # -- width arg for converter
+            width: 320
+            # -- height arg for converter
+            height: 320
+            # -- fps, only for webm, webp and gif (2, 5, 10, 20 or 25 recommended)
+            fps: 25
+        # -- Servers to always allow double puppeting from
+        double_puppet_server_map: {}
+        #  example.com: https://example.com
+        # -- Allow using double puppeting from any server with a valid client .well-known file.
+        double_puppet_allow_discovery: false
+        # -- Shared secrets for https://github.com/devture/matrix-synapse-shared-secret-auth
+        #
+        # If set, double puppeting will be enabled automatically for local users
+        # instead of users having to find an access token and run `login-matrix`
+        # manually.
+        login_shared_secret_map: {}
+        #  example.com: foobar
+
+        # -- The prefix for commands. Only required in non-management rooms.
+        command_prefix: '!discord'
+        # Messages sent upon joining a management room.
+        # Markdown is supported. The defaults are listed below.
+        management_room_text:
+          # -- Sent when joining a room.
+          welcome: "Hello, I'm a Discord bridge bot."
+          # -- Sent when joining a management room and the user is already logged in.
+          welcome_connected: "Use `help` for help."
+          # -- Sent when joining a management room and the user is not logged in.
+          welcome_unconnected: "Use `help` for help or `login` to log in."
+          # -- Optional extra text sent when joining a management room.
+          additional_help: ""
+
+        # Settings for backfilling messages.
+        backfill:
+          # Limits for forward backfilling.
+          forward_limits:
+            # Initial backfill (when creating portal). 0 means backfill is disabled.
+            # A special unlimited value is not supported, you must set a limit. Initial backfill will
+            # fetch all messages first before backfilling anything, so high limits can take a lot of time.
+            initial:
+              dm: 0
+              channel: 0
+              thread: 0
+            # Missed message backfill (on startup).
+            # 0 means backfill is disabled, -1 means fetch all messages since last bridged message.
+            # When using unlimited backfill (-1), messages are backfilled as they are fetched.
+            # With limits, all messages up to the limit are fetched first and backfilled afterwards.
+            missed:
+              dm: 0
+              channel: 0
+              thread: 0
+          # -- Maximum members in a guild to enable backfilling. Set to -1 to disable limit.
+          # This can be used as a rough heuristic to disable backfilling in channels that are too active.
+          # Currently only applies to missed message backfill.
+          max_guild_members: -1
+
+        # End-to-bridge encryption support options.
+        #
+        # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
+        encryption:
+          # -- Allow encryption, work in group chat rooms with e2ee enabled
+          allow: false
+          # -- Default to encryption, force-enable encryption in all portals the bridge creates
+          # This will cause the bridge bot to be in private chats for the encryption to work properly.
+          default: false
+          # -- Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
+          appservice: false
+          # -- Require encryption, drop any unencrypted messages.
+          require: false
+          # -- Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
+          # You must use a client that supports requesting keys from other users to use this feature.
+          allow_key_sharing: false
+          # -- Should users mentions be in the event wire content to enable the server to send push notifications?
+          plaintext_mentions: false
+          # Options for deleting megolm sessions from the bridge.
+          delete_keys:
+            # -- Beeper-specific: delete outbound sessions when hungryserv confirms
+            # that the user has uploaded the key to key backup.
+            delete_outbound_on_ack: false
+            # -- Don't store outbound sessions in the inbound table.
+            dont_store_outbound: false
+            # -- Ratchet megolm sessions forward after decrypting messages.
+            ratchet_on_decrypt: false
+            # -- Delete fully used keys (index >= max_messages) after decrypting messages.
+            delete_fully_used_on_decrypt: false
+            # -- Delete previous megolm sessions from same device when receiving a new one.
+            delete_prev_on_new_session: false
+            # -- Delete megolm sessions received from a device when the device is deleted.
+            delete_on_device_delete: false
+            # -- Periodically delete megolm sessions when 2x max_age has passed since receiving the session.
+            periodically_delete_expired: false
+            # -- Delete inbound megolm sessions that don't have the received_at field used for
+            # automatic ratcheting and expired session deletion. This is meant as a migration
+            # to delete old keys prior to the bridge update.
+            delete_outdated_inbound: false
+
+          # What level of device verification should be required from users?
+          #
+          # Valid levels:
+          #   unverified - Send keys to all device in the room.
+          #   cross-signed-untrusted - Require valid cross-signing, but trust all cross-signing keys.
+          #   cross-signed-tofu - Require valid cross-signing, trust cross-signing keys on first use (and reject changes).
+          #   cross-signed-verified - Require valid cross-signing, plus a valid user signature from the bridge bot.
+          #                           Note that creating user signatures from the bridge bot is not currently possible.
+          #   verified - Require manual per-device verification
+          #              (currently only possible by modifying the `trust` column in the `crypto_device` database table).
+          verification_levels:
+            # -- Minimum level for which the bridge should send keys to when bridging messages from WhatsApp to Matrix.
+            receive: unverified
+            # -- Minimum level that the bridge should accept for incoming Matrix messages.
+            send: unverified
+            # -- Minimum level that the bridge should require for accepting key requests.
+            share: cross-signed-tofu
+
+          # Options for Megolm room key rotation. These options allow you to
+          # configure the m.room.encryption event content. See:
+          # https://spec.matrix.org/v1.3/client-server-api/#mroomencryption for
+          # more information about that event.
+          rotation:
+            # -- Enable custom Megolm room key rotation settings. Note that these
+            # settings will only apply to rooms created after this option is
+            # set.
+            enable_custom: false
+            # -- The maximum number of milliseconds a session should be used
+            # before changing it. The Matrix spec recommends 604800000 (a week)
+            # as the default.
+            milliseconds: 604800000
+            # -- The maximum number of messages that should be sent with a given a
+            # session before changing it. The Matrix spec recommends 100 as the
+            # default.
+            messages: 100
+
+            # -- Disable rotating keys when a user's devices change?
+            # You should not enable this option unless you understand all the implications.
+            disable_device_change_key_rotation: false
+
+        # Settings for provisioning API
+        provisioning:
+          # -- Prefix for the provisioning API paths.
+          prefix: /_matrix/provision
+          # -- Shared secret for authentication. If set to "generate", a random
+          # secret will be generated, or if set to "disable", the provisioning
+          # API will be disabled.
+          shared_secret: generate
+          # -- Enable debug API at /debug with provisioning authentication.
+          debug_endpoints: false
+
+        # Permissions for using the bridge.
+        # Permitted values:
+        #    relay - Talk through the relaybot (if enabled), no access otherwise
+        #     user - Access to use the bridge to chat with a Discord account.
+        #    admin - User level and some additional administration tools
+        # Permitted keys:
+        #        * - All Matrix users
+        #   domain - All users on that homeserver
+        #     mxid - Specific user
+        permissions: {}
+        #   "*": relay
+        #   "example.com": user
+        #   "@admin:example.com": admin
+
+      # Logging config. See https://github.com/tulir/zeroconfig for details.
+      logging:
+        # -- min logging level
+        min_level: debug
+        writers:
+          - type: stdout
+            format: pretty-colored
+          - type: file
+            format: json
+            filename: ./logs/mautrix-discord.log
+            max_size: 100
+            max_backups: 10
+            compress: true
+
+
+  ## DEPRECATION: This section is for the old halfshot/matrix-appservice-discord
+  # docker image which is no longer maintained. Please use the bridges.discord_mautrix
+  # section instead. !! We will remove this secton in the future. !!
   discord:
-    # -- Set to true to enable the Discord bridge
+    # -- Set to true to enable the DEPRECATED Discord bridge. This will be
+    # removed in the future in favor of discord_mautrix.enabled
     enabled: false
 
     # Discord bot authentication.

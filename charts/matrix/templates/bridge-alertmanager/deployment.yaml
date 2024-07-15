@@ -1,0 +1,182 @@
+{{- if .Values.bridges.alertmanager.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "matrix.fullname" . }}-bridge-alertmanager
+  labels:
+{{ include "matrix.labels" . | indent 4 }}
+spec:
+  revisionHistoryLimit: {{ .Values.bridges.alertmanager.revisionHistoryLimit }}
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-alertmanager
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      matrix-chart/allow-synapse-access: allow
+  template:
+    metadata:
+      annotations:
+        # re-roll deployment on config change
+        checksum/alertmanager-registration: {{ include (print $.Template.BasePath "/bridge-alertmanager/secret-registration.yaml") . | sha256sum }}
+      labels:
+        app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-alertmanager
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        matrix-chart/allow-synapse-access: allow
+    spec:
+      {{- if .Values.bridges.affinity }}
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - {{ include "matrix.name" . }}-synapse
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                      - {{ .Release.Name }}
+              topologyKey: kubernetes.io/hostname
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.bridges.alertmanager.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: load-config
+          {{- if .Values.bridges.alertmanager.registration.existingSecret }}
+          image: "mikefarah/yq:latest"
+          {{- else }}
+          image: "alpine:latest"
+          {{- end }}
+          imagePullPolicy: {{ .Values.bridges.alertmanager.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              cp /data/registration.yaml /tmp/registration.yaml && \
+              {{- if .Values.bridges.alertmanager.registration.existingSecret }}
+              echo "Starting yq of registration.yaml" && \
+              yq eval -i '.as_token = env(AS_TOKEN)' /tmp/registration.yaml && \
+              yq eval -i '.hs_token = env(HS_TOKEN)' /tmp/registration.yaml && \
+              {{- end }}
+              cp /tmp/registration.yaml /bridges/alertmanager.yaml
+          {{- if .Values.bridges.alertmanager.registration.existingSecret }}
+          env:
+            - name: AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.alertmanager.registration.existingSecret }}
+                  key: {{ .Values.bridges.alertmanager.registration.existingSecretKeys.as_token }}
+            - name: HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.alertmanager.registration.existingSecret }}
+                  key: {{ .Values.bridges.alertmanager.registration.existingSecretKeys.hs_token }}
+          {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: bridges
+              mountPath: /bridges
+          {{- with .Values.bridges.alertmanager.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      containers:
+        - name: "bridge-alertmanager"
+          image: "{{ .Values.bridges.alertmanager.image.repository }}:{{ .Values.bridges.alertmanager.image.tag }}"
+          imagePullPolicy: {{ .Values.bridges.alertmanager.image.pullPolicy }}
+          env:
+            - name: APP_PORT
+              value: {{ .Values.bridges.alertmanager.config.app_port | quote }}
+
+            - name: APP_ALERTMANAGER_SECRET
+              value: {{ .Values.bridges.alertmanager.config.app_alertmanager_secret | default "matrix.alertmanager.webhook_secret" }}
+
+            - name: MATRIX_HOMESERVER_URL
+              value: {{ .Values.bridges.alertmanager.config.homeserver_url | default (include "matrix.baseUrl" .) }}
+
+            - name: MATRIX_ROOMS
+              value: {{ .Values.bridges.alertmanager.config.bot.rooms }}
+
+            {{- if .Values.bridges.alertmanager.registration.existingSecret }}
+            - name: MATRIX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.alertmanager.registration.existingSecret }}
+                  key: {{ .Values.bridges.alertmanager.registration.existingSecretKeys.as_token }}
+            {{- else }}
+            - name: MATRIX_TOKEN
+              value: {{ .Values.bridges.alertmanager.registration.as_token }}
+            {{- end }}
+
+            - name: MATRIX_USER
+              value: "@{{ .Values.bridges.alertmanager.config.bot.user }}:{{ .Values.matrix.serverName }}"
+
+            {{- with .Values.bridges.alertmanager.config.bot.display_name }}
+            - name: MATRIX_DISPLAY_NAME
+              value: {{ . }}
+            {{- end }}
+
+            {{- with .Values.bridges.alertmanager.config.bot.avatar_url }}
+            - name: MATRIX_AVATAR_URL
+              value: {{ . }}
+            {{- end }}
+
+            {{- with .Values.bridges.alertmanager.config.bot.mention_room }}
+            - name: MENTION_ROOM
+              value: {{ . | quote }}
+            {{- end }}
+
+            {{- if .Values.bridges.alertmanager.config.grafana_url }}
+            - name: GRAFANA_URL
+              value: {{ .Values.bridges.alertmanager.config.grafana_url }}
+
+            - name: GRAFANA_DATASOURCE
+              value: {{ .Values.bridges.alertmanager.config.grafana_datasource }}
+            {{- end }}
+
+            {{- if .Values.bridges.alertmanager.config.alertmanager_url }}
+            - name: ALERTMANAGER_URL
+              value: {{ .Values.bridges.alertmanager.config.alertmanager_url }}
+            {{- end }}
+          ports:
+            - name: appservice
+              containerPort: {{ .Values.bridges.alertmanager.config.app_port }}
+              protocol: TCP
+           {{- with .Values.bridges.alertmanager.extraVolumeMounts }}
+             {{- toYaml . | nindent 12 }}
+           {{- end }}
+          {{- with .Values.bridges.alertmanager.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.bridges.alertmanager.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: data
+          projected:
+            sources:
+              - secret:
+                  name: {{ include "matrix.alertmanager.registrationSecret" . }}
+        - name: bridges
+          persistentVolumeClaim:
+            {{- if not .Values.bridges.volume.existingClaim }}
+            claimName: "{{ include "matrix.fullname" . }}-bridges"
+            {{- else -}}
+            claimName: {{ .Values.bridges.volume.existingClaim }}
+            {{- end }}
+        {{- with .Values.bridges.alertmanager.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+{{- end }}

@@ -1,0 +1,402 @@
+{{- define "discord_config.yaml" }}
+# Homeserver details.
+homeserver:
+    # The address that this appservice can use to connect to the homeserver.
+    {{ if .Values.bridges.discord_mautrix.config.homeserver.address }}
+    address: {{ .Values.bridges.discord_mautrix.config.homeserver.address }}
+    {{- else -}}
+    address: https://{{ include "matrix.baseUrl" . }}
+    {{- end }}
+    # Publicly accessible base URL for media, used for avatars in relay mode.
+    # If not set, the connection address above will be used.
+    public_address: {{ .Values.bridges.discord_mautrix.config.homeserver.public_address }}
+    # The domain of the homeserver (also known as server_name, used for MXIDs, etc).
+    {{ if .Values.bridges.discord_mautrix.config.homeserver.domain }}
+    domain: {{ .Values.bridges.discord_mautrix.config.homeserver.domain }}
+    {{- else -}}
+    domain: {{ .Values.matrix.hostname }}
+    {{- end }}
+
+    # What software is the homeserver running?
+    # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
+    software: {{ .Values.bridges.discord_mautrix.config.homeserver.software }}
+    # The URL to push real-time bridge status to.
+    # If set, the bridge will make POST requests to this URL whenever a user's discord connection state changes.
+    # The bridge will use the appservice as_token to authorize requests.
+    status_endpoint: {{ .Values.bridges.discord_mautrix.config.homeserver.status_endpoint }}
+    # Endpoint for reporting per-message status.
+    message_send_checkpoint_endpoint: {{ .Values.bridges.discord_mautrix.config.homeserver.message_send_checkpoint_endpoint }}
+    # Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246?
+    async_media: {{ .Values.bridges.discord_mautrix.config.homeserver.async_media }}
+
+    # Should the bridge use a websocket for connecting to the homeserver?
+    # The server side is currently not documented anywhere and is only implemented by mautrix-wsproxy,
+    # mautrix-asmux (deprecated), and hungryserv (proprietary).
+    websocket: {{ .Values.bridges.discord_mautrix.config.homeserver.websocket }}
+    # How often should the websocket be pinged? Pinging will be disabled if this is zero.
+    ping_interval_seconds: {{ .Values.bridges.discord_mautrix.config.homeserver.ping_interval_seconds }}
+
+# Application service host/registration related details.
+# Changing these values requires regeneration of the registration.
+appservice:
+    # The address that the homeserver can use to connect to this appservice.
+    {{ if .Values.bridges.discord_mautrix.config.appservice.address }}
+    address: {{ .Values.bridges.discord_mautrix.config.appservice.address }}
+    {{- else -}}
+    address: "http://{{ include "matrix.fullname" . }}-bridge-discord:{{ .Values.bridges.discord_mautrix.config.appservice.port }}"
+    {{- end }}
+
+    # The hostname and port where this appservice should listen.
+    hostname: {{ .Values.bridges.discord_mautrix.config.appservice.hostname }}
+    port: {{ .Values.bridges.discord_mautrix.config.appservice.port }}
+
+    # Database config.
+    database:
+        # The database type. "sqlite3-fk-wal" and "postgres" are supported.
+        type: {{ .Values.bridges.discord_mautrix.config.appservice.database.type }}
+        # The database URI.
+        # SQLite: A raw file path is supported, but
+        #   `file:<path>?_txlock=immediate` is recommended.
+        #   https://github.com/mattn/go-sqlite3#connection-string
+        # Postgres: Connection string. For example,
+        #   postgres://user:password@host/database?sslmode=disable
+        # To connect via Unix socket, use something like,
+        #   postgres:///dbname?host=/var/run/postgresql
+        uri: {{ .Values.bridges.discord_mautrix.config.appservice.database.uri }}
+        # Maximum number of connections. Mostly relevant for Postgres.
+        max_open_conns: {{ .Values.bridges.discord_mautrix.config.appservice.database.max_open_conns }}
+        max_idle_conns: {{ .Values.bridges.discord_mautrix.config.appservice.database.max_idle_conns }}
+        # Maximum connection idle time and lifetime before they're closed. Disabled if null.
+        # Parsed with https://pkg.go.dev/time#ParseDuration
+        max_conn_idle_time: {{ .Values.bridges.discord_mautrix.config.appservice.database.max_conn_idle_time }}
+        max_conn_lifetime: {{ .Values.bridges.discord_mautrix.config.appservice.database.max_conn_lifetime }}
+
+    # The unique ID of this appservice.
+    id: {{ .Values.bridges.discord_mautrix.config.appservice.id }}
+    # Appservice bot details.
+    bot:
+        # Username of the appservice bot.
+        username: {{ .Values.bridges.discord_mautrix.config.appservice.bot.username }}
+        # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
+        # to leave display name/avatar as-is.
+        displayname: {{ .Values.bridges.discord_mautrix.config.appservice.bot.displayname }}
+        avatar: {{ .Values.bridges.discord_mautrix.config.appservice.bot.avatar }}
+
+    # Whether or not to receive ephemeral events via appservice transactions.
+    # Requires MSC2409 support (i.e. Synapse 1.22+).
+    ephemeral_events: {{ .Values.bridges.discord_mautrix.config.appservice.ephemeral_events }}
+
+    # Should incoming events be handled asynchronously?
+    # This may be necessary for large public instances with lots of messages going through.
+    # However, messages will not be guaranteed to be bridged in the same order they were sent in.
+    async_transactions: {{ .Values.bridges.discord_mautrix.config.appservice.async_transactions }}
+
+    # Authentication tokens for AS <-> HS communication. Autogenerated; do not modify.
+    as_token: "{{ include "matrix.discord_mautrix.as_token" . }}"
+    hs_token: "{{ include "matrix.discord_mautrix.hs_token" . }}"
+
+# Bridge config
+bridge:
+    # Localpart template of MXIDs for Discord users.
+    # {{`{{.}}`}} is replaced with the internal ID of the Discord user.
+    username_template: {{ .Values.bridges.discord_mautrix.config.bridge.username_template | quote }}
+    # Displayname template for Discord users. This is also used as the room name in DMs if private_chat_portal_meta is enabled.
+    # Available variables:
+    #   .ID - Internal user ID
+    #   .Username - Legacy display/username on Discord
+    #   .GlobalName - New displayname on Discord
+    #   .Discriminator - The 4 numbers after the name on Discord
+    #   .Bot - Whether the user is a bot
+    #   .System - Whether the user is an official system user
+    #   .Webhook - Whether the user is a webhook and is not an application
+    #   .Application - Whether the user is an application
+    displayname_template: {{ .Values.bridges.discord_mautrix.config.bridge.displayname_template | quote }}
+    # Displayname template for Discord channels (bridged as rooms, or spaces when type=4).
+    # Available variables:
+    #   .Name - Channel name, or user displayname (pre-formatted with displayname_template) in DMs.
+    #   .ParentName - Parent channel name (used for categories).
+    #   .GuildName - Guild name.
+    #   .NSFW - Whether the channel is marked as NSFW.
+    #   .Type - Channel type (see values at https://github.com/bwmarrin/discordgo/blob/v0.25.0/structs.go#L251-L267)
+    channel_name_template: {{ .Values.bridges.discord_mautrix.config.bridge.channel_name_template | quote }}
+    # Displayname template for Discord guilds (bridged as spaces).
+    # Available variables:
+    #   .Name - Guild name
+    guild_name_template: {{ .Values.bridges.discord_mautrix.config.bridge.guild_name_template | quote }}
+    # Whether to explicitly set the avatar and room name for private chat portal rooms.
+    # If set to `default`, this will be enabled in encrypted rooms and disabled in unencrypted rooms.
+    # If set to `always`, all DM rooms will have explicit names and avatars set.
+    # If set to `never`, DM rooms will never have names and avatars set.
+    private_chat_portal_meta: {{ .Values.bridges.discord_mautrix.config.bridge.private_chat_portal_meta }}
+
+    portal_message_buffer: {{ .Values.bridges.discord_mautrix.config.bridge.portal_message_buffer }}
+
+    # Number of private channel portals to create on bridge startup.
+    # Other portals will be created when receiving messages.
+    startup_private_channel_create_limit: {{ .Values.bridges.discord_mautrix.config.bridge.startup_private_channel_create_limit }}
+    # Should the bridge send a read receipt from the bridge bot when a message has been sent to Discord?
+    delivery_receipts: {{ .Values.bridges.discord_mautrix.config.bridge.delivery_receipts }}
+    # Whether the bridge should send the message status as a custom com.beeper.message_send_status event.
+    message_status_events: {{ .Values.bridges.discord_mautrix.config.bridge.message_status_events }}
+    # Whether the bridge should send error notices via m.notice events when a message fails to bridge.
+    message_error_notices: {{ .Values.bridges.discord_mautrix.config.bridge.message_error_notices }}
+    # Should the bridge use space-restricted join rules instead of invite-only for guild rooms?
+    # This can avoid unnecessary invite events in guild rooms when members are synced in.
+    restricted_rooms: {{ .Values.bridges.discord_mautrix.config.bridge.restricted_rooms }}
+    # Should the bridge automatically join the user to threads on Discord when the thread is opened on Matrix?
+    # This only works with clients that support thread read receipts (MSC3771 added in Matrix v1.4).
+    autojoin_thread_on_open: {{ .Values.bridges.discord_mautrix.config.bridge.autojoin_thread_on_open }}
+    # Should inline fields in Discord embeds be bridged as HTML tables to Matrix?
+    # Tables aren't supported in all clients, but are the only way to emulate the Discord inline field UI.
+    embed_fields_as_tables: {{ .Values.bridges.discord_mautrix.config.bridge.embed_fields_as_tables }}
+    # Should guild channels be muted when the portal is created? This only meant for single-user instances,
+    # it won't mute it for all users if there are multiple Matrix users in the same Discord guild.
+    mute_channels_on_create: {{ .Values.bridges.discord_mautrix.config.bridge.mute_channels_on_create }}
+    # Should the bridge update the m.direct account data event when double puppeting is enabled.
+    # Note that updating the m.direct event is not atomic (except with mautrix-asmux)
+    # and is therefore prone to race conditions.
+    sync_direct_chat_list: {{ .Values.bridges.discord_mautrix.config.bridge.sync_direct_chat_list }}
+    # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
+    # This field will automatically be changed back to false after it, except if the config file is not writable.
+    resend_bridge_info: {{ .Values.bridges.discord_mautrix.config.bridge.resend_bridge_info }}
+    # Should incoming custom emoji reactions be bridged as mxc:// URIs?
+    # If set to false, custom emoji reactions will be bridged as the shortcode instead, and the image won't be available.
+    custom_emoji_reactions: {{ .Values.bridges.discord_mautrix.config.bridge.custom_emoji_reactions }}
+    # Should the bridge attempt to completely delete portal rooms when a channel is deleted on Discord?
+    # If true, the bridge will try to kick Matrix users from the room. Otherwise, the bridge only makes ghosts leave.
+    delete_portal_on_channel_delete: {{ .Values.bridges.discord_mautrix.config.bridge.delete_portal_on_channel_delete }}
+    # Should the bridge delete all portal rooms when you leave a guild on Discord?
+    # This only applies if the guild has no other Matrix users on this bridge instance.
+    delete_guild_on_leave: {{ .Values.bridges.discord_mautrix.config.bridge.delete_guild_on_leave }}
+    # Whether or not created rooms should have federation enabled.
+    # If false, created portal rooms will never be federated.
+    federate_rooms: {{ .Values.bridges.discord_mautrix.config.bridge.federate_rooms }}
+    # Prefix messages from webhooks with the profile info? This can be used along with a custom displayname_template
+    # to better handle webhooks that change their name all the time (like ones used by bridges).
+    prefix_webhook_messages: {{ .Values.bridges.discord_mautrix.config.bridge.prefix_webhook_messages }}
+    # Bridge webhook avatars?
+    enable_webhook_avatars: {{ .Values.bridges.discord_mautrix.config.bridge.enable_webhook_avatars }}
+    # Should the bridge upload media to the Discord CDN directly before sending the message when using a user token,
+    # like the official client does? The other option is sending the media in the message send request as a form part
+    # (which is always used by bots and webhooks).
+    use_discord_cdn_upload: {{ .Values.bridges.discord_mautrix.config.bridge.use_discord_cdn_upload }}
+    # Should mxc uris copied from Discord be cached?
+    # This can be `never` to never cache, `unencrypted` to only cache unencrypted mxc uris, or `always` to cache everything.
+    # If you have a media repo that generates non-unique mxc uris, you should set this to never.
+    cache_media: {{ .Values.bridges.discord_mautrix.config.bridge.cache_media }}
+    # Settings for converting Discord media to custom mxc:// URIs instead of reuploading.
+    # More details can be found at https://docs.mau.fi/bridges/go/discord/direct-media.html
+    direct_media:
+        # Should custom mxc:// URIs be used instead of reuploading media?
+        enabled: {{ .Values.bridges.discord_mautrix.config.bridge.direct_media.enabled }}
+        # The server name to use for the custom mxc:// URIs.
+        # This server name will effectively be a real Matrix server, it just won't implement anything other than media.
+        # You must either set up .well-known delegation from this domain to the bridge, or proxy the domain directly to the bridge.
+        server_name: {{ .Values.bridges.discord_mautrix.config.bridge.direct_media.server_name }}
+        # Optionally a custom .well-known response. This defaults to `server_name:443`
+        well_known_response: {{ .Values.bridges.discord_mautrix.config.bridge.direct_media.well_known_response }}
+        # The bridge supports MSC3860 media download redirects and will use them if the requester supports it.
+        # Optionally, you can force redirects and not allow proxying at all by setting this to false.
+        allow_proxy: {{ .Values.bridges.discord_mautrix.config.bridge.direct_media.allow_proxy }}
+        # Matrix server signing key to make the federation tester pass, same format as synapse's .signing.key file.
+        server_key: {{ .Values.bridges.discord_mautrix.config.bridge.direct_media.server_key }}
+    # Settings for converting animated stickers.
+    animated_sticker:
+        # Format to which animated stickers should be converted.
+        # disable - No conversion, send as-is (lottie JSON)
+        # png - converts to non-animated png (fastest)
+        # gif - converts to animated gif
+        # webm - converts to webm video, requires ffmpeg executable with vp9 codec and webm container support
+        # webp - converts to animated webp, requires ffmpeg executable with webp codec/container support
+        target: {{ .Values.bridges.discord_mautrix.config.bridge.animated_sticker.target }}
+        # Arguments for converter. All converters take width and height.
+        args:
+            width: {{ .Values.bridges.discord_mautrix.config.bridge.animated_sticker.args.width }}
+            height: {{ .Values.bridges.discord_mautrix.config.bridge.animated_sticker.args.height }}
+            # only for webm, webp and gif (2, 5, 10, 20 or 25 recommended)
+            fps: {{ .Values.bridges.discord_mautrix.config.bridge.animated_sticker.args.fps }}
+    # Servers to always allow double puppeting from
+    {{- with .Values.bridges.discord_mautrix.config.bridge.double_puppet_server_map }}
+    double_puppet_server_map:
+      {{- toYaml . | nindent 8 }}
+    {{- end -}}
+    # Allow using double puppeting from any server with a valid client .well-known file.
+    double_puppet_allow_discovery: {{ .Values.bridges.discord_mautrix.config.bridge.double_puppet_allow_discovery }}
+    # Shared secrets for https://github.com/devture/matrix-synapse-shared-secret-auth
+    #
+    # If set, double puppeting will be enabled automatically for local users
+    # instead of users having to find an access token and run `login-matrix`
+    # manually.
+    {{- with .Values.bridges.discord_mautrix.config.bridge.login_shared_secret_map }}
+    login_shared_secret_map:
+      {{- toYaml . | nindent 8 }}
+    {{- end -}}
+    # The prefix for commands. Only required in non-management rooms.
+    command_prefix: {{ .Values.bridges.discord_mautrix.config.bridge.command_prefix }}
+    # Messages sent upon joining a management room.
+    # Markdown is supported. The defaults are listed below.
+    management_room_text:
+        # Sent when joining a room.
+        welcome: {{ .Values.bridges.discord_mautrix.config.bridge.management_room_text.welcome }}
+        # Sent when joining a management room and the user is already logged in.
+        welcome_connected: {{ .Values.bridges.discord_mautrix.config.bridge.management_room_text.welcome_connected }}
+        # Sent when joining a management room and the user is not logged in.
+        welcome_unconnected: {{ .Values.bridges.discord_mautrix.config.bridge.management_room_text.welcome_unconnected }}
+        # Optional extra text sent when joining a management room.
+        additional_help: {{ .Values.bridges.discord_mautrix.config.bridge.management_room_text.additional_help }}
+
+    # Settings for backfilling messages.
+    backfill:
+        # Limits for forward backfilling.
+        forward_limits:
+            # Initial backfill (when creating portal). 0 means backfill is disabled.
+            # A special unlimited value is not supported, you must set a limit. Initial backfill will
+            # fetch all messages first before backfilling anything, so high limits can take a lot of time.
+            initial:
+                dm: {{ .Values.bridges.discord_mautrix.config.bridge.backfill.forward_limits.initial.dm }}
+                channel: {{ .Values.bridges.discord_mautrix.config.bridge.backfill.forward_limits.initial.channel }}
+                thread: {{ .Values.bridges.discord_mautrix.config.bridge.backfill.forward_limits.initial.thread }}
+            # Missed message backfill (on startup).
+            # 0 means backfill is disabled, -1 means fetch all messages since last bridged message.
+            # When using unlimited backfill (-1), messages are backfilled as they are fetched.
+            # With limits, all messages up to the limit are fetched first and backfilled afterwards.
+            missed:
+                dm: {{ .Values.bridges.discord_mautrix.config.bridge.backfill.forward_limits.missed.dm }}
+                channel: {{ .Values.bridges.discord_mautrix.config.bridge.backfill.forward_limits.missed.channel }}
+                thread: {{ .Values.bridges.discord_mautrix.config.bridge.backfill.forward_limits.missed.thread }}
+        # Maximum members in a guild to enable backfilling. Set to -1 to disable limit.
+        # This can be used as a rough heuristic to disable backfilling in channels that are too active.
+        # Currently only applies to missed message backfill.
+        max_guild_members: {{ .Values.bridges.discord_mautrix.config.bridge.backfill.max_guild_members }}
+
+    # End-to-bridge encryption support options.
+    #
+    # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
+    encryption:
+        # Allow encryption, work in group chat rooms with e2ee enabled
+        allow: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.allow }}
+        # Default to encryption, force-enable encryption in all portals the bridge creates
+        # This will cause the bridge bot to be in private chats for the encryption to work properly.
+        default: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.default }}
+        # Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
+        appservice: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.appservice }}
+        # Require encryption, drop any unencrypted messages.
+        require: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.require }}
+        # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
+        # You must use a client that supports requesting keys from other users to use this feature.
+        allow_key_sharing: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.allow_key_sharing }}
+        # Should users mentions be in the event wire content to enable the server to send push notifications?
+        plaintext_mentions: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.plaintext_mentions }}
+        # Options for deleting megolm sessions from the bridge.
+        delete_keys:
+            # Beeper-specific: delete outbound sessions when hungryserv confirms
+            # that the user has uploaded the key to key backup.
+            delete_outbound_on_ack: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.delete_keys.delete_outbound_on_ack }}
+            # Don't store outbound sessions in the inbound table.
+            dont_store_outbound: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.delete_keys.dont_store_outbound }}
+            # Ratchet megolm sessions forward after decrypting messages.
+            ratchet_on_decrypt: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.delete_keys.ratchet_on_decrypt }}
+            # Delete fully used keys (index >= max_messages) after decrypting messages.
+            delete_fully_used_on_decrypt: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.delete_keys.delete_fully_used_on_decrypt }}
+            # Delete previous megolm sessions from same device when receiving a new one.
+            delete_prev_on_new_session: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.delete_keys.delete_prev_on_new_session }}
+            # Delete megolm sessions received from a device when the device is deleted.
+            delete_on_device_delete: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.delete_keys.delete_on_device_delete }}
+            # Periodically delete megolm sessions when 2x max_age has passed since receiving the session.
+            periodically_delete_expired: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.delete_keys.periodically_delete_expired }}
+            # Delete inbound megolm sessions that don't have the received_at field used for
+            # automatic ratcheting and expired session deletion. This is meant as a migration
+            # to delete old keys prior to the bridge update.
+            delete_outdated_inbound: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.delete_keys.delete_outdated_inbound }}
+        # What level of device verification should be required from users?
+        #
+        # Valid levels:
+        #   unverified - Send keys to all device in the room.
+        #   cross-signed-untrusted - Require valid cross-signing, but trust all cross-signing keys.
+        #   cross-signed-tofu - Require valid cross-signing, trust cross-signing keys on first use (and reject changes).
+        #   cross-signed-verified - Require valid cross-signing, plus a valid user signature from the bridge bot.
+        #                           Note that creating user signatures from the bridge bot is not currently possible.
+        #   verified - Require manual per-device verification
+        #              (currently only possible by modifying the `trust` column in the `crypto_device` database table).
+        verification_levels:
+            # Minimum level for which the bridge should send keys to when bridging messages from WhatsApp to Matrix.
+            receive: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.verification_levels.receive }}
+            # Minimum level that the bridge should accept for incoming Matrix messages.
+            send: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.verification_levels.send }}
+            # Minimum level that the bridge should require for accepting key requests.
+            share: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.verification_levels.share }}
+        # Options for Megolm room key rotation. These options allow you to
+        # configure the m.room.encryption event content. See:
+        # https://spec.matrix.org/v1.3/client-server-api/#mroomencryption for
+        # more information about that event.
+        rotation:
+            # Enable custom Megolm room key rotation settings. Note that these
+            # settings will only apply to rooms created after this option is
+            # set.
+            enable_custom: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.rotation.enable_custom }}
+            # The maximum number of milliseconds a session should be used
+            # before changing it. The Matrix spec recommends 604800000 (a week)
+            # as the default.
+            milliseconds: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.rotation.milliseconds }}
+            # The maximum number of messages that should be sent with a given a
+            # session before changing it. The Matrix spec recommends 100 as the
+            # default.
+            messages: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.rotation.messages }}
+
+            # Disable rotating keys when a user's devices change?
+            # You should not enable this option unless you understand all the implications.
+            disable_device_change_key_rotation: {{ .Values.bridges.discord_mautrix.config.bridge.encryption.rotation.disable_device_change_key_rotation }}
+
+    # Settings for provisioning API
+    provisioning:
+        # Prefix for the provisioning API paths.
+        prefix: {{ .Values.bridges.discord_mautrix.config.bridge.provisioning.prefix }}
+        # Shared secret for authentication. If set to "generate", a random secret will be generated,
+        # or if set to "disable", the provisioning API will be disabled.
+        shared_secret: {{ .Values.bridges.discord_mautrix.config.bridge.provisioning.shared_secret }}
+        # Enable debug API at /debug with provisioning authentication.
+        debug_endpoints: {{ .Values.bridges.discord_mautrix.config.bridge.provisioning.debug_endpoints }}
+
+    # Permissions for using the bridge.
+    # Permitted values:
+    #    relay - Talk through the relaybot (if enabled), no access otherwise
+    #     user - Access to use the bridge to chat with a Discord account.
+    #    admin - User level and some additional administration tools
+    # Permitted keys:
+    #        * - All Matrix users
+    #   domain - All users on that homeserver
+    #     mxid - Specific user
+    permissions:
+    {{- if .Values.bridges.discord_mautrix.config.bridge.permissions }}
+    {{- with .Values.bridges.discord_mautrix.config.bridge.permissions }}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- else }}
+        "*": relay
+        "{{ .Values.matrix.hostname }}": user
+        {{- range .Values.bridges.discord_mautrix.admin_users }}
+        "@{{ . }}:{{ $.Values.matrix.hostname }}": admin
+        {{- end }}
+    {{- end }}
+
+# Logging config. See https://github.com/tulir/zeroconfig for details.
+logging:
+    min_level: {{ .Values.bridges.discord_mautrix.config.logging.min_level }}
+    writers:
+    {{- range .Values.bridges.discord_mautrix.config.logging.writers }}
+    - type: {{ .type }}
+      format: {{ .format }}
+      {{- if hasKey . "filename" }}
+      filename: {{ .filename }}
+      {{- end }}
+      {{- if hasKey . "max_size" }}
+      max_size: {{ .max_size }}
+      {{- end }}
+      {{- if hasKey . "max_backups" }}
+      max_backups: {{ .max_backups }}
+      {{- end }}
+      {{- if hasKey . "compress" }}
+      compress: {{ .compress }}
+      {{- end }}
+    {{- end }}
+{{- end }}{{/* end define config.yaml */}}

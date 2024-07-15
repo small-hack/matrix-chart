@@ -1,0 +1,223 @@
+{{- if .Values.bridges.hookshot.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "matrix.fullname" . }}-bridge-hookshot
+  labels:
+{{ include "matrix.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.bridges.hookshot.replicaCount }}
+  revisionHistoryLimit: {{ .Values.bridges.hookshot.revisionHistoryLimit }}
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-hookshot
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      matrix-chart/allow-synapse-access: allow
+  template:
+    metadata:
+      {{- if and (not .Values.bridges.hookshot.existingSecret.config) (not .Values.bridges.hookshot.existingSecret.config) (not .Values.bridges.hookshot.existingSecret.passkey) (not .Values.bridges.hookshot.existingSecret.registration)}}
+      annotations:
+        # re-roll deployment on config change
+        {{- if and (not .Values.bridges.hookshot.existingSecret.config) (not .Values.bridges.hookshot.existingSecret.config)}}
+        checksum/hookshot-config: {{ include (print $.Template.BasePath "/bridge-hookshot/configmap.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if not .Values.bridges.hookshot.existingSecret.registration }}
+        checksum/hookshot-registration: {{ include (print $.Template.BasePath "/bridge-hookshot/secret-registration.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if not .Values.bridges.hookshot.existingSecret.passkey }}
+        checksum/hookshot-passkey: {{ include (print $.Template.BasePath "/bridge-hookshot/secret-passkey.yaml") . | sha256sum }}
+        {{- end }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-hookshot
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        matrix-chart/allow-synapse-access: allow
+    spec:
+      {{- if .Values.bridges.affinity }}
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - {{ include "matrix.name" . }}-synapse
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                      - {{ .Release.Name }}
+              topologyKey: kubernetes.io/hostname
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.bridges.hookshot.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: "load-config"
+          {{- if .Values.bridges.hookshot.registration.existingSecret }}
+          image: "mikefarah/yq:latest"
+          {{- else }}
+          image: "alpine:latest"
+          {{- end }}
+          imagePullPolicy: {{ .Values.bridges.hookshot.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              cp /load/registration.yml /data/registration.yml && \
+              cp /load/config.yml /data/config.yml && \
+              cp /load/passkey.pem /data/passkey.pem && \
+              {{- if .Values.bridges.hookshot.registration.existingSecret }}
+              echo "Starting yq of registration.yml" && \
+              yq eval -i '.as_token = env(AS_TOKEN)' /data/registration.yml && \
+              yq eval -i '.hs_token = env(HS_TOKEN)' /data/registration.yml && \
+              {{- end }}
+              {{- if .Values.bridges.hookshot.config.github.existingSecret }}
+              {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.auth_id }}
+              yq eval -i '.github.auth.id = env(APP_ID)' /data/config.yml && \
+              {{- end }}
+              {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.webhook_secret }}
+              yq eval -i '.github.webhook.secret = env(WEBHOOK_SECRET)' /data/config.yml && \
+              {{- end }}
+              {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.oauth_client_id }}
+              yq eval -i '.github.oauth.client_id = env(OAUTH_CLIENT_ID)' /data/config.yml && \
+              {{- end }}
+              {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.oauth_client_secret }}
+              yq eval -i '.github.oauth.client_secret = env(OAUTH_CLIENT_SECRET)' /data/config.yml && \
+              {{- end }}
+              {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.private_key }}
+              cp /load/github-key.pem /data/github-key.pem && \
+              {{- end }}
+              {{- end }}{{/* end if github.existingSecret */}}
+              cp /data/registration.yml /bridges/hookshot.yaml
+          {{- if or .Values.bridges.hookshot.registration.existingSecret .Values.bridges.hookshot.config.github.existingSecret }}
+          env:
+           {{- if .Values.bridges.hookshot.registration.existingSecret }}
+            - name: AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.hookshot.registration.existingSecret }}
+                  key: {{ .Values.bridges.hookshot.registration.existingSecretKeys.as_token }}
+            - name: HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.hookshot.registration.existingSecret }}
+                  key: {{ .Values.bridges.hookshot.registration.existingSecretKeys.hs_token }}
+            {{- end }}{{/* end if registration.existingSecret */}}
+           {{- with .Values.bridges.hookshot.config.github.existingSecretKeys.auth_id }}
+            - name: APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret }}
+                  key: {{ . }}
+           {{- end }}{{/* with config.github.existingSecretKeys.auth_id */}}
+           {{- with .Values.bridges.hookshot.config.github.existingSecretKeys.webhook_secret }}
+            - name: WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret }}
+                  key: {{ . }}
+           {{- end }}{{/* with config.github.existingSecretKeys.webhook_secret */}}
+           {{- with .Values.bridges.hookshot.config.github.existingSecretKeys.oauth_client_id }}
+            - name: OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret }}
+                  key: {{ . }}
+           {{- end }}{{/* with config.github.existingSecretKeys.oauth_client_id */}}
+           {{- with .Values.bridges.hookshot.config.github.existingSecretKeys.oauth_client_secret }}
+            - name: OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.bridges.hookshot.config.github.existingSecret }}
+                  key: {{ . }}
+           {{- end }}{{/* with config.github.existingSecretKeys.oauth_client_secret */}}
+          {{- end }}{{/* end if existing secret for github or registration */}}
+          volumeMounts:
+            - name: load
+              mountPath: /load
+            - name: data
+              mountPath: /data
+            - name: bridges
+              mountPath: /bridges
+            - name: scratch
+              mountPath: /tmp
+          {{- with .Values.bridges.hookshot.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      containers:
+        - name: "bridge-hookshot"
+          image: "{{ .Values.bridges.hookshot.image.repository }}:{{ .Values.bridges.hookshot.image.tag }}"
+          imagePullPolicy: {{ .Values.bridges.hookshot.image.pullPolicy }}
+          ports:
+            {{- if .Values.bridges.hookshot.config.generic.enabled }}
+            - name: webhook
+              containerPort: {{ .Values.bridges.hookshot.service.webhook.port }}
+              protocol: TCP
+            {{- end }}
+            {{- if .Values.bridges.hookshot.config.metrics.enabled }}
+            - name: metrics
+              containerPort: {{ .Values.bridges.hookshot.service.metrics.port }}
+              protocol: TCP
+            {{- end }}
+            - name: appservice
+              containerPort: {{ .Values.bridges.hookshot.service.appservice.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          {{- with .Values.bridges.hookshot.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.bridges.hookshot.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: load
+          projected:
+            sources:
+              {{- if not .Values.bridges.hookshot.existingSecret.config }}
+              - configMap:
+                  name: {{ include "matrix.hookshot.configmap" . }}
+              {{- else -}}
+              - secret:
+                  name: {{ include "matrix.hookshot.configSecret" . }}
+              {{- end }}
+              - secret:
+                  name: {{ include "matrix.hookshot.passkeySecret" . }}
+              - secret:
+                  name: {{ include "matrix.hookshot.registrationSecret" . }}
+              {{- if and .Values.bridges.hookshot.config.github.existingSecret .Values.bridges.hookshot.config.github.existingSecretKeys.private_key }}
+              - secret:
+                  name: {{ .Values.bridges.hookshot.config.github.existingSecret }}
+                  items:
+                    - key: {{ .Values.bridges.hookshot.config.github.existingSecretKeys.private_key }}
+                      path: github-key.pem
+              {{- end }}
+        - name: data
+          emptyDir:
+            sizeLimit: 500Mi
+        - name: scratch
+          emptyDir:
+            sizeLimit: 10Mi
+        - name: bridges
+          persistentVolumeClaim:
+            {{- if not .Values.bridges.volume.existingClaim }}
+            claimName: "{{ include "matrix.fullname" . }}-bridges"
+            {{- else -}}
+            claimName: {{ .Values.bridges.volume.existingClaim }}
+            {{- end }}
+{{- end }}

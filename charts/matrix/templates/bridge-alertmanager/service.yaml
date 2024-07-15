@@ -1,0 +1,22 @@
+{{- if .Values.bridges.alertmanager.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "matrix.fullname" . }}-bridge-alertmanager
+  labels:
+{{ include "matrix.labels" . | indent 4 }}
+spec:
+  type: {{ .Values.bridges.alertmanager.service.type }}
+  ports:
+    - port: {{ .Values.bridges.alertmanager.config.app_port }}
+      targetPort: appservice
+      protocol: TCP
+      name: bridge
+    - port: 80
+      targetPort: appservice
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-alertmanager
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

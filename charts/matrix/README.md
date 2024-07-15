@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 12.0.0](https://img.shields.io/badge/Version-12.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.109.0](https://img.shields.io/badge/AppVersion-v1.109.0-informational?style=flat-square)
+![Version: 13.0.0](https://img.shields.io/badge/Version-13.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.109.0](https://img.shields.io/badge/AppVersion-v1.109.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -30,13 +30,41 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | bridges.affinity | bool | `false` | Recommended to leave this disabled to allow bridges to be scheduled on separate nodes. Set this to true to reduce latency between the homeserver and bridges, or if your cloud provider does not allow the ReadWriteMany access mode (see below) |
+| bridges.alertmanager.config.alertmanager_url | string | `""` | set to enable silence link, e.g. https://alertmanager.example.com |
+| bridges.alertmanager.config.app_alertmanager_secret | string | `""` | secret key for the alertmanager webhook config URL |
+| bridges.alertmanager.config.app_port | int | `3000` | alertmanager's container port |
+| bridges.alertmanager.config.bot.avatar_url | string | `""` | optional: mxc:// avatar to set for the bot user |
+| bridges.alertmanager.config.bot.display_name | string | `""` | optional: display name to set for the bot user |
+| bridges.alertmanager.config.bot.mention_room | bool | `false` | Set this to true to make firing alerts do a `@room` mention. NOTE! Bot should also have enough power in the room for this to be useful. |
+| bridges.alertmanager.config.bot.rooms | string | `""` | rooms to send alerts to, separated by a | Each entry contains the receiver name (from alertmanager) and the internal id (not the public alias) of the Matrix channel to forward to. |
+| bridges.alertmanager.config.bot.user | string | `"alertmanager"` | user in matrix for the the alertmanager bot e.g. alertmanager which becomes @alertmanager:homeserver.tld |
+| bridges.alertmanager.config.grafana_datasource | string | `""` | grafana data source, e.g. default |
+| bridges.alertmanager.config.grafana_url | string | `""` | set to enable Grafana links, e.g. https://grafana.example.com |
+| bridges.alertmanager.config.homeserver_url | string | `""` | your homeserver url, e.g. https://homeserver.tld |
+| bridges.alertmanager.enabled | bool | `false` |  |
+| bridges.alertmanager.encryption | bool | `false` |  |
+| bridges.alertmanager.existingSecret.registration | string | `""` |  |
+| bridges.alertmanager.image.pullPolicy | string | `"IfNotPresent"` | alertmanager bridge docker image pull policy. If tag is "latest", set tag to "Always" |
+| bridges.alertmanager.image.repository | string | `"jessebot/matrix-alertmanager-bot"` | alertmanager bridge docker image |
+| bridges.alertmanager.image.tag | string | `"0.11.0"` | alertmanager bridge docker image tag |
+| bridges.alertmanager.registration.as_token | string | `""` |  |
+| bridges.alertmanager.registration.existingSecret | string | `""` | Use an existing Kubernetes Secret to store your own generated appservice and homeserver tokens. If this is not set, we'll generate them for you. Setting this won't override the ENTIRE registration.yaml we generate for the synapse pod to authenticate mautrix/discord. It will only replaces the tokens. To replaces the ENTIRE registration.yaml, use bridges.alertmanager.existingSecret.registration |
+| bridges.alertmanager.registration.existingSecretKeys.as_token | string | `"as_token"` | key in existingSecret for as_token (application service token). If provided and existingSecret is set, ignores bridges.alertmanager.registration.as_token |
+| bridges.alertmanager.registration.existingSecretKeys.hs_token | string | `"hs_token"` | key in existingSecret for hs_token (home server token) |
+| bridges.alertmanager.registration.id | string | `"alertmanager"` | name of the application service |
+| bridges.alertmanager.registration.rate_limited | bool | `false` | should this bot be rate limited? |
+| bridges.alertmanager.registration.sender_localpart | string | `"alertmanager"` | localpart of the user associated with the application service. Events will be sent to the AS if this user is the target of the event, or is a joined member of the room where the event occurred. |
+| bridges.alertmanager.registration.url | string | `""` | url of the alertmanager service. if not provided, we will template it for you like http://matrix-alertmanager-service:3000 |
+| bridges.alertmanager.replicaCount | int | `1` | alertmanager bridge pod replicas |
+| bridges.alertmanager.revisionHistoryLimit | int | `2` | set the revisionHistoryLimit to decide how many replicaSets are kept when you change a deployment. Explicitly setting this field to 0, will result in cleaning up all the history of your Deployment thus that Deployment will not be able to roll back. |
+| bridges.alertmanager.service.type | string | `"ClusterIP"` | service type for the alertmanager bridge |
 | bridges.discord.auth.botToken | string | `""` | Discord bot token for authentication |
 | bridges.discord.auth.clientId | string | `""` | Discord bot clientID for authentication |
 | bridges.discord.channelName | string | `"[Discord] :guild :name"` |  |
 | bridges.discord.data.capacity | string | `"512Mi"` | Size of the PVC to allocate for the SQLite database |
 | bridges.discord.data.storageClass | string | `""` | Storage class (optional) |
 | bridges.discord.defaultVisibility | string | `"public"` | Default visibility of bridged rooms (public/private) |
-| bridges.discord.enabled | bool | `false` | Set to true to enable the Discord bridge |
+| bridges.discord.enabled | bool | `false` | Set to true to enable the DEPRECATED Discord bridge. This will be removed in the future in favor of discord_mautrix.enabled |
 | bridges.discord.image.pullPolicy | string | `"Always"` |  |
 | bridges.discord.image.repository | string | `"halfshot/matrix-appservice-discord"` | docker image repo for discord bridge |
 | bridges.discord.image.tag | string | `"latest"` | tag for discord brdige docker image |
@@ -51,6 +79,229 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord.typingNotifications | bool | `true` | Set to false to disable typing notifications (only for Discord to Matrix) |
 | bridges.discord.users.nickname | string | `":nick"` | Nickname of bridged Discord users Available vars:   :nick     - user's Discord nickname   :username - user's Discord username   :tag      - user's 4 digit Discord tag   :id       - user's Discord developer ID (long) |
 | bridges.discord.users.username | string | `":username#:tag"` | Username of bridged Discord users Available vars:   :username - user's Discord username   :tag      - user's 4 digit Discord tag   :id       - user's Discord developer ID (long) |
+| bridges.discord_mautrix.admin_users | list | `[]` | optional: if set and bridges.discord_mautrix.config.permissions are NOT set below, we'll use this list of admin users to template an admin user using your matrix host. You MUST also set the matrix.hostname parameter. example value of ["admin"] would become @admin:matrix.example.com |
+| bridges.discord_mautrix.config.appservice.address | string | `""` | The address that the homeserver can use to connect to this appservice. example is http://localhost:29334 but if not provided, we guess :) |
+| bridges.discord_mautrix.config.appservice.async_transactions | bool | `false` | Should incoming events be handled asynchronously? This may be necessary for large public instances with lots of messages going through. However, messages will not be guaranteed to be bridged in the same order they were sent in. |
+| bridges.discord_mautrix.config.appservice.bot.avatar | string | `"remove"` | Display avatar for bot. Set to "remove" to remove display avatar. example: mxc://maunium.net/nIdEykemnwdisvHbpxflpDlC |
+| bridges.discord_mautrix.config.appservice.bot.displayname | string | `"Discord bridge bot"` | Display name for bot. Set to "remove" to remove display name. |
+| bridges.discord_mautrix.config.appservice.bot.username | string | `"discordbot"` | Username of the appservice bot. |
+| bridges.discord_mautrix.config.appservice.database.max_conn_idle_time | string | `nil` | Maximum connection idle time before its closed. Disabled if null. Parsed with https://pkg.go.dev/time#ParseDuration |
+| bridges.discord_mautrix.config.appservice.database.max_conn_lifetime | string | `nil` | Maximum connection lifetime before its closed. Disabled if null. Parsed with https://pkg.go.dev/time#ParseDuration |
+| bridges.discord_mautrix.config.appservice.database.max_idle_conns | int | `2` |  |
+| bridges.discord_mautrix.config.appservice.database.max_open_conns | int | `20` | Maximum number of connections. Mostly relevant for Postgres. |
+| bridges.discord_mautrix.config.appservice.database.type | string | `"sqlite3-fk-wal"` | The database type. "sqlite3-fk-wal" and "postgres" are supported. |
+| bridges.discord_mautrix.config.appservice.database.uri | string | `"file:/mautrixdiscord.db?_txlock=immediate"` | The database URI. SQLite: A raw file path is supported, but recommended way is:   `file:<path>?_txlock=immediate`   https://github.com/mattn/go-sqlite3#connection-string Postgres: Connection string. For example,   postgres://user:password@host/database?sslmode=disable To connect via Unix socket, use something like,   postgres:///dbname?host=/var/run/postgresql |
+| bridges.discord_mautrix.config.appservice.ephemeral_events | bool | `true` | Whether or not to receive ephemeral events via appservice transactions. Requires MSC2409 support (i.e. Synapse 1.22+). |
+| bridges.discord_mautrix.config.appservice.hostname | string | `"0.0.0.0"` | The hostname where this appservice should listen. |
+| bridges.discord_mautrix.config.appservice.id | string | `"discord"` | The unique ID of this appservice. |
+| bridges.discord_mautrix.config.appservice.port | int | `29334` | The port where this appservice should listen. |
+| bridges.discord_mautrix.config.bridge.animated_sticker.args.fps | int | `25` | fps, only for webm, webp and gif (2, 5, 10, 20 or 25 recommended) |
+| bridges.discord_mautrix.config.bridge.animated_sticker.args.height | int | `320` | height arg for converter |
+| bridges.discord_mautrix.config.bridge.animated_sticker.args.width | int | `320` | width arg for converter |
+| bridges.discord_mautrix.config.bridge.animated_sticker.target | string | `"webp"` | Format to which animated stickers should be converted. disable - No conversion, send as-is (lottie JSON) png - converts to non-animated png (fastest) gif - converts to animated gif webm - converts to webm video, requires ffmpeg executable with vp9 codec and webm container support webp - converts to animated webp, requires ffmpeg executable with webp codec/container support |
+| bridges.discord_mautrix.config.bridge.autojoin_thread_on_open | bool | `true` | Should the bridge automatically join the user to threads on Discord when the thread is opened on Matrix? This only works with clients that support thread read receipts (MSC3771 added in Matrix v1.4). |
+| bridges.discord_mautrix.config.bridge.backfill.forward_limits.initial.channel | int | `0` |  |
+| bridges.discord_mautrix.config.bridge.backfill.forward_limits.initial.dm | int | `0` |  |
+| bridges.discord_mautrix.config.bridge.backfill.forward_limits.initial.thread | int | `0` |  |
+| bridges.discord_mautrix.config.bridge.backfill.forward_limits.missed.channel | int | `0` |  |
+| bridges.discord_mautrix.config.bridge.backfill.forward_limits.missed.dm | int | `0` |  |
+| bridges.discord_mautrix.config.bridge.backfill.forward_limits.missed.thread | int | `0` |  |
+| bridges.discord_mautrix.config.bridge.backfill.max_guild_members | int | `-1` | Maximum members in a guild to enable backfilling. Set to -1 to disable limit. This can be used as a rough heuristic to disable backfilling in channels that are too active. Currently only applies to missed message backfill. |
+| bridges.discord_mautrix.config.bridge.cache_media | string | `"unencrypted"` | Should mxc uris copied from Discord be cached? This can be `never` to never cache, `unencrypted` to only cache unencrypted mxc uris, or `always` to cache everything. If you have a media repo that generates non-unique mxc uris, you should set this to never. |
+| bridges.discord_mautrix.config.bridge.channel_name_template | string | `"{{if or (eq .Type 3) (eq .Type 4)}}{{.Name}}{{else}}#{{.Name}}{{end}}"` | Displayname template for Discord channels (bridged as rooms, or spaces when type=4). Available variables:   .Name - Channel name, or user displayname (pre-formatted with displayname_template) in DMs.   .ParentName - Parent channel name (used for categories).   .GuildName - Guild name.   .NSFW - Whether the channel is marked as NSFW.   .Type - Channel type (see values at https://github.com/bwmarrin/discordgo/blob/v0.25.0/structs.go#L251-L267) |
+| bridges.discord_mautrix.config.bridge.command_prefix | string | `"!discord"` | The prefix for commands. Only required in non-management rooms. |
+| bridges.discord_mautrix.config.bridge.custom_emoji_reactions | bool | `true` | Should incoming custom emoji reactions be bridged as mxc:// URIs? If set to false, custom emoji reactions will be bridged as the shortcode instead, and the image won't be available. |
+| bridges.discord_mautrix.config.bridge.delete_guild_on_leave | bool | `true` | Should the bridge delete all portal rooms when you leave a guild on Discord? This only applies if the guild has no other Matrix users on this bridge instance. |
+| bridges.discord_mautrix.config.bridge.delete_portal_on_channel_delete | bool | `false` | Should the bridge attempt to completely delete portal rooms when a channel is deleted on Discord? If true, the bridge will try to kick Matrix users from the room. Otherwise, the bridge only makes ghosts leave. |
+| bridges.discord_mautrix.config.bridge.delivery_receipts | bool | `false` | Should the bridge send a read receipt from the bridge bot when a message has been sent to Discord? |
+| bridges.discord_mautrix.config.bridge.direct_media | object | `{"allow_proxy":true,"enabled":false,"server_key":"generate","server_name":"discord-media.example.com","well_known_response":null}` | Settings for converting Discord media to custom mxc:// URIs instead of reuploading. More details can be found at https://docs.mau.fi/bridges/go/discord/direct-media.html |
+| bridges.discord_mautrix.config.bridge.direct_media.allow_proxy | bool | `true` | The bridge supports MSC3860 media download redirects and will use them if the requester supports it. Optionally, you can force redirects and not allow proxying at all by setting this to false. |
+| bridges.discord_mautrix.config.bridge.direct_media.enabled | bool | `false` | Should custom mxc:// URIs be used instead of reuploading media? |
+| bridges.discord_mautrix.config.bridge.direct_media.server_key | string | `"generate"` | Matrix server signing key to make the federation tester pass, same format as synapse's .signing.key file. |
+| bridges.discord_mautrix.config.bridge.direct_media.server_name | string | `"discord-media.example.com"` | The server name to use for the custom mxc:// URIs. This server name will effectively be a real Matrix server, it just won't implement anything other than media. You must either set up .well-known delegation from this domain to the bridge, or proxy the domain directly to the bridge. |
+| bridges.discord_mautrix.config.bridge.direct_media.well_known_response | string | `nil` | Optionally a custom .well-known response. This defaults to `server_name:443` |
+| bridges.discord_mautrix.config.bridge.displayname_template | string | `"{{or .GlobalName .Username}}{{if .Bot}} (bot){{end}}"` | Displayname template for Discord users. This is also used as the room name in DMs if private_chat_portal_meta is enabled. Available variables:   .ID - Internal user ID   .Username - Legacy display/username on Discord   .GlobalName - New displayname on Discord   .Discriminator - The 4 numbers after the name on Discord   .Bot - Whether the user is a bot   .System - Whether the user is an official system user   .Webhook - Whether the user is a webhook and is not an application   .Application - Whether the user is an application |
+| bridges.discord_mautrix.config.bridge.double_puppet_allow_discovery | bool | `false` | Allow using double puppeting from any server with a valid client .well-known file. |
+| bridges.discord_mautrix.config.bridge.double_puppet_server_map | object | `{}` | Servers to always allow double puppeting from |
+| bridges.discord_mautrix.config.bridge.embed_fields_as_tables | bool | `true` | Should inline fields in Discord embeds be bridged as HTML tables to Matrix? Tables aren't supported in all clients, but are the only way to emulate the Discord inline field UI. |
+| bridges.discord_mautrix.config.bridge.enable_webhook_avatars | bool | `true` | Bridge webhook avatars? |
+| bridges.discord_mautrix.config.bridge.encryption.allow | bool | `false` | Allow encryption, work in group chat rooms with e2ee enabled |
+| bridges.discord_mautrix.config.bridge.encryption.allow_key_sharing | bool | `false` | Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled. You must use a client that supports requesting keys from other users to use this feature. |
+| bridges.discord_mautrix.config.bridge.encryption.appservice | bool | `false` | Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data. |
+| bridges.discord_mautrix.config.bridge.encryption.default | bool | `false` | Default to encryption, force-enable encryption in all portals the bridge creates This will cause the bridge bot to be in private chats for the encryption to work properly. |
+| bridges.discord_mautrix.config.bridge.encryption.delete_keys.delete_fully_used_on_decrypt | bool | `false` | Delete fully used keys (index >= max_messages) after decrypting messages. |
+| bridges.discord_mautrix.config.bridge.encryption.delete_keys.delete_on_device_delete | bool | `false` | Delete megolm sessions received from a device when the device is deleted. |
+| bridges.discord_mautrix.config.bridge.encryption.delete_keys.delete_outbound_on_ack | bool | `false` | Beeper-specific: delete outbound sessions when hungryserv confirms that the user has uploaded the key to key backup. |
+| bridges.discord_mautrix.config.bridge.encryption.delete_keys.delete_outdated_inbound | bool | `false` | Delete inbound megolm sessions that don't have the received_at field used for automatic ratcheting and expired session deletion. This is meant as a migration to delete old keys prior to the bridge update. |
+| bridges.discord_mautrix.config.bridge.encryption.delete_keys.delete_prev_on_new_session | bool | `false` | Delete previous megolm sessions from same device when receiving a new one. |
+| bridges.discord_mautrix.config.bridge.encryption.delete_keys.dont_store_outbound | bool | `false` | Don't store outbound sessions in the inbound table. |
+| bridges.discord_mautrix.config.bridge.encryption.delete_keys.periodically_delete_expired | bool | `false` | Periodically delete megolm sessions when 2x max_age has passed since receiving the session. |
+| bridges.discord_mautrix.config.bridge.encryption.delete_keys.ratchet_on_decrypt | bool | `false` | Ratchet megolm sessions forward after decrypting messages. |
+| bridges.discord_mautrix.config.bridge.encryption.plaintext_mentions | bool | `false` | Should users mentions be in the event wire content to enable the server to send push notifications? |
+| bridges.discord_mautrix.config.bridge.encryption.require | bool | `false` | Require encryption, drop any unencrypted messages. |
+| bridges.discord_mautrix.config.bridge.encryption.rotation.disable_device_change_key_rotation | bool | `false` | Disable rotating keys when a user's devices change? You should not enable this option unless you understand all the implications. |
+| bridges.discord_mautrix.config.bridge.encryption.rotation.enable_custom | bool | `false` | Enable custom Megolm room key rotation settings. Note that these settings will only apply to rooms created after this option is set. |
+| bridges.discord_mautrix.config.bridge.encryption.rotation.messages | int | `100` | The maximum number of messages that should be sent with a given a session before changing it. The Matrix spec recommends 100 as the default. |
+| bridges.discord_mautrix.config.bridge.encryption.rotation.milliseconds | int | `604800000` | The maximum number of milliseconds a session should be used before changing it. The Matrix spec recommends 604800000 (a week) as the default. |
+| bridges.discord_mautrix.config.bridge.encryption.verification_levels.receive | string | `"unverified"` | Minimum level for which the bridge should send keys to when bridging messages from WhatsApp to Matrix. |
+| bridges.discord_mautrix.config.bridge.encryption.verification_levels.send | string | `"unverified"` | Minimum level that the bridge should accept for incoming Matrix messages. |
+| bridges.discord_mautrix.config.bridge.encryption.verification_levels.share | string | `"cross-signed-tofu"` | Minimum level that the bridge should require for accepting key requests. |
+| bridges.discord_mautrix.config.bridge.federate_rooms | bool | `true` | Whether or not created rooms should have federation enabled. If false, created portal rooms will never be federated. |
+| bridges.discord_mautrix.config.bridge.guild_name_template | string | `"{{.Name}}"` | Displayname template for Discord guilds (bridged as spaces). Available variables:   .Name - Guild name |
+| bridges.discord_mautrix.config.bridge.login_shared_secret_map | object | `{}` | Shared secrets for https://github.com/devture/matrix-synapse-shared-secret-auth  If set, double puppeting will be enabled automatically for local users instead of users having to find an access token and run `login-matrix` manually. |
+| bridges.discord_mautrix.config.bridge.management_room_text.additional_help | string | `""` | Optional extra text sent when joining a management room. |
+| bridges.discord_mautrix.config.bridge.management_room_text.welcome | string | `"Hello, I'm a Discord bridge bot."` | Sent when joining a room. |
+| bridges.discord_mautrix.config.bridge.management_room_text.welcome_connected | string | `"Use `help` for help."` | Sent when joining a management room and the user is already logged in. |
+| bridges.discord_mautrix.config.bridge.management_room_text.welcome_unconnected | string | `"Use `help` for help or `login` to log in."` | Sent when joining a management room and the user is not logged in. |
+| bridges.discord_mautrix.config.bridge.message_error_notices | bool | `true` | Whether the bridge should send error notices via m.notice events when a message fails to bridge. |
+| bridges.discord_mautrix.config.bridge.message_status_events | bool | `false` | Whether the bridge should send the message status as a custom com.beeper.message_send_status event. |
+| bridges.discord_mautrix.config.bridge.mute_channels_on_create | bool | `false` | Should guild channels be muted when the portal is created? This only meant for single-user instances, it won't mute it for all users if there are multiple Matrix users in the same Discord guild. |
+| bridges.discord_mautrix.config.bridge.permissions | object | `{}` |  |
+| bridges.discord_mautrix.config.bridge.portal_message_buffer | int | `128` |  |
+| bridges.discord_mautrix.config.bridge.prefix_webhook_messages | bool | `false` | Prefix messages from webhooks with the profile info? This can be used along with a custom displayname_template to better handle webhooks that change their name all the time (like ones used by bridges). |
+| bridges.discord_mautrix.config.bridge.private_chat_portal_meta | string | `"default"` | Whether to explicitly set the avatar and room name for private chat portal rooms. If set to `default`, this will be enabled in encrypted rooms and disabled in unencrypted rooms. If set to `always`, all DM rooms will have explicit names and avatars set. If set to `never`, DM rooms will never have names and avatars set. |
+| bridges.discord_mautrix.config.bridge.provisioning.debug_endpoints | bool | `false` | Enable debug API at /debug with provisioning authentication. |
+| bridges.discord_mautrix.config.bridge.provisioning.prefix | string | `"/_matrix/provision"` | Prefix for the provisioning API paths. |
+| bridges.discord_mautrix.config.bridge.provisioning.shared_secret | string | `"generate"` | Shared secret for authentication. If set to "generate", a random secret will be generated, or if set to "disable", the provisioning API will be disabled. |
+| bridges.discord_mautrix.config.bridge.resend_bridge_info | bool | `false` | Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run. This field will automatically be changed back to false after it, except if the config file is not writable. |
+| bridges.discord_mautrix.config.bridge.restricted_rooms | bool | `true` | Should the bridge use space-restricted join rules instead of invite-only for guild rooms? This can avoid unnecessary invite events in guild rooms when members are synced in. |
+| bridges.discord_mautrix.config.bridge.startup_private_channel_create_limit | int | `5` | Number of private channel portals to create on bridge startup. Other portals will be created when receiving messages. |
+| bridges.discord_mautrix.config.bridge.sync_direct_chat_list | bool | `false` | Should the bridge update the m.direct account data event when double puppeting is enabled. Note that updating the m.direct event is not atomic (except with mautrix-asmux) and is therefore prone to race conditions. |
+| bridges.discord_mautrix.config.bridge.use_discord_cdn_upload | bool | `true` | Should the bridge upload media to the Discord CDN directly before sending the message when using a user token, like the official client does? The other option is sending the media in the message send request as a form part (which is always used by bots and webhooks). |
+| bridges.discord_mautrix.config.bridge.username_template | string | `"{{`discord_{{.}}`}}"` | Localpart template of MXIDs for Discord users. {{.}} is replaced with the internal ID of the Discord user. |
+| bridges.discord_mautrix.config.homeserver.address | string | `""` | The address that this appservice can use to connect to the homeserver. this would be something like https://matrix.example.com, but if not set, we'll try to guess the correct homeserver url :) |
+| bridges.discord_mautrix.config.homeserver.async_media | bool | `false` | Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246? |
+| bridges.discord_mautrix.config.homeserver.domain | string | `""` | domain of the homeserver (also known as server_name, used for MXIDs, etc). if not provided, we'll try to guess the correct one, but if your server is https://matrix.example.com, it's probably example.com |
+| bridges.discord_mautrix.config.homeserver.message_send_checkpoint_endpoint | string | `nil` | Endpoint for reporting per-message status. |
+| bridges.discord_mautrix.config.homeserver.ping_interval_seconds | int | `0` | How often should the websocket be pinged? Pinging will be disabled if this is zero. |
+| bridges.discord_mautrix.config.homeserver.public_address | string | `nil` |  |
+| bridges.discord_mautrix.config.homeserver.software | string | `"standard"` | What software is the homeserver running? Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here. |
+| bridges.discord_mautrix.config.homeserver.status_endpoint | string | `nil` | The URL to push real-time bridge status to. If set, the bridge will make POST requests to this URL whenever a user's discord connection state changes. The bridge will use the appservice as_token to authorize requests. |
+| bridges.discord_mautrix.config.homeserver.websocket | bool | `false` | Should the bridge use a websocket for connecting to the homeserver? The server side is currently not documented anywhere and is only implemented by mautrix-wsproxy, mautrix-asmux (deprecated), and hungryserv (proprietary). |
+| bridges.discord_mautrix.config.logging.min_level | string | `"debug"` | min logging level |
+| bridges.discord_mautrix.config.logging.writers[0].format | string | `"pretty-colored"` |  |
+| bridges.discord_mautrix.config.logging.writers[0].type | string | `"stdout"` |  |
+| bridges.discord_mautrix.config.logging.writers[1].compress | bool | `true` |  |
+| bridges.discord_mautrix.config.logging.writers[1].filename | string | `"./logs/mautrix-discord.log"` |  |
+| bridges.discord_mautrix.config.logging.writers[1].format | string | `"json"` |  |
+| bridges.discord_mautrix.config.logging.writers[1].max_backups | int | `10` |  |
+| bridges.discord_mautrix.config.logging.writers[1].max_size | int | `100` |  |
+| bridges.discord_mautrix.config.logging.writers[1].type | string | `"file"` |  |
+| bridges.discord_mautrix.enabled | bool | `false` | Set to true to enable the Discord bridge. Learn more in the [mautrix bridge docs](https://docs.mau.fi/bridges/go/discord/index.html). |
+| bridges.discord_mautrix.existingSecret | object | `{"config":"","registration":""}` | use an existingSecret for mautrix/discord bridge config.yaml, if set, ignores everything under bridges.discord_mautrix.config Cannot be used in combination with bridges.discord_mautrix.registration.existingSecret. |
+| bridges.discord_mautrix.extraVolumeMounts | list | `[]` | extra volumeMounts for the mautrix/discord deployment |
+| bridges.discord_mautrix.extraVolumes | list | `[]` | extra volumes for the mautrix/discord deployment |
+| bridges.discord_mautrix.image.pullPolicy | string | `"IfNotPresent"` |  |
+| bridges.discord_mautrix.image.repository | string | `"dock.mau.dev/mautrix/discord"` | docker image repo for mautrix/discord bridge |
+| bridges.discord_mautrix.image.tag | string | `"08cde6313a32d2382886444db86a7a6e6b12080c-amd64"` | tag for mautrix/discord bridge docker image |
+| bridges.discord_mautrix.podSecurityContext | object | `{}` | security context for the entire mautrix/discord pod |
+| bridges.discord_mautrix.registration.existingSecret | string | `""` | Use an existing Kubernetes Secret to store your own generated appservice and homeserver tokens. If this is not set, we'll generate them for you. Setting this won't override the ENTIRE registration.yaml we generate for the synapse pod to authenticate mautrix/discord. It will only replaces the tokens. To replaces the ENTIRE registration.yaml, use bridges.discord_mautrix.existingSecret.registration |
+| bridges.discord_mautrix.registration.existingSecretKeys.as_token | string | `"as_token"` | key in existingSecret for as_token (appservice token) |
+| bridges.discord_mautrix.registration.existingSecretKeys.hs_token | string | `"hs_token"` | key in existingSecret for hs_token (home server token) |
+| bridges.discord_mautrix.registration.sender_localpart | string | `"discord"` | I don't actually know what this does |
+| bridges.discord_mautrix.revisionHistoryLimit | int | `2` | set the revisionHistoryLimit to decide how many replicaSets are kept when you change a deployment. Explicitly setting this field to 0, will result in cleaning up all the history of your Deployment thus that Deployment will not be able to roll back. |
+| bridges.discord_mautrix.securityContext | object | `{}` | security context for the init container and main container in the discord pod |
+| bridges.discord_mautrix.service.bridge.port | int | `29334` |  |
+| bridges.discord_mautrix.service.type | string | `"ClusterIP"` |  |
+| bridges.hookshot.config.bot.avatar | string | `""` | optional: Define profile avatar for the bot user example: mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d |
+| bridges.hookshot.config.bot.displayname | string | `""` | Define profile display name for the bot user |
+| bridges.hookshot.config.bridge.bindAddress | string | `"0.0.0.0"` | this probably shouldn't change since we're using docker |
+| bridges.hookshot.config.bridge.domain | string | `""` | if not set, defaults to matrix.serverName |
+| bridges.hookshot.config.bridge.mediaUrl | string | `""` | example is https://example.com, but if left blank, we don't include it |
+| bridges.hookshot.config.bridge.port | int | `9993` | the port to run the application service on |
+| bridges.hookshot.config.bridge.url | string | `""` | url in example is http://localhost:8008, but if not set, we use matrix.baseUrl |
+| bridges.hookshot.config.cache | Optional | `{"redisUri":""}` | Cache options for large scale deployments. |
+| bridges.hookshot.config.cache.redisUri | string | `""` | For encryption to work, this must be configured. example value: redis://localhost:6379 |
+| bridges.hookshot.config.feeds.enabled | bool | `false` | enable RSS/Atom feed support |
+| bridges.hookshot.config.feeds.pollConcurrency | int | `4` |  |
+| bridges.hookshot.config.feeds.pollIntervalSeconds | int | `600` | specifies how often each feed will be checked for updates. It may be checked less often if under exceptional load, but it will never be checked more often than every pollIntervalSeconds |
+| bridges.hookshot.config.feeds.pollTimeoutSeconds | int | `30` |  |
+| bridges.hookshot.config.figma.enabled | Optional | `false` | Configure this to enable Figma support |
+| bridges.hookshot.config.figma.instances.your-instance.accessToken | string | `"your-personal-access-token"` |  |
+| bridges.hookshot.config.figma.instances.your-instance.passcode | string | `"your-webhook-passcode"` |  |
+| bridges.hookshot.config.figma.instances.your-instance.teamId | string | `"your-team-id"` |  |
+| bridges.hookshot.config.figma.publicUrl | string | `"https://example.com/hookshot/"` |  |
+| bridges.hookshot.config.generic.allowJsTransformationFunctions | bool | `false` | will allow users to write short transformation snippets in code, and thus is unsafe in untrusted environments |
+| bridges.hookshot.config.generic.enableHttpGet | bool | `false` | means that webhooks can be triggered by GET requests, in addition to POST and PUT. This was previously on by default, but is now disabled due to concerns mentioned in docs. |
+| bridges.hookshot.config.generic.enabled | bool | `false` | enable support for generic webhook events via the hookshot bridge, see [docs](https://matrix-org.github.io/matrix-hookshot/latest/setup/webhooks.html) for more info |
+| bridges.hookshot.config.generic.outbound | bool | `false` | configure Hookshot to send outgoing requests to other services when a message appears on Matrix |
+| bridges.hookshot.config.generic.urlPrefix | string | `""` | describes the public facing URL of your webhook handler. For instance, if your load balancer redirected webhook requests from https://example.com/mywebhookspath to the bridge (on /webhook), an example webhook URL would look like: https://example.com/mywebhookspath/abcdef. |
+| bridges.hookshot.config.generic.userIdPrefix | string | `""` | create a specific user for each new webhook connection in a room. For example, a connection with a name like example for a prefix of webhook_ will create a user called @webhook_example:example.com. If you enable this option, you need to configure the user to be part of your registration file |
+| bridges.hookshot.config.generic.waitForComplete | bool | `false` | causes the bridge to wait until the webhook is processed before sending a response. Some services prefer you always respond with a 200 as soon as the webhook has entered processing (false) while others prefer to know if the resulting Matrix message has been sent (true) |
+| bridges.hookshot.config.github.auth.id | string | `""` | App ID for the GitHub App, e.g. 123 |
+| bridges.hookshot.config.github.auth.privateKeyFile | string | `"/data/github-key.pem"` | privateKeyFile can be generated by clicking "Generate a private key" under the Private keys section on the GitHub app page. |
+| bridges.hookshot.config.github.defaultOptions | Optional | `{"hotlinkIssues":{"prefix":"#"},"showIssueRoomLink":false}` | Default options for GitHub connections. see docs for more: https://matrix-org.github.io/matrix-hookshot/latest/usage/room_configuration/github_repo.html#configuration |
+| bridges.hookshot.config.github.enabled | bool | `false` | enable GitHub support in the hookshot bridge |
+| bridges.hookshot.config.github.enterpriseUrl | string | `""` | If you are using an on-premise / enterprise edition of GitHub, you need provide the base URL in enterpriseUrl. You do not need to specify the /api/... path in the URL |
+| bridges.hookshot.config.github.existingSecret | string | `""` | grab sensitive values for github from an existing Kubernetes secret |
+| bridges.hookshot.config.github.existingSecretKeys.auth_id | string | `""` | key in existing Kubernetes secret for GitHub auth.id which is the GitHub App ID |
+| bridges.hookshot.config.github.existingSecretKeys.oauth_client_id | string | `""` | key in existing Kubernetes secret for GitHub oauth client id |
+| bridges.hookshot.config.github.existingSecretKeys.oauth_client_secret | string | `""` | key in existing Kubernetes secret for GitHub oauth client secret |
+| bridges.hookshot.config.github.existingSecretKeys.private_key | string | `""` | key in existin Kubernetes secret for GitHub privatekey |
+| bridges.hookshot.config.github.existingSecretKeys.webhook_secret | string | `""` | key in existing Kubernetes secret for GitHub webhook secret |
+| bridges.hookshot.config.github.oauth | object | `{"client_id":"","client_secret":"","redirect_uri":""}` | oauth section should include both the Client ID and Client Secret on the GitHub App page. The redirect_uri value must be the public path to /oauth on the webhooks path. E.g. if your load balancer points https://example.com/hookshot to the bridge webhooks listener, you should use the path https://example.com/hookshot/oauth. This value MUST exactly match the Callback URL on the GitHub App page. |
+| bridges.hookshot.config.github.userIdPrefix | Optional | `"_github_"` | Prefix used when creating ghost users for GitHub accounts. |
+| bridges.hookshot.config.github.webhook.secret | string | `""` | Webhook settings for the GitHub app. example showed value secrettoken |
+| bridges.hookshot.config.gitlab.commentDebounceMs | Optional | `5000` | Aggregate comments by waiting this many miliseconds before posting them to Matrix. Defaults to 5000 (5 seconds) |
+| bridges.hookshot.config.gitlab.enabled | bool | `false` | enable GitLab support in the hookshot bridge |
+| bridges.hookshot.config.gitlab.instances | object | `{}` | gitlab instances to use |
+| bridges.hookshot.config.gitlab.userIdPrefix | Optional | `""` | Prefix used when creating ghost users for GitLab accounts. docs suggest: "_gitlab_" |
+| bridges.hookshot.config.gitlab.webhook.publicUrl | string | `""` | example showed https://example.com/hookshot/ |
+| bridges.hookshot.config.gitlab.webhook.secret | string | `""` | example showed value of secrettoken |
+| bridges.hookshot.config.listeners[0].bindAddress | string | `"0.0.0.0"` |  |
+| bridges.hookshot.config.listeners[0].port | int | `9000` |  |
+| bridges.hookshot.config.listeners[0].resources[0] | string | `"webhooks"` |  |
+| bridges.hookshot.config.listeners[1].bindAddress | string | `"0.0.0.0"` |  |
+| bridges.hookshot.config.listeners[1].port | int | `9001` |  |
+| bridges.hookshot.config.listeners[1].resources[0] | string | `"metrics"` |  |
+| bridges.hookshot.config.listeners[1].resources[1] | string | `"provisioning"` |  |
+| bridges.hookshot.config.logging.colorize | bool | `true` | enable text colors in logging |
+| bridges.hookshot.config.logging.json | bool | `false` | enable json formatted logging |
+| bridges.hookshot.config.logging.level | string | `"info"` | log severity level. Options: debug, info, warn, error |
+| bridges.hookshot.config.logging.timestampFormat | string | `"HH:mm:ss:SSS"` | logging timestamp format |
+| bridges.hookshot.config.metrics.enabled | bool | `false` | enable Prometheus metrics support from hookshot to Prometheus, see [docs](https://matrix-org.github.io/matrix-hookshot/latest/metrics.html) |
+| bridges.hookshot.config.passFile | string | `"/data/passkey.pem"` | A passkey used to encrypt tokens stored inside the bridge. |
+| bridges.hookshot.config.permissions | Optional | `[]` | Permissions for using the bridge. See [docs](https://matrix-org.github.io/matrix-hookshot/latest/setup.html#permissions) |
+| bridges.hookshot.config.provisioning.enabled | Optional | `false` | Provisioning API for integration managers |
+| bridges.hookshot.config.provisioning.secret | string | `"!secretToken"` |  |
+| bridges.hookshot.config.queue | Optional | `{"redisUri":""}` | Message queue configuration options for large scale deployments. |
+| bridges.hookshot.config.queue.redisUri | string | `""` | For encryption to work, this must not be configured. example value: redis://localhost:6379 |
+| bridges.hookshot.config.sentry | Optional | `{"dsn":"","environment":""}` | Configure Sentry error reporting |
+| bridges.hookshot.config.sentry.dsn | string | `""` | example value: https://examplePublicKey@o0.ingest.sentry.io/0 |
+| bridges.hookshot.config.sentry.environment | string | `""` | example value: production |
+| bridges.hookshot.config.serviceBots | Optional | `[]` | Define additional bot users for specific services |
+| bridges.hookshot.config.widgets.addToAdminRooms | bool | `false` | The admin room feature is still very barebones so while it's included here for completeness, most instances should leave addToAdminRooms off (as it is by default). This flag will add an "admin room" widget to user admin rooms. |
+| bridges.hookshot.config.widgets.branding.widgetTitle | string | `"Hookshot Configuration"` |  |
+| bridges.hookshot.config.widgets.disallowedIpRanges | list | `[]` | which IP ranges should be disallowed when resolving homeserver IP addresses (for security reasons). Unless you know what you are doing, it is recommended to not include this key. The default blocked IPs are listed below for your convenience. In addition to setting up the widgets config, you must bind a listener for the widgets resource in your listeners config. |
+| bridges.hookshot.config.widgets.enabled | Optional | `false` | EXPERIMENTAL support for complimentary widgets |
+| bridges.hookshot.config.widgets.openIdOverrides | object | `{}` | allows you to configure the correct federation endpoints for a given set of Matrix server names. This is useful if you are testing/developing Hookshot in a local dev environment. Production environments should not use this configuration (as their Matrix server name should be resolvable). The config takes a mapping of Matrix server name => base path for federation. E.g. if your server name was my-local-server and your federation was readable via http://localhost/_matrix/federation, you would put configure my-local-server: "http://localhost" |
+| bridges.hookshot.config.widgets.publicUrl | string | `"https://example.com/widgetapi/v1/static/"` | should be set to the publicly reachable address for the widget public content. By default, Hookshot hosts this content on the widgets listener under /widgetapi/v1/static. |
+| bridges.hookshot.config.widgets.roomSetupWidget | object | `{"addOnInvite":false}` | The room setup feature is more complete, supporting generic webhook configuration (with more options coming soon). This can be enabled by setting roomSetupWidget to an object. You can add the widget by saying !hookshot setup-widget in any room. When addOnInvite is true, the bridge will add a widget to rooms when the bot is invited, and the room has no existing connections. |
+| bridges.hookshot.enabled | bool | `false` | enable the [hookshot](https://matrix-org.github.io/matrix-hookshot) bridge |
+| bridges.hookshot.encryption | bool | `false` | if you'd like to enable encryption in your registration.yml |
+| bridges.hookshot.existingConfigMap | string | `""` | use the name of an existing ConfigMap for hookshot bridge. If set, ignores entire bridges.hookshot.config section |
+| bridges.hookshot.existingSecret.config | string | `""` | optionally use existing kubernetes Secret for config.yml, ignores hookshot.config |
+| bridges.hookshot.existingSecret.passkey | string | `""` | optionally use existing kubernetes Secret for passkey.pem, ignores hookshot.passkey |
+| bridges.hookshot.existingSecret.registration | string | `""` | optionally use existing kubernetes Secret for registration |
+| bridges.hookshot.image.pullPolicy | string | `"IfNotPresent"` | hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always" |
+| bridges.hookshot.image.repository | string | `"halfshot/matrix-hookshot"` | hookshot bridge docker image |
+| bridges.hookshot.image.tag | string | `"5.4.1"` | hookshot bridge docker image tag |
+| bridges.hookshot.passkey | string | `""` | If bridges.hookshot.passkey AND bridges.hookshot.existingSecret.passkey are BOTH empty strings, we will generate a passkey for you. To Generate yourself: openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 |
+| bridges.hookshot.podSecurityContext | object | `{}` | hookshot pod security context |
+| bridges.hookshot.registration.existingSecret | string | `""` |  |
+| bridges.hookshot.registration.existingSecretKeys.as_token | string | `"as_token"` | key in existingSecret for as_token (application service token) |
+| bridges.hookshot.registration.existingSecretKeys.hs_token | string | `"hs_token"` | key in existingSecret for hs_token (home server token) |
+| bridges.hookshot.registration.rate_limited | bool | `false` |  |
+| bridges.hookshot.registration.sender_localpart | string | `"hookshot"` |  |
+| bridges.hookshot.registration.url | string | `""` | This should match the bridges.hookshot.config.bridge.port in your config file |
+| bridges.hookshot.replicaCount | int | `1` | hookshot bridge pod replicas |
+| bridges.hookshot.resources | object | `{}` | resources limits/requests for the hookshot bridge pod |
+| bridges.hookshot.revisionHistoryLimit | int | `2` | set the revisionHistoryLimit to decide how many replicaSets are kept when you change a deployment. Explicitly setting this field to 0, will result in cleaning up all the history of your Deployment thus that Deployment will not be able to roll back. |
+| bridges.hookshot.securityContext | object | `{}` | hookshot container securityContext |
+| bridges.hookshot.service.appservice.port | int | `9993` | appservice service port for the hookshot bridge |
+| bridges.hookshot.service.metrics.port | int | `9001` | metrics service port for the hookshot bridge |
+| bridges.hookshot.service.type | string | `"ClusterIP"` | service type for the hookshot bridge |
+| bridges.hookshot.service.webhook.port | int | `9000` | webhook service port for the hookshot bridge |
 | bridges.irc.data.capacity | string | `"1Mi"` | Size of the data PVC to allocate |
 | bridges.irc.database | string | `"matrix_irc"` | Postgres database to store IRC bridge data in, this db will be created if postgresql.enabled: true, otherwise you must create it manually |
 | bridges.irc.databaseSslVerify | bool | `true` |  |
@@ -70,7 +321,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.volume.capacity | string | `"1Mi"` | Capacity of the shared volume for storing bridge/appservice registration files. Note: 1Mi should be enough but some cloud providers may set a minimum PVC size of 1Gi, adjust as necessary |
 | bridges.volume.existingClaim | string | `""` | name of an existing persistent volume claim to use for bridges |
 | bridges.volume.storageClass | string | `""` | Storage class (optional) |
-| bridges.whatsapp.bot.avatar | string | `"mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"` | avatar of the WhatsApp bridge bot |
+| bridges.whatsapp.bot.avatar | string | `""` | avatar of the WhatsApp bridge bot example: mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr |
 | bridges.whatsapp.bot.displayName | string | `"WhatsApp bridge bot"` | display name of the WhatsApp bridge bot |
 | bridges.whatsapp.bot.username | string | `"whatsappbot"` | Username of the WhatsApp bridge bot |
 | bridges.whatsapp.callNotices | bool | `true` | Send notifications for incoming calls |
@@ -537,7 +788,6 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | This annotation is required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
 | synapse.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
 | synapse.ingress.enabled | bool | `true` | enable ingress for synapse, so the server is reachable outside the cluster |
-| synapse.ingress.host | string | `""` | @DEPRECATION: hostname for your synapse server, please use synapse.ingress.hosts instead. This will be removed in a future release |
 | synapse.ingress.hosts[0].host | string | `"matrix.chart-example.local"` |  |
 | synapse.ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | synapse.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
@@ -561,6 +811,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.probes.startup.timeoutSeconds | int | `5` | startup probe seconds before timing out |
 | synapse.replicaCount | int | `1` | replica count of the synapse pods |
 | synapse.resources | object | `{}` | resource requests and limits for synapse |
+| synapse.revisionHistoryLimit | int | `2` | set the revisionHistoryLimit to decide how many replicaSets are kept when you change a deployment. Explicitly setting this field to 0, will result in cleaning up all the history of your Deployment thus that Deployment will not be able to roll back. |
 | synapse.securityContext | object | `{"allowPrivilegeEscalation":false,"readOnlyRootFilesystem":false,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | securityContext for the synapse CONTAINER ONLY Does not work by default in all cloud providers, disable by default |
 | synapse.securityContext.allowPrivilegeEscalation | bool | `false` | AllowPrivilegeEscalation controls whether a process can gain more privileges than its parent process. This bool directly controls if the no_new_privs flag will be set on the container process. AllowPrivilegeEscalation is true always when the container is: 1) run as Privileged 2) has CAP_SYS_ADMIN Note that this field cannot be set when spec.os.name is windows. |
 | synapse.securityContext.readOnlyRootFilesystem | bool | `false` | Whether this container has a read-only root filesystem. Default is false. Note that this field cannot be set when spec.os.name is windows. |

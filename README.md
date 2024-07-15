@@ -16,9 +16,17 @@ helm repo add matrix https://small-hack.github.io/matrix-chart
 # downloads the values.yaml locally
 helm show values matrix/matrix > values.yaml
 
+# You should then edit the values.yaml to your liking.
+
+## NOTE: The most important helm parameter is matrix.hostname
+## without it, this chart may not work!
+
 # install the chart
 helm install my-release-name matrix/matrix --values values.yaml
 ```
+
+**NOTE: The most important helm parameter is `matrix.hostname`. Without it, this chart may not work!**
+
 
 ## Current Features ✨
 
@@ -35,24 +43,28 @@ helm install my-release-name matrix/matrix --values values.yaml
 - Use s3 to store media using [element-hq/synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider/tree/main)
 - Use [matrix-sliding-sync-chart](https://github.com/small-hack/matrix-sliding-sync-chart) as a sub chart for using [element-x] which requires [matrix-org/sliding-sync](https://github.com/matrix-org/sliding-sync)
 - Use existing Kubernetes secrets and existing Persistent Volume Claims
+- [mautrix/discord](https://github.com/mautrix/discord) - Discord bridge for syncing between matrix and Discord
+- [small-hack/matrix-alertmanager](https://github.com/small-hack/matrix-alertmanager) - Prometheus Alertmanager bridge for syncing between matrix and Alertmanager
 
-### ⚠️ Optional Features (Untested Since Fork)
+#### ⚠️ Untested Features
 
 These features still need to be tested, but are technically baked into the chart from the fork:
 
 - Use of lightweight Exim relay
-- [Half-Shot/matrix-appservice-discord](https://github.com/Half-Shot/matrix-appservice-discord) Discord bridge
 - [matrix-org/matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) IRC bridge
 - [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge
 
 # Notes
 
 * [Databases](#databases)
+* [Ingress](#ingress)
 * [Federation](#federation)
     * [Federation not Working](#federation-not-working)
     * [Addiing Trusted Key Servers from an existing Secret](#addiing-trusted-key-servers-from-an-existing-secret)
 * [Notes on using Matrix Sliding Sync](#notes-on-using-matrix-sliding-sync)
 * [Notes on using MAS (Matrix Authentication Service)](#notes-on-using-mas-matrix-authentication-service)
+* [Bridges](#bridges)
+    * [Discord](#discord)
 * [About and Status](#about-and-status)
 
 ## Databases
@@ -66,6 +78,51 @@ You must select one of the following options:
 >
 > You cannot enable both `externalDatabase` and `postgresql`. You must select _one_.
 
+## Ingress
+
+A previous version of this chart supported using the `synapse.ingress.host` parameter. This option has been removed. You must now set a `synapse.ingress.hosts`. Because of this, you must now also set `matrix.hostname` or certain functionality will not work. Example of how to setup ingress and hostname:
+
+```yaml
+matrix:
+  # used for setting up config files that require your homeserver hostname
+  # such as bridging between your matrix homeserver (synapse) and other services
+  # such as discord or WhatsApp
+  hostname: my-synapse-hostname.com
+
+synapse:
+  ingress:
+    className: "nginx"
+    annotations:
+      # required for TLS certs issued by cert-manager
+      cert-manager.io/cluster-issuer: letsencrypt-staging
+
+      # -- This annotation is required for the Nginx ingress provider. You can
+      # remove it if you use a different ingress provider
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        proxy_intercept_errors off;
+
+    hosts:
+      - host: "my-synapse-hostname.com"
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            # if mas.enabled is set to true, you want pathType for / to be Prefix
+            # pathType: Prefix
+
+          # if mas.enabled is set to true, you want to uncomment the following:
+          # - path: "/_matrix/client/(r0|v3)/(refresh|login|logout).*"
+          #   pathType: ImplementationSpecific
+          #   backend:
+          #     service:
+          #       value: release-name-mas
+          #       port:
+          #         name: http
+    # -- enable tls for synapse ingress
+    tls:
+      - secretName: "matrix-tls"
+        hosts:
+          - my-synapse-hostname
+```
 
 ## Federation
 
@@ -77,6 +134,7 @@ I managed to finally get past that by adding the following to my values.yaml:
 
 ```yaml
 matrix:
+  hostname: my-synapse-hostname.com
   federation:
     enabled: true
 
@@ -98,6 +156,7 @@ Later on, I realized I could also use [`serve_server_wellknown`](https://element
 
 ```yaml
 matrix:
+  hostname: my-synapse-hostname.com
   federation:
     enabled: true
   serve_server_wellknown: true
@@ -109,6 +168,7 @@ If you'd like to get your [`trusted_key_servers`](https://element-hq.github.io/s
 
 ```yaml
 matrix:
+  hostname: my-synapse-hostname.com
   federation:
     enabled: true
   security:
@@ -140,6 +200,7 @@ To use [sliding sync](https://github.com/matrix-org/sliding-sync), which is requ
 
 ```yaml
 matrix:
+  hostname: my-synapse-hostname.com
   extra_well_known_client_content:
      "org.matrix.msc3575.proxy":
        "url": "https://your-sliding-sync-hostname.com"
@@ -183,6 +244,7 @@ MAS is currently the only way to use OIDC with [element-x]. If you're using MAS 
 
 ```yaml
 matrix:
+  hostname: my-synapse-hostname.com
   experimental_features:
     msc3861:
       # Likely needed if using OIDC on synapse and you want to allow usage of Element-X (the beta of element)
@@ -337,6 +399,153 @@ mas:
               template: "{{ user.email }}"
               set_email_verification: always
 ```
+
+## Bridges
+
+We've only recently started adding/testing [bridges](https://matrix.org/ecosystem/bridges/) to this stack, so there may be some bugs, but so far, we've got the discord bridge upgraded. The rest of the bridges are in a beta/alpha state and although we want to support them, we haven't had the time to test them out since the major fork. If you find something wrong with them, please feel free to submit an Issue or Pull Request.
+
+So far we've tested and gotten working two bots/bridges: Alertmanager and Discord. We wanted to get hookshot working, but try as we might, we could never get the bot to respond to queries in a matrix chat.
+
+### Alertmanager
+
+Check out the [upstream repo](https://github.com/small-hack/matrix-alertmanager) for more info (especially [`.env.default`](https://github.com/small-hack/matrix-alertmanager/blob/main/.env.default)), but here's the gist for configuring it via this chart.
+
+```yaml
+bridges:
+  alertmanager:
+    enabled: false
+
+    existingSecret:
+      # -- optional secret to replace the entire registration.yaml
+      registration: ""
+
+    # this section is for registering the application service with matrix
+    # read more about application services here:
+    # https://spec.matrix.org/v1.11/application-service-api/
+    registration:
+      # -- url of the alertmanager service. if not provided, we will template it
+      # for you like http://matrix-alertmanager-service:3000
+      url: ""
+      # A secret token that the application service will use to authenticate
+      # requests to the homeserver.
+      as_token: ""
+      # -- Use an existing Kubernetes Secret to store your own generated appservice
+      # and homeserver tokens. If this is not set, we'll generate them for you.
+      # Setting this won't override the ENTIRE registration.yaml we generate for
+      # the synapse pod to authenticate mautrix/discord. It will only replaces the tokens.
+      # To replaces the ENTIRE registration.yaml, use
+      # bridges.alertmanager.existingSecret.registration
+      existingSecret: ""
+      existingSecretKeys:
+        # -- key in existingSecret for as_token (application service token). If
+        # provided and existingSecret is set, ignores bridges.alertmanager.registration.as_token
+        as_token: "as_token"
+        # -- key in existingSecret for hs_token (home server token)
+        hs_token: "hs_token"
+
+    encryption: false
+
+    config:
+      # -- secret key for the alertmanager webhook config URL
+      app_alertmanager_secret: ""
+      # -- your homeserver url, e.g. https://homeserver.tld
+      homeserver_url: ""
+
+      bot:
+        # -- optional: display name to set for the bot user
+        display_name: ""
+        # -- optional: mxc:// avatar to set for the bot user
+        avatar_url: ""
+        # -- rooms to send alerts to, separated by a |
+        # Each entry contains the receiver name (from alertmanager) and the
+        # internal id (not the public alias) of the Matrix channel to forward to.
+        # example: reciever1/!789fhdsauoh48:mymatrix.hostname.com
+        rooms: ""
+        # -- Set this to true to make firing alerts do a `@room` mention.
+        # NOTE! Bot should also have enough power in the room for this to be useful.
+        mention_room: false
+
+      # -- set to enable Grafana links, e.g. https://grafana.example.com
+      grafana_url: ""
+      # -- grafana data source, e.g. default
+      grafana_datasource: ""
+      # -- set to enable silence link, e.g. https://alertmanager.example.com
+      alertmanager_url: ""
+```
+
+### Discord
+
+We previously had the halfshot/discord bridge as a part of this stack, but as of July 2024 the image was no longer being updated and hadn't been updated in 3 years, see: [#589](https://github.com/small-hack/matrix-chart/issues/589) for more info. Instead we now offer the [mautrix/discord](https://github.com/mautrix/discord) bridge. You can read their docs [here](https://docs.mau.fi/bridges/go/discord/index.html).
+
+Here's how we got it mostly working on our end via the values.yaml:
+
+```yaml
+matrix:
+  hostname: my-synapse-hostname.com
+
+bridges:
+  discord_mautrix:
+    enabled: true
+    # this just keeps the replicasets from getting
+    # out of control, feel free to set to 10 to
+    # keep more history for rollbacks
+    revisionHistoryLimit: 1
+
+    # -- extra volumes for the mautrix/discord deployment
+    # we created this separately from the chart
+    extraVolumes:
+      - name: sqllite
+        persistentVolumeClaim:
+          claimName: mautrix-discord-bridge-sqlite
+
+    extraVolumeMounts:
+      - name: sqllite
+        mountPath: /sql
+
+    admin_users:
+      - friend
+      - admin
+
+    config:
+      # Homeserver details
+      homeserver:
+        address: "https://my-synapse-hostname.com"
+        domain: "my-synapse-hostname.com"
+
+      appservice:
+        # Database config - we used sqllite because it's easy
+        database:
+          type: sqlite3-fk-wal
+          uri: file:/sql/mautrixdiscord.db?_txlock=immediate
+
+      bridge:
+        encryption:
+          # -- Allow encryption, work in group chat rooms with e2ee enabled
+          allow: true
+          # -- Default to encryption, force-enable encryption in all portals the bridge creates
+          # This will cause the bridge bot to be in private chats for the encryption to work properly.
+          default: true
+```
+
+Example PVC for the sqllite file to persist:
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mautrix-discord-bridge-sqlite
+  namespace: matrix
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: local-path
+```
+
+After you set this up, you'll still need to authenticate the matrix bot (mautrix/discord) with your Discord bot. For that, you'll need to follow the instructions in the [mautrix discord docs](https://docs.mau.fi/bridges/go/discord/authentication.html).
+
 
 ## About and Status
 

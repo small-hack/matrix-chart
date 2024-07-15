@@ -1,0 +1,155 @@
+{{- if .Values.bridges.discord_mautrix.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "matrix.fullname" . }}-bridge-discord
+  labels:
+{{ include "matrix.labels" . | indent 4 }}
+spec:
+  revisionHistoryLimit: {{ .Values.bridges.discord_mautrix.revisionHistoryLimit }}
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-discord
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      matrix-chart/allow-synapse-access: allow
+  template:
+    metadata:
+      annotations:
+        # re-roll deployment on config change
+        checksum/discord-config: {{ include (print $.Template.BasePath "/bridge-mautrix-discord/secret-config.yaml") . | sha256sum }}
+        checksum/discord-registration: {{ include (print $.Template.BasePath "/bridge-mautrix-discord/secret-registration.yaml") . | sha256sum }}
+      labels:
+        app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-discord
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        matrix-chart/allow-synapse-access: allow
+    spec:
+      {{- if .Values.bridges.affinity }}
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - {{ include "matrix.name" . }}-synapse
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                      - {{ .Release.Name }}
+              topologyKey: kubernetes.io/hostname
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.bridges.discord_mautrix.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: load-config
+          {{- if .Values.bridges.discord_mautrix.registration.existingSecret }}
+          image: "mikefarah/yq:latest"
+          {{- else }}
+          image: "alpine:latest"
+          {{- end }}
+          imagePullPolicy: {{ .Values.bridges.discord_mautrix.image.pullPolicy }}
+          command:
+           - "/bin/sh"
+           - "-ec"
+           - |
+             cp /load/registration.yaml /data/registration.yaml && \
+             cp /load/config.yaml /data/config.yaml && \
+             {{- if .Values.bridges.discord_mautrix.registration.existingSecret }}
+             echo "Starting yq of registration.yaml and config.yaml" && \
+             echo -e "as_token will be $AS_TOKEN" && echo -e "hs token will be $HS_TOKEN" && \
+             yq eval -i '.as_token = env(AS_TOKEN)' /data/registration.yaml && \
+             yq eval -i '.hs_token = env(HS_TOKEN)' /data/registration.yaml && \
+
+             echo "registration as token afterwards:" && \
+             yq .as_token /data/registration.yaml && \
+             echo "registration hs token afterwards:" && \
+             yq .hs_token /data/registration.yaml && \
+
+             yq eval -i '.appservice.as_token = env(AS_TOKEN)' /data/config.yaml && \
+             yq eval -i '.appservice.hs_token = env(HS_TOKEN)' /data/config.yaml && \
+
+             echo "config as token afterwards:" && \
+             yq .appservice.as_token /data/config.yaml && \
+             echo "config hs token afterwards:" && \
+             yq .appservice.hs_token /data/config.yaml && \
+             {{- end }}
+             cp /data/registration.yaml /bridges/discord.yaml
+          {{ if .Values.bridges.discord_mautrix.registration.existingSecret }}
+          env:
+            - name: AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.discord_mautrix.registration.existingSecret }}
+                  key: {{ .Values.bridges.discord_mautrix.registration.existingSecretKeys.as_token }}
+            - name: HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.discord_mautrix.registration.existingSecret }}
+                  key: {{ .Values.bridges.discord_mautrix.registration.existingSecretKeys.hs_token }}
+          {{- end }}
+          volumeMounts:
+            - name: load
+              mountPath: /load
+            - name: data
+              mountPath: /data
+            - name: bridges
+              mountPath: /bridges
+          {{- with .Values.bridges.discord_mautrix.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      containers:
+        - name: "bridge-discord"
+          image: "{{ .Values.bridges.discord_mautrix.image.repository }}:{{ .Values.bridges.discord_mautrix.image.tag }}"
+          imagePullPolicy: {{ .Values.bridges.discord_mautrix.image.pullPolicy }}
+          command: ["mautrix-discord", "--config", "/data/config.yaml", "--no-update"]
+          ports:
+            - name: bridge
+              containerPort: {{ .Values.bridges.discord_mautrix.config.appservice.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data
+           {{- with .Values.bridges.discord_mautrix.extraVolumeMounts }}
+             {{- toYaml . | nindent 12 }}
+           {{- end }}
+          {{- with .Values.bridges.discord_mautrix.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.bridges.discord_mautrix.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: load
+          projected:
+            sources:
+              - secret:
+                  name: {{ include "matrix.discord_mautrix.configSecret" . }}
+              - secret:
+                  name: {{ include "matrix.discord_mautrix.registrationSecret" . }}
+        - name: bridges
+          persistentVolumeClaim:
+            {{- if not .Values.bridges.volume.existingClaim }}
+            claimName: "{{ include "matrix.fullname" . }}-bridges"
+            {{- else -}}
+            claimName: {{ .Values.bridges.volume.existingClaim }}
+            {{- end }}
+        - name: data
+          emptyDir:
+            sizeLimit: 500Mi
+        {{- with .Values.bridges.discord_mautrix.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+{{- end }}
