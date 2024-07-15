@@ -4,8 +4,8 @@ kind: ServiceMonitor
 metadata:
   name: {{ include "matrix.fullname" . }}-synapse
   labels:
-    {{- include "matrix.labels" . | indent 4 }}
-    {{- include "matrix.synapse.labels" . | indent 4}}
+    {{- include "matrix.labels" . | nindent 4 }}
+    {{- include "matrix.synapse.labels" . | nindent 4}}
 spec:
   endpoints:
   - interval: 30s
@@ -16,6 +16,6 @@ spec:
       - {{ .Release.Namespace | quote }}
   selector:
     matchLabels:
-      {{- include "matrix.labels" . | indent 6 }}
-      {{- include "matrix.synapse.labels" . | indent 6 }}
+      {{- include "matrix.labels" . | nindent 6 }}
+      {{- include "matrix.synapse.labels" . | nindent 6 }}
 {{- end }}
