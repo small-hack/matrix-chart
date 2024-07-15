@@ -203,10 +203,6 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.securityContext | object | `{}` | security context for the init container and main container in the discord pod |
 | bridges.discord_mautrix.service.bridge.port | int | `29334` |  |
 | bridges.discord_mautrix.service.type | string | `"ClusterIP"` |  |
-| bridges.discord_mautrix.volume.accessMode | string | `"ReadWriteOnce"` |  |
-| bridges.discord_mautrix.volume.capacity | string | `"1Gi"` |  |
-| bridges.discord_mautrix.volume.existingClaim | string | `""` | use an existing PVC claim instead of creating one fresh for the discord_mautrix /data volume |
-| bridges.discord_mautrix.volume.storageClass | string | `"local-path"` |  |
 | bridges.hookshot.config.bot.avatar | string | `""` | optional: Define profile avatar for the bot user example: mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d |
 | bridges.hookshot.config.bot.displayname | string | `""` | Define profile display name for the bot user |
 | bridges.hookshot.config.bridge.bindAddress | string | `"0.0.0.0"` | this probably shouldn't change since we're using docker |
