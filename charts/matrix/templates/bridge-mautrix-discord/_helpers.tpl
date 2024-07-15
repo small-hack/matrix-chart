@@ -23,11 +23,3 @@
 {{ template "matrix.fullname" . }}-discord-registration
 {{- end -}}
 {{- end -}}
-
-{{- define "matrix.discord_mautrix.pvc" -}}
-{{- if .Values.bridges.discord_mautrix.volume.existingClaim -}}
-{{ .Values.bridges.discord_mautrix.volume.existingClaim }}
-{{- else -}}
-{{ template "matrix.fullname" . }}-discord-bridge
-{{- end -}}
-{{- end -}}

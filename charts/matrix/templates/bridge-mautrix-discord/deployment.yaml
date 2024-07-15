@@ -147,8 +147,8 @@ spec:
             claimName: {{ .Values.bridges.volume.existingClaim }}
             {{- end }}
         - name: data
-          persistentVolumeClaim:
-            claimName: {{ include "matrix.discord_mautrix.pvc" . }}
+          emptyDir:
+            sizeLimit: 500Mi
         {{- with .Values.bridges.discord_mautrix.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
