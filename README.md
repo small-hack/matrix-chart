@@ -43,7 +43,8 @@ helm install my-release-name matrix/matrix --values values.yaml
 - Use s3 to store media using [element-hq/synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider/tree/main)
 - Use [matrix-sliding-sync-chart](https://github.com/small-hack/matrix-sliding-sync-chart) as a sub chart for using [element-x] which requires [matrix-org/sliding-sync](https://github.com/matrix-org/sliding-sync)
 - Use existing Kubernetes secrets and existing Persistent Volume Claims
-- [mautrix/discord](https://github.com/mautrix/discord) Discord bridge for syncing between matrix and Discord
+- [mautrix/discord](https://github.com/mautrix/discord) - Discord bridge for syncing between matrix and Discord
+- [small-hack/matrix-alertmanager](https://github.com/small-hack/matrix-alertmanager) - Prometheus Alertmanager bridge for syncing between matrix and Alertmanager
 
 #### ⚠️ Untested Features
 
@@ -116,23 +117,12 @@ synapse:
           #       value: release-name-mas
           #       port:
           #         name: http
-
-          # if bridges.hookshot.generic.enabled, you want to uncomment the following:
-          #  - path: /webhook
-          #   pathType: ImplementationSpecific
-          #   backend:
-          #     service:
-          #       value: release-name-bridge-hookshot
-          #       port:
-          #         name: http
-
     # -- enable tls for synapse ingress
     tls:
       - secretName: "matrix-tls"
         hosts:
           - my-synapse-hostname
 ```
-
 
 ## Federation
 
@@ -413,6 +403,75 @@ mas:
 ## Bridges
 
 We've only recently started adding/testing [bridges](https://matrix.org/ecosystem/bridges/) to this stack, so there may be some bugs, but so far, we've got the discord bridge upgraded. The rest of the bridges are in a beta/alpha state and although we want to support them, we haven't had the time to test them out since the major fork. If you find something wrong with them, please feel free to submit an Issue or Pull Request.
+
+So far we've tested and gotten working two bots/bridges: Alertmanager and Discord. We wanted to get hookshot working, but try as we might, we could never get the bot to respond to queries in a matrix chat.
+
+### Alertmanager
+
+Check out the [upstream repo](https://github.com/small-hack/matrix-alertmanager) for more info (especially [`.env.default`](https://github.com/small-hack/matrix-alertmanager/blob/main/.env.default)), but here's the gist for configuring it via this chart.
+
+```yaml
+bridges:
+  alertmanager:
+    enabled: false
+
+    existingSecret:
+      # -- optional secret to replace the entire registration.yaml
+      registration: ""
+
+    # this section is for registering the application service with matrix
+    # read more about application services here:
+    # https://spec.matrix.org/v1.11/application-service-api/
+    registration:
+      # -- url of the alertmanager service. if not provided, we will template it
+      # for you like http://matrix-alertmanager-service:3000
+      url: ""
+      # A secret token that the application service will use to authenticate
+      # requests to the homeserver.
+      as_token: ""
+      # -- Use an existing Kubernetes Secret to store your own generated appservice
+      # and homeserver tokens. If this is not set, we'll generate them for you.
+      # Setting this won't override the ENTIRE registration.yaml we generate for
+      # the synapse pod to authenticate mautrix/discord. It will only replaces the tokens.
+      # To replaces the ENTIRE registration.yaml, use
+      # bridges.alertmanager.existingSecret.registration
+      existingSecret: ""
+      existingSecretKeys:
+        # -- key in existingSecret for as_token (application service token). If
+        # provided and existingSecret is set, ignores bridges.alertmanager.registration.as_token
+        as_token: "as_token"
+        # -- key in existingSecret for hs_token (home server token)
+        hs_token: "hs_token"
+
+    encryption: false
+
+    config:
+      # -- secret key for the alertmanager webhook config URL
+      app_alertmanager_secret: ""
+      # -- your homeserver url, e.g. https://homeserver.tld
+      homeserver_url: ""
+
+      bot:
+        # -- optional: display name to set for the bot user
+        display_name: ""
+        # -- optional: mxc:// avatar to set for the bot user
+        avatar_url: ""
+        # -- rooms to send alerts to, separated by a |
+        # Each entry contains the receiver name (from alertmanager) and the
+        # internal id (not the public alias) of the Matrix channel to forward to.
+        # example: reciever1/!789fhdsauoh48:mymatrix.hostname.com
+        rooms: ""
+        # -- Set this to true to make firing alerts do a `@room` mention.
+        # NOTE! Bot should also have enough power in the room for this to be useful.
+        mention_room: false
+
+      # -- set to enable Grafana links, e.g. https://grafana.example.com
+      grafana_url: ""
+      # -- grafana data source, e.g. default
+      grafana_datasource: ""
+      # -- set to enable silence link, e.g. https://alertmanager.example.com
+      alertmanager_url: ""
+```
 
 ### Discord
 

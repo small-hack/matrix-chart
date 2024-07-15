@@ -1908,9 +1908,9 @@ bridges:
     encryption: false
 
     config:
-      # -- appservice port?
+      # -- alertmanager's container port
       app_port: 3000
-      # -- secret key for the webhook events, I don't know what this is
+      # -- secret key for the alertmanager webhook config URL
       app_alertmanager_secret: ""
       # -- your homeserver url, e.g. https://homeserver.tld
       homeserver_url: ""
@@ -1918,7 +1918,7 @@ bridges:
       bot:
         # -- user in matrix for the the alertmanager bot e.g. alertmanager
         # which becomes @alertmanager:homeserver.tld
-        user: ""
+        user: "alertmanager"
         # -- optional: display name to set for the bot user
         display_name: ""
         # -- optional: mxc:// avatar to set for the bot user
