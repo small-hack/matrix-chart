@@ -58,7 +58,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.bridges.hookshot.securityContext }}
+      {{- with .Values.bridges.hookshot.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -155,11 +155,6 @@ spec:
           {{- with .Values.bridges.hookshot.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
-            capabilities:
-              drop:
-                - ALL
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
           {{- end }}
       containers:
         - name: "bridge-hookshot"
@@ -182,12 +177,10 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+          {{- with .Values.bridges.hookshot.securityContext }}
           securityContext:
-            capabilities:
-              drop:
-                - ALL
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.bridges.hookshot.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

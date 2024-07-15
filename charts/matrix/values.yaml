@@ -1982,7 +1982,16 @@ bridges:
     securityContext:
       runAsUser: 1000
       runAsGroup: 1000
+
+    podSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
       fsGroup: 1000
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
 
     # -- If bridges.hookshot.passkey AND bridges.hookshot.existingSecret.passkey are
     # BOTH empty strings, we will generate a passkey for you. To Generate yourself:
