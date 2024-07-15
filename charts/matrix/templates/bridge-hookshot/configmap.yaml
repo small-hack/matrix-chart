@@ -7,5 +7,5 @@ metadata:
   {{ include "matrix.labels" . | nindent 4}}
 data:
   config.yml: |-
-    {{ include "config.yaml" . | nindent 4 }}
+    {{ include "hookshot_config.yaml" . | nindent 4 }}
 {{- end }}

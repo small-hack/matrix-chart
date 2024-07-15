@@ -1,4 +1,4 @@
-{{- define "config.yaml" }}
+{{- define "hookshot_config.yaml" }}
 bridge:
   domain: {{ .Values.bridges.hookshot.config.bridge.domain | default .Values.matrix.hostname }}
   url: {{ .Values.bridges.hookshot.config.bridge.url | default (include "matrix.baseUrl" .) }}
