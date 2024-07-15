@@ -771,6 +771,9 @@ synapse:
     # -- Port to listen on for metrics scraping
     port: 9092
     annotations: true
+    serviceMonitor:
+      # -- enable a prometheus ServiceMonitor to send metrics to prometheus
+      enabled: false
 
   # -- optiona: extra env variables to pass to the matrix synapse deployment
   extraEnv: []

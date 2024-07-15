@@ -1,0 +1,21 @@
+{{- if and .Values.synapse.metrics.enabled .Values.synapse.metrics.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "matrix.fullname" . }}-synapse
+  labels:
+    {{- include "matrix.labels" . | nindent 4 }}
+    {{- include "matrix.synapse.labels" . | nindent 4}}
+spec:
+  endpoints:
+  - interval: 30s
+    targetPort: {{ .Values.synapse.metrics.port }}
+    path: /_synapse/metrics
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace | quote }}
+  selector:
+    matchLabels:
+      {{- include "matrix.labels" . | nindent 6 }}
+      {{- include "matrix.synapse.labels" . | nindent 6 }}
+{{- end }}
