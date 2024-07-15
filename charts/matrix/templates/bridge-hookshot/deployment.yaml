@@ -87,13 +87,13 @@ spec:
               yq eval -i '.github.auth.id = env(APP_ID)' /data/config.yml && \
               {{- end }}
               {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.webhook_secret }}
-              yq eval -i '.github.auth.id = env(WEBHOOK_SECRET)' /data/config.yml && \
+              yq eval -i '.github.webhook.secret = env(WEBHOOK_SECRET)' /data/config.yml && \
               {{- end }}
               {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.oauth_client_id }}
-              yq eval -i '.github.auth.id = env(OAUTH_CLIENT_ID)' /data/config.yml && \
+              yq eval -i '.github.oauth.client_id = env(OAUTH_CLIENT_ID)' /data/config.yml && \
               {{- end }}
               {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.oauth_client_secret }}
-              yq eval -i '.github.auth.id = env(OAUTH_CLIENT_SECRET)' /data/config.yml && \
+              yq eval -i '.github.oauth.client_secret = env(OAUTH_CLIENT_SECRET)' /data/config.yml && \
               {{- end }}
               {{- if .Values.bridges.hookshot.config.github.existingSecretKeys.private_key }}
               cp /load/github-key.pem /data/github-key.pem && \
