@@ -79,9 +79,9 @@ spec:
              yq eval -i '.appservice.hs_token = env(HS_TOKEN)' /data/config.yaml && \
 
              echo "config as token afterwards:" && \
-             yq .as_token /data/config.yaml && \
+             yq .appservice.as_token /data/config.yaml && \
              echo "config hs token afterwards:" && \
-             yq .hs_token /data/config.yaml && \
+             yq .appservice.hs_token /data/config.yaml && \
              {{- end }}
              cp /data/registration.yaml /bridges/discord.yaml
           {{ if .Values.bridges.discord_mautrix.registration.existingSecret }}
