@@ -1,0 +1,11 @@
+{{- if and (not .Values.bridges.rss.existingSecret.feeds ) .Values.bridges.rss.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "matrix.rss.feedsSecret" . }}
+  labels:
+  {{ include "matrix.labels" . | nindent 4}}
+data:
+  feeds.yml: |-
+    {{ include "rss_feeds.yml" . | nindent 4 }}
+{{- end }}

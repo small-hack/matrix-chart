@@ -14,3 +14,21 @@
 {{ template "matrix.fullname" . }}-rss-registration
 {{- end -}}
 {{- end -}}
+
+{{/* config secret name */}}
+{{- define "matrix.rss.configSecret" -}}
+{{- if .Values.bridges.rss.existingSecret.config -}}
+{{ .Values.bridges.rss.existingSecret.config }}
+{{- else -}}
+{{ template "matrix.fullname" . }}-rss-config
+{{- end -}}
+{{- end -}}
+
+{{/* feeds secret name */}}
+{{- define "matrix.rss.feedsSecret" -}}
+{{- if .Values.bridges.rss.existingSecret.feeds -}}
+{{ .Values.bridges.rss.existingSecret.feeds }}
+{{- else -}}
+{{ template "matrix.fullname" . }}-rss-feeds
+{{- end -}}
+{{- end -}}

@@ -119,7 +119,11 @@ spec:
           projected:
             sources:
               - secret:
+                  name: {{ include "matrix.rss.configSecret" . }}
+              - secret:
                   name: {{ include "matrix.rss.registrationSecret" . }}
+              - secret:
+                  name: {{ include "matrix.rss.feedsSecret" . }}
         - name: bridges
           persistentVolumeClaim:
             {{- if not .Values.bridges.volume.existingClaim }}
