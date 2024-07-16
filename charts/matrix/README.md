@@ -38,13 +38,19 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.alertmanager.config.bot.mention_room | bool | `false` | Set this to true to make firing alerts do a `@room` mention. NOTE! Bot should also have enough power in the room for this to be useful. |
 | bridges.alertmanager.config.bot.rooms | string | `""` | rooms to send alerts to, separated by a | Each entry contains the receiver name (from alertmanager) and the internal id (not the public alias) of the Matrix channel to forward to. |
 | bridges.alertmanager.config.bot.user | string | `"alertmanager"` | user in matrix for the the alertmanager bot e.g. alertmanager which becomes @alertmanager:homeserver.tld |
+| bridges.alertmanager.config.colors.critical | string | `"#f2748a"` | HEX color code to use for critical alerts |
+| bridges.alertmanager.config.colors.default | string | `"#585858"` | HEX color code to use for default alerts |
+| bridges.alertmanager.config.colors.error | string | `"#f289f9"` | HEX color code to use for error alerts |
+| bridges.alertmanager.config.colors.info | string | `"#7aa2f7"` | HEX color code to use for info alerts |
+| bridges.alertmanager.config.colors.recovered | string | `"#a8fd57"` | HEX color code to use for recovered alerts |
+| bridges.alertmanager.config.colors.warning | string | `"#fdcd36"` | HEX color code to use for warning alerts |
 | bridges.alertmanager.config.grafana_datasource | string | `""` | grafana data source, e.g. default |
 | bridges.alertmanager.config.grafana_url | string | `""` | set to enable Grafana links, e.g. https://grafana.example.com |
 | bridges.alertmanager.config.homeserver_url | string | `""` | your homeserver url, e.g. https://homeserver.tld |
 | bridges.alertmanager.enabled | bool | `false` |  |
 | bridges.alertmanager.encryption | bool | `false` |  |
-| bridges.alertmanager.existingSecret.registration | string | `""` |  |
-| bridges.alertmanager.image.pullPolicy | string | `"IfNotPresent"` | alertmanager bridge docker image pull policy. If tag is "latest", set tag to "Always" |
+| bridges.alertmanager.existingSecret.registration | string | `""` | use an existing Kubernetes secret for your entire appservice registration file. must have a secret key called registration.yaml |
+| bridges.alertmanager.image.pullPolicy | string | `"IfNotPresent"` | alertmanager bridge docker image pull policy. If tag is "latest", set pullPolicy to "Always" |
 | bridges.alertmanager.image.repository | string | `"jessebot/matrix-alertmanager-bot"` | alertmanager bridge docker image |
 | bridges.alertmanager.image.tag | string | `"0.12.0"` | alertmanager bridge docker image tag |
 | bridges.alertmanager.registration.as_token | string | `""` |  |
@@ -283,7 +289,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.existingSecret.config | string | `""` | optionally use existing kubernetes Secret for config.yml, ignores hookshot.config |
 | bridges.hookshot.existingSecret.passkey | string | `""` | optionally use existing kubernetes Secret for passkey.pem, ignores hookshot.passkey |
 | bridges.hookshot.existingSecret.registration | string | `""` | optionally use existing kubernetes Secret for registration |
-| bridges.hookshot.image.pullPolicy | string | `"IfNotPresent"` | hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always" |
+| bridges.hookshot.image.pullPolicy | string | `"IfNotPresent"` | hookshot bridge docker image pull policy. If tag is "latest", set pullPolicy to "Always" |
 | bridges.hookshot.image.repository | string | `"halfshot/matrix-hookshot"` | hookshot bridge docker image |
 | bridges.hookshot.image.tag | string | `"5.4.1"` | hookshot bridge docker image tag |
 | bridges.hookshot.passkey | string | `""` | If bridges.hookshot.passkey AND bridges.hookshot.existingSecret.passkey are BOTH empty strings, we will generate a passkey for you. To Generate yourself: openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 |
@@ -317,6 +323,32 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.irc.servers."chat.freenode.net".ssl | bool | `true` | Whether to use SSL or not. Default: false. |
 | bridges.irc.service.port | int | `9006` |  |
 | bridges.irc.service.type | string | `"ClusterIP"` |  |
+| bridges.rss.config.bot.avatar | string | `""` | optionally provide an mxc:// file to use as an avatar for this bot |
+| bridges.rss.config.bot.default_room | string | `""` | the default room to post things in and interact in |
+| bridges.rss.config.bot.display_name | string | `"RSS Bot"` | optionally provide a display name for this bot |
+| bridges.rss.config.bot.interval | int | `60` | interval to update all feeds, in seconds |
+| bridges.rss.config.bot.user | string | `"rss"` | the username of the bot (we will automatically template the homeserver) |
+| bridges.rss.enabled | bool | `false` |  |
+| bridges.rss.encryption | bool | `false` |  |
+| bridges.rss.existingFeedsConfigMap | string | `""` | optionally provide an existing Kubernetes ConfigMap with a key of feeds.yml if set, bridges.rss.feeds will be ignored. |
+| bridges.rss.existingSecret.config | string | `""` | use an existing Kubernetes secret for your entire config.yml file. must have a secret key called config.yml. If provided, ignores bridges.rss.config |
+| bridges.rss.existingSecret.feeds | string | `""` | use an existing Kubernetes secret for your entire feeds.yml file. must have a secret key called feeds.yml. If provided, ignores bridges.rss.feeds |
+| bridges.rss.existingSecret.registration | string | `""` | use an existing Kubernetes secret for your entire appservice registration file. must have a secret key called registration.yaml. If provided, ignores bridges.rss.registration |
+| bridges.rss.feeds | list | `[]` | optionally provide a list of RSS feeds to add to the rss bot on startup |
+| bridges.rss.image.pullPolicy | string | `"Always"` | rss bridge docker image pull policy. If tag is "main", set pullPolicy to "Always" |
+| bridges.rss.image.repository | string | `"jessebot/matrix-rss-bot"` | rss bridge docker image |
+| bridges.rss.image.tag | string | `"main"` | rss bridge docker image tag |
+| bridges.rss.registration.as_token | string | `""` |  |
+| bridges.rss.registration.existingSecret | string | `""` | Use an existing Kubernetes Secret to store your own generated appservice and homeserver tokens. If this is not set, we'll generate them for you. Setting this won't override the ENTIRE registration.yaml we generate for the synapse pod to authenticate mautrix/discord. It will only replaces the tokens. To replaces the ENTIRE registration.yaml, use bridges.rss.existingSecret.registration |
+| bridges.rss.registration.existingSecretKeys.as_token | string | `"as_token"` | key in existingSecret for as_token (application service token). If provided and existingSecret is set, ignores bridges.rss.registration.as_token |
+| bridges.rss.registration.existingSecretKeys.hs_token | string | `""` | key in existingSecret for hs_token (home server token) |
+| bridges.rss.registration.id | string | `"rss"` | name of the application service |
+| bridges.rss.registration.rate_limited | bool | `false` | should this bot be rate limited? |
+| bridges.rss.registration.sender_localpart | string | `"rss"` | localpart of the user associated with the application service. Events will be sent to the AS if this user is the target of the event, or is a joined member of the room where the event occurred. |
+| bridges.rss.registration.url | string | `""` | url of the rss service. if not provided, we will template it for you like http://matrix-rss-service:3000 |
+| bridges.rss.replicaCount | int | `1` | rss bridge pod replicas |
+| bridges.rss.revisionHistoryLimit | int | `2` | set the revisionHistoryLimit to decide how many replicaSets are kept when you change a deployment. Explicitly setting this field to 0, will result in cleaning up all the history of your Deployment thus that Deployment will not be able to roll back. |
+| bridges.rss.service.type | string | `"ClusterIP"` | service type for the rss bridge |
 | bridges.volume.accessMode | string | `"ReadWriteMany"` | Access mode of the shared volume. ReadWriteMany is recommended to allow bridges to be scheduled on separate nodes. Some cloud providers may not allow the ReadWriteMany access mode. In that case, change this to ReadWriteOnce AND set bridges.affinity (above) to true |
 | bridges.volume.capacity | string | `"1Mi"` | Capacity of the shared volume for storing bridge/appservice registration files. Note: 1Mi should be enough but some cloud providers may set a minimum PVC size of 1Gi, adjust as necessary |
 | bridges.volume.existingClaim | string | `""` | name of an existing persistent volume claim to use for bridges |
@@ -782,9 +814,9 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.extraEnv | list | `[]` | optiona: extra env variables to pass to the matrix synapse deployment |
 | synapse.extraVolumeMounts | list | `[]` | optional: extra volume mounts for the matrix synapse deployment |
 | synapse.extraVolumes | list | `[]` | optional: extra volumes for the matrix synapse deployment |
-| synapse.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy for synapse image, Use Always if using image.tag: latest |
+| synapse.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy for synapse image. Use "Always" if using image.tag is "latest" |
 | synapse.image.repository | string | `"matrixdotorg/synapse"` | image registry and repository to use for synapse |
-| synapse.image.tag | string | `""` | tag of synapse docker image to use. change this to latest to grab the    cutting-edge release of synapse |
+| synapse.image.tag | string | `""` | tag of synapse docker image to use. change this to latest to grab the cutting-edge release of synapse |
 | synapse.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | This annotation is required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
 | synapse.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
 | synapse.ingress.enabled | bool | `true` | enable ingress for synapse, so the server is reachable outside the cluster |
