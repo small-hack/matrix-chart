@@ -348,6 +348,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.rss.registration.url | string | `""` | url of the rss service. if not provided, we will template it for you like http://matrix-rss-service:3000 |
 | bridges.rss.replicaCount | int | `1` | rss bridge pod replicas |
 | bridges.rss.revisionHistoryLimit | int | `2` | set the revisionHistoryLimit to decide how many replicaSets are kept when you change a deployment. Explicitly setting this field to 0, will result in cleaning up all the history of your Deployment thus that Deployment will not be able to roll back. |
+| bridges.rss.service.port | int | `80` | port for service to run on |
 | bridges.rss.service.type | string | `"ClusterIP"` | service type for the rss bridge |
 | bridges.volume.accessMode | string | `"ReadWriteMany"` | Access mode of the shared volume. ReadWriteMany is recommended to allow bridges to be scheduled on separate nodes. Some cloud providers may not allow the ReadWriteMany access mode. In that case, change this to ReadWriteOnce AND set bridges.affinity (above) to true |
 | bridges.volume.capacity | string | `"1Mi"` | Capacity of the shared volume for storing bridge/appservice registration files. Note: 1Mi should be enough but some cloud providers may set a minimum PVC size of 1Gi, adjust as necessary |
