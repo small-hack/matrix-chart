@@ -8,14 +8,10 @@ metadata:
 spec:
   type: {{ .Values.bridges.rss.service.type }}
   ports:
-    - port: {{ .Values.bridges.rss.config.app_port }}
+    - port: {{ .Values.bridges.rss.service.port }}
       targetPort: appservice
       protocol: TCP
       name: bridge
-    - port: 80
-      targetPort: appservice
-      protocol: TCP
-      name: http
   selector:
     app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-rss
     app.kubernetes.io/instance: {{ .Release.Name }}

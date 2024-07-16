@@ -1864,6 +1864,8 @@ bridges:
     service:
       # -- service type for the rss bridge
       type: ClusterIP
+      # -- port for service to run on
+      port: 80
 
     # -- rss bridge pod replicas
     replicaCount: 1

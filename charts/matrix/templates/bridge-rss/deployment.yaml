@@ -99,62 +99,9 @@ spec:
           image: "{{ .Values.bridges.rss.image.repository }}:{{ .Values.bridges.rss.image.tag }}"
           imagePullPolicy: {{ .Values.bridges.rss.image.pullPolicy }}
           env:
-            - name: APP_PORT
-              value: {{ .Values.bridges.rss.config.app_port | quote }}
-
-            - name: APP_rss_SECRET
-              value: {{ .Values.bridges.rss.config.app_rss_secret | default "matrix.rss.webhook_secret" }}
-
-            - name: MATRIX_HOMESERVER_URL
-              value: {{ .Values.bridges.rss.config.homeserver_url | default (include "matrix.baseUrl" .) }}
-
-            - name: MATRIX_ROOMS
-              value: {{ .Values.bridges.rss.config.bot.rooms }}
-
-            {{- if .Values.bridges.rss.registration.existingSecret }}
-            - name: MATRIX_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.bridges.rss.registration.existingSecret }}
-                  key: {{ .Values.bridges.rss.registration.existingSecretKeys.as_token }}
-            {{- else }}
-            - name: MATRIX_TOKEN
-              value: {{ .Values.bridges.rss.registration.as_token }}
-            {{- end }}
-
-            - name: MATRIX_USER
-              value: "@{{ .Values.bridges.rss.config.bot.user }}:{{ .Values.matrix.serverName }}"
-
-            {{- with .Values.bridges.rss.config.bot.display_name }}
-            - name: MATRIX_DISPLAY_NAME
-              value: {{ . }}
-            {{- end }}
-
-            {{- with .Values.bridges.rss.config.bot.avatar_url }}
-            - name: MATRIX_AVATAR_URL
-              value: {{ . }}
-            {{- end }}
-
-            {{- with .Values.bridges.rss.config.bot.mention_room }}
-            - name: MENTION_ROOM
-              value: {{ . | quote }}
-            {{- end }}
-
-            {{- if .Values.bridges.rss.config.grafana_url }}
-            - name: GRAFANA_URL
-              value: {{ .Values.bridges.rss.config.grafana_url }}
-
-            - name: GRAFANA_DATASOURCE
-              value: {{ .Values.bridges.rss.config.grafana_datasource }}
-            {{- end }}
-
-            {{- if .Values.bridges.rss.config.rss_url }}
-            - name: rss_URL
-              value: {{ .Values.bridges.rss.config.rss_url }}
-            {{- end }}
           ports:
             - name: appservice
-              containerPort: {{ .Values.bridges.rss.config.app_port }}
+              containerPort: 80
               protocol: TCP
            {{- with .Values.bridges.rss.extraVolumeMounts }}
              {{- toYaml . | nindent 12 }}
