@@ -1262,7 +1262,7 @@ report_stats: {{ .Values.matrix.telemetry }}
 
 # A list of application service config files to use
 #
-{{- if or .Values.bridges.hookshot.enabled .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.discord_mautrix.enabled .Values.bridges.irc.enabled .Values.bridges.alertmanager.enabled }}
+{{- if or .Values.bridges.hookshot.enabled .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.discord_mautrix.enabled .Values.bridges.irc.enabled .Values.bridges.alertmanager.enabled .Values.bridges.rss.enabled }}
 app_service_config_files:
   {{- if .Values.bridges.whatsapp.enabled }}
   - "/bridges/whatsapp.yaml"
@@ -1272,6 +1272,9 @@ app_service_config_files:
   {{- end }}
   {{- if .Values.bridges.irc.enabled }}
   - "/bridges/irc.yaml"
+  {{- end }}
+  {{- if .Values.bridges.rss.enabled }}
+  - "/bridges/rss.yaml"
   {{- end }}
   {{- if .Values.bridges.alertmanager.enabled }}
   - "/bridges/alertmanager.yaml"

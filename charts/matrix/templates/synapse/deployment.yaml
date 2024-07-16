@@ -31,6 +31,9 @@ spec:
         {{- if and (not .Values.bridges.alertmanager.existingSecret) .Values.bridges.alertmanager.enabled }}
         checksum/alertmanager-registration: {{ include (print $.Template.BasePath "/bridge-alertmanager/secret-registration.yaml") . | sha256sum }}
         {{- end }}
+        {{- if and (not .Values.bridges.rss.existingSecret) .Values.bridges.rss.enabled }}
+        checksum/rss-registration: {{ include (print $.Template.BasePath "/bridge-rss/secret-registration.yaml") . | sha256sum }}
+        {{- end }}
         {{- if not .Values.matrix.homeserverOverride }}
         checksum/synapse-config: {{ include (print $.Template.BasePath "/synapse/initial-config-map.yaml") . | sha256sum }}
         {{- end }}
@@ -499,7 +502,7 @@ spec:
             {{ else }}
             claimName: {{ .Values.volumes.media.existingClaim }}
             {{- end }}
-        {{- if or .Values.bridges.hookshot.enabled .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.discord_mautrix.enabled .Values.bridges.irc.enabled .Values.bridges.alertmanager.enabled }}
+        {{- if or .Values.bridges.hookshot.enabled .Values.bridges.whatsapp.enabled .Values.bridges.discord.enabled .Values.bridges.discord_mautrix.enabled .Values.bridges.irc.enabled .Values.bridges.alertmanager.enabled .Values.bridges.rss.enabled }}
         - name: bridges
           persistentVolumeClaim:
             {{- if not .Values.bridges.volume.existingClaim }}
