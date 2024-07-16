@@ -103,6 +103,9 @@ spec:
             - name: appservice
               containerPort: 80
               protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data
            {{- with .Values.bridges.rss.extraVolumeMounts }}
              {{- toYaml . | nindent 12 }}
            {{- end }}
