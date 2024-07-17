@@ -1,0 +1,186 @@
+{{- if .Values.bridges.rss.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "matrix.fullname" . }}-bridge-rss
+  labels:
+{{ include "matrix.labels" . | indent 4 }}
+spec:
+  revisionHistoryLimit: {{ .Values.bridges.rss.revisionHistoryLimit }}
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-rss
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      matrix-chart/allow-synapse-access: allow
+  template:
+    metadata:
+      annotations:
+        # re-roll deployment on config change
+        checksum/rss-registration: {{ include (print $.Template.BasePath "/bridge-rss/secret-registration.yaml") . | sha256sum }}
+      labels:
+        app.kubernetes.io/name: {{ include "matrix.name" . }}-bridge-rss
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        matrix-chart/allow-synapse-access: allow
+    spec:
+      {{- if .Values.bridges.affinity }}
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - {{ include "matrix.name" . }}-synapse
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                      - {{ .Release.Name }}
+              topologyKey: kubernetes.io/hostname
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.bridges.rss.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: load-config
+          {{- if .Values.bridges.rss.registration.existingSecret }}
+          image: "mikefarah/yq:latest"
+          {{- else }}
+          image: "alpine:latest"
+          {{- end }}
+          imagePullPolicy: {{ .Values.bridges.rss.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              cp /data/registration.yaml /tmp/registration.yaml && \
+              {{- if .Values.bridges.rss.registration.existingSecret }}
+              echo "Starting yq of registration.yaml" && \
+              yq eval -i '.as_token = env(AS_TOKEN)' /tmp/registration.yaml && \
+              {{- if .Values.bridges.rss.registration.existingSecretKeys.hs_token }}
+              yq eval -i '.hs_token = env(HS_TOKEN)' /tmp/registration.yaml && \
+              {{- end }}
+              {{- end }}
+              cp /tmp/registration.yaml /bridges/rss.yaml
+          {{- if .Values.bridges.rss.registration.existingSecret }}
+          env:
+            - name: AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.rss.registration.existingSecret }}
+                  key: {{ .Values.bridges.rss.registration.existingSecretKeys.as_token }}
+            {{- if .Values.bridges.rss.registration.existingSecretKeys.hs_token }}
+            - name: HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.rss.registration.existingSecret }}
+                  key: {{ .Values.bridges.rss.registration.existingSecretKeys.hs_token }}
+            {{- end }}
+          {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: bridges
+              mountPath: /bridges
+          {{- with .Values.bridges.rss.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      containers:
+        - name: "bridge-rss"
+          image: "{{ .Values.bridges.rss.image.repository }}:{{ .Values.bridges.rss.image.tag }}"
+          imagePullPolicy: {{ .Values.bridges.rss.image.pullPolicy }}
+          env:
+            - name: APP_PORT
+              value: {{ .Values.bridges.rss.config.app_port | quote }}
+
+            - name: APP_rss_SECRET
+              value: {{ .Values.bridges.rss.config.app_rss_secret | default "matrix.rss.webhook_secret" }}
+
+            - name: MATRIX_HOMESERVER_URL
+              value: {{ .Values.bridges.rss.config.homeserver_url | default (include "matrix.baseUrl" .) }}
+
+            - name: MATRIX_ROOMS
+              value: {{ .Values.bridges.rss.config.bot.rooms }}
+
+            {{- if .Values.bridges.rss.registration.existingSecret }}
+            - name: MATRIX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bridges.rss.registration.existingSecret }}
+                  key: {{ .Values.bridges.rss.registration.existingSecretKeys.as_token }}
+            {{- else }}
+            - name: MATRIX_TOKEN
+              value: {{ .Values.bridges.rss.registration.as_token }}
+            {{- end }}
+
+            - name: MATRIX_USER
+              value: "@{{ .Values.bridges.rss.config.bot.user }}:{{ .Values.matrix.serverName }}"
+
+            {{- with .Values.bridges.rss.config.bot.display_name }}
+            - name: MATRIX_DISPLAY_NAME
+              value: {{ . }}
+            {{- end }}
+
+            {{- with .Values.bridges.rss.config.bot.avatar_url }}
+            - name: MATRIX_AVATAR_URL
+              value: {{ . }}
+            {{- end }}
+
+            {{- with .Values.bridges.rss.config.bot.mention_room }}
+            - name: MENTION_ROOM
+              value: {{ . | quote }}
+            {{- end }}
+
+            {{- if .Values.bridges.rss.config.grafana_url }}
+            - name: GRAFANA_URL
+              value: {{ .Values.bridges.rss.config.grafana_url }}
+
+            - name: GRAFANA_DATASOURCE
+              value: {{ .Values.bridges.rss.config.grafana_datasource }}
+            {{- end }}
+
+            {{- if .Values.bridges.rss.config.rss_url }}
+            - name: rss_URL
+              value: {{ .Values.bridges.rss.config.rss_url }}
+            {{- end }}
+          ports:
+            - name: appservice
+              containerPort: {{ .Values.bridges.rss.config.app_port }}
+              protocol: TCP
+           {{- with .Values.bridges.rss.extraVolumeMounts }}
+             {{- toYaml . | nindent 12 }}
+           {{- end }}
+          {{- with .Values.bridges.rss.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.bridges.rss.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: data
+          projected:
+            sources:
+              - secret:
+                  name: {{ include "matrix.rss.registrationSecret" . }}
+        - name: bridges
+          persistentVolumeClaim:
+            {{- if not .Values.bridges.volume.existingClaim }}
+            claimName: "{{ include "matrix.fullname" . }}-bridges"
+            {{- else -}}
+            claimName: {{ .Values.bridges.volume.existingClaim }}
+            {{- end }}
+        {{- with .Values.bridges.rss.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+{{- end }}

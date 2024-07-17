@@ -629,9 +629,9 @@ synapse:
     # -- image registry and repository to use for synapse
     repository: "matrixdotorg/synapse"
     # -- tag of synapse docker image to use. change this to latest to grab the
-    #    cutting-edge release of synapse
+    # cutting-edge release of synapse
     tag: ""
-    # -- pullPolicy for synapse image, Use Always if using image.tag: latest
+    # -- pullPolicy for synapse image. Use "Always" if using image.tag is "latest"
     pullPolicy: IfNotPresent
 
   service:
@@ -1847,9 +1847,101 @@ mail:
       password: "password"
 
 ############################################################################
-#  Bridges to synapse, for services such as Discord, Webhooks, IRC, and RSS
+#  Bridges to synapse, for services such as Alertmanager, Discord, and RSS
 ############################################################################
 bridges:
+  rss:
+    enabled: false
+    image:
+      # -- rss bridge docker image
+      repository: "jessebot/matrix-rss-bot"
+      # -- rss bridge docker image tag
+      tag: "main"
+      # -- rss bridge docker image pull policy.
+      # If tag is "main", set pullPolicy to "Always"
+      pullPolicy: Always
+
+    service:
+      # -- service type for the rss bridge
+      type: ClusterIP
+
+    # -- rss bridge pod replicas
+    replicaCount: 1
+
+    # -- set the revisionHistoryLimit to decide how many replicaSets are
+    # kept when you change a deployment. Explicitly setting this field to 0,
+    # will result in cleaning up all the history of your Deployment thus that
+    # Deployment will not be able to roll back.
+    revisionHistoryLimit: 2
+
+    existingSecret:
+      # -- use an existing Kubernetes secret for your entire appservice registration file.
+      # must have a secret key called registration.yaml. If provided, ignores bridges.rss.registration
+      registration: ""
+      # -- use an existing Kubernetes secret for your entire feeds.yml file.
+      # must have a secret key called feeds.yml. If provided, ignores bridges.rss.feeds
+      feeds: ""
+      # -- use an existing Kubernetes secret for your entire config.yml file.
+      # must have a secret key called config.yml. If provided, ignores bridges.rss.config
+      config: ""
+
+    # -- optionally provide an existing Kubernetes ConfigMap with a key of feeds.yml
+    # if set, bridges.rss.feeds will be ignored.
+    existingFeedsConfigMap: ""
+
+    # this section is for registering the application service with matrix
+    # read more about application services here:
+    # https://spec.matrix.org/v1.11/application-service-api/
+    registration:
+      # -- name of the application service
+      id: "rss"
+      # -- url of the rss service. if not provided, we will template it
+      # for you like http://matrix-rss-service:3000
+      url: ""
+      # -- should this bot be rate limited?
+      rate_limited: false
+      # -- localpart of the user associated with the application service.
+      # Events will be sent to the AS if this user is the target of the event,
+      # or is a joined member of the room where the event occurred.
+      sender_localpart: "rss"
+      # A secret token that the application service will use to authenticate
+      # requests to the homeserver.
+      as_token: ""
+      # -- Use an existing Kubernetes Secret to store your own generated appservice
+      # and homeserver tokens. If this is not set, we'll generate them for you.
+      # Setting this won't override the ENTIRE registration.yaml we generate for
+      # the synapse pod to authenticate mautrix/discord. It will only replaces the tokens.
+      # To replaces the ENTIRE registration.yaml, use
+      # bridges.rss.existingSecret.registration
+      existingSecret: ""
+      existingSecretKeys:
+        # -- key in existingSecret for as_token (application service token). If
+        # provided and existingSecret is set, ignores bridges.rss.registration.as_token
+        as_token: "as_token"
+        # -- key in existingSecret for hs_token (home server token)
+        hs_token: ""
+
+    encryption: false
+
+    config:
+      bot:
+        # -- the username of the bot (we will automatically template the homeserver)
+        user: "rss"
+        # -- optionally provide a display name for this bot
+        display_name: "RSS Bot"
+        # -- optionally provide an mxc:// file to use as an avatar for this bot
+        avatar: ""
+        # -- the default room to post things in and interact in
+        default_room: ""
+        # -- interval to update all feeds, in seconds
+        interval: 60
+
+    # -- optionally provide a list of RSS feeds to add to the rss bot on startup
+    feeds: []
+    # - name: "matrix.org blog"
+    #   url: "https://matrix.org/blog/feed"
+    #   room_id: "!AUweUQXCxcVfFOaOIU:matrix.org"
+
   alertmanager:
     enabled: false
     image:
@@ -1857,7 +1949,7 @@ bridges:
       repository: "jessebot/matrix-alertmanager-bot"
       # -- alertmanager bridge docker image tag
       tag: "0.12.0"
-      # -- alertmanager bridge docker image pull policy. If tag is "latest", set tag to "Always"
+      # -- alertmanager bridge docker image pull policy. If tag is "latest", set pullPolicy to "Always"
       pullPolicy: IfNotPresent
 
     service:
@@ -1874,6 +1966,8 @@ bridges:
     revisionHistoryLimit: 2
 
     existingSecret:
+      # -- use an existing Kubernetes secret for your entire appservice registration file.
+      # must have a secret key called registration.yaml
       registration: ""
 
     # this section is for registering the application service with matrix
@@ -1941,6 +2035,21 @@ bridges:
       # -- set to enable silence link, e.g. https://alertmanager.example.com
       alertmanager_url: ""
 
+      # default HEX color codes to use for alert severity text
+      colors:
+        # -- HEX color code to use for critical alerts
+        critical: "#f2748a"
+        # -- HEX color code to use for error alerts
+        error: "#f289f9"
+        # -- HEX color code to use for warning alerts
+        warning: "#fdcd36"
+        # -- HEX color code to use for info alerts
+        info: "#7aa2f7"
+        # -- HEX color code to use for recovered alerts
+        recovered: "#a8fd57"
+        # -- HEX color code to use for default alerts
+        default: "#585858"
+
   # see: https://matrix-org.github.io/matrix-hookshot/latest/setup/sample-configuration.html
   hookshot:
     # -- enable the [hookshot](https://matrix-org.github.io/matrix-hookshot) bridge
@@ -1954,7 +2063,7 @@ bridges:
       repository: "halfshot/matrix-hookshot"
       # -- hookshot bridge docker image tag
       tag: "5.4.1"
-      # -- hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always"
+      # -- hookshot bridge docker image pull policy. If tag is "latest", set pullPolicy to "Always"
       pullPolicy: IfNotPresent
 
     # -- hookshot bridge pod replicas
