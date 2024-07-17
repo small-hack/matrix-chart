@@ -1877,18 +1877,19 @@ bridges:
     revisionHistoryLimit: 2
 
     existingSecret:
-      # -- use an existing Kubernetes secret for your entire appservice registration file.
-      # must have a secret key called registration.yaml. If provided, ignores bridges.rss.registration
+      # -- use an existing Kubernetes secret for your entire appservice
+      # registration file. must have a secret key called registration.yaml.
+      # If provided, ignores bridges.rss.registration
       registration: ""
-      # -- use an existing Kubernetes secret for your entire feeds.yml file.
-      # must have a secret key called feeds.yml. If provided, ignores bridges.rss.feeds
+      # -- use an existing Kubernetes secret for your entire feeds.yml file. Must
+      # have a secret key called feeds.yml. If provided, ignores bridges.rss.feeds
       feeds: ""
-      # -- use an existing Kubernetes secret for your entire config.yml file.
-      # must have a secret key called config.yml. If provided, ignores bridges.rss.config
+      # -- use an existing Kubernetes secret for your entire config.yml file. Must
+      # have a secret key called config.yml. If provided, ignores bridges.rss.config
       config: ""
 
-    # -- optionally provide an existing Kubernetes ConfigMap with a key of feeds.yml
-    # if set, bridges.rss.feeds will be ignored.
+    # -- optionally provide an existing Kubernetes ConfigMap with a key of
+    # feeds.yml. If set, bridges.rss.feeds will be ignored.
     existingFeedsConfigMap: ""
 
     # this section is for registering the application service with matrix
@@ -1906,14 +1907,17 @@ bridges:
       # Events will be sent to the AS if this user is the target of the event,
       # or is a joined member of the room where the event occurred.
       sender_localpart: "rss"
-      # A secret token that the application service will use to authenticate
+      # -- A secret token that the application service will use to authenticate
       # requests to the homeserver.
       as_token: ""
-      # -- Use an existing Kubernetes Secret to store your own generated appservice
-      # and homeserver tokens. If this is not set, we'll generate them for you.
-      # Setting this won't override the ENTIRE registration.yaml we generate for
-      # the synapse pod to authenticate mautrix/discord. It will only replaces the tokens.
-      # To replaces the ENTIRE registration.yaml, use
+      # -- A secret token that the homeserver will use authenticate requests to
+      # the application service.
+      hs_token: ""
+      # -- Use an existing Kubernetes Secret to store your own generated
+      # appservice and homeserver tokens. If this is not set, we'll generate
+      # them for you. Setting this won't override the ENTIRE registration.yaml
+      # we generate for the synapse pod to authenticate mautrix/discord. It will
+      # only replaces the tokens. To replaces the ENTIRE registration.yaml, use
       # bridges.rss.existingSecret.registration
       existingSecret: ""
       existingSecretKeys:
@@ -1921,7 +1925,7 @@ bridges:
         # provided and existingSecret is set, ignores bridges.rss.registration.as_token
         as_token: "as_token"
         # -- key in existingSecret for hs_token (home server token)
-        hs_token: ""
+        hs_token: "hs_token"
 
     encryption: false
 

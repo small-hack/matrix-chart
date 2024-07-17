@@ -65,9 +65,7 @@ spec:
               {{- if .Values.bridges.rss.registration.existingSecret }}
               echo "Starting yq of registration.yaml" && \
               yq eval -i '.as_token = env(AS_TOKEN)' /tmp/registration.yaml && \
-              {{- if .Values.bridges.rss.registration.existingSecretKeys.hs_token }}
               yq eval -i '.hs_token = env(HS_TOKEN)' /tmp/registration.yaml && \
-              {{- end }}
               {{- end }}
               cp /tmp/registration.yaml /bridges/rss.yaml
           {{- if .Values.bridges.rss.registration.existingSecret }}
@@ -77,13 +75,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.bridges.rss.registration.existingSecret }}
                   key: {{ .Values.bridges.rss.registration.existingSecretKeys.as_token }}
-            {{- if .Values.bridges.rss.registration.existingSecretKeys.hs_token }}
             - name: HS_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.bridges.rss.registration.existingSecret }}
                   key: {{ .Values.bridges.rss.registration.existingSecretKeys.hs_token }}
-            {{- end }}
           {{- end }}
           volumeMounts:
             - name: data
