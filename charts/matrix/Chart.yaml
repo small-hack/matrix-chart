@@ -8,7 +8,7 @@ sources:
 
 type: application
 
-version: 13.2.0
+version: 13.2.1
 
 # renovate: image=matrixdotorg/synapse
 appVersion: v1.109.0
