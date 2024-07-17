@@ -1930,6 +1930,8 @@ bridges:
     encryption: false
 
     config:
+      log:
+        level: info
       bot:
         # -- the username of the bot (we will automatically template the homeserver)
         user: "rss"

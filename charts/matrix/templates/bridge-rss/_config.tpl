@@ -16,4 +16,8 @@ bot:
   {{- end }}
   default_room: {{ .Values.bridges.rss.config.bot.default_room }}
   interval: {{ .Values.bridges.rss.config.bot.interval }}
+
+log:
+  level: {{ .Values.bridges.rss.config.log.level }}
+
 {{- end }}{{/* end define template rss_config.yml */}}
