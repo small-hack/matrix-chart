@@ -328,6 +328,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.rss.config.bot.display_name | string | `"RSS Bot"` | optionally provide a display name for this bot |
 | bridges.rss.config.bot.interval | int | `60` | interval to update all feeds, in seconds |
 | bridges.rss.config.bot.user | string | `"rss"` | the username of the bot (we will automatically template the homeserver) |
+| bridges.rss.config.log.level | string | `"info"` |  |
 | bridges.rss.enabled | bool | `false` |  |
 | bridges.rss.encryption | bool | `false` |  |
 | bridges.rss.existingFeedsConfigMap | string | `""` | optionally provide an existing Kubernetes ConfigMap with a key of feeds.yml. If set, bridges.rss.feeds will be ignored. |
