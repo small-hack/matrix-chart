@@ -330,18 +330,19 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.rss.config.bot.user | string | `"rss"` | the username of the bot (we will automatically template the homeserver) |
 | bridges.rss.enabled | bool | `false` |  |
 | bridges.rss.encryption | bool | `false` |  |
-| bridges.rss.existingFeedsConfigMap | string | `""` | optionally provide an existing Kubernetes ConfigMap with a key of feeds.yml if set, bridges.rss.feeds will be ignored. |
-| bridges.rss.existingSecret.config | string | `""` | use an existing Kubernetes secret for your entire config.yml file. must have a secret key called config.yml. If provided, ignores bridges.rss.config |
-| bridges.rss.existingSecret.feeds | string | `""` | use an existing Kubernetes secret for your entire feeds.yml file. must have a secret key called feeds.yml. If provided, ignores bridges.rss.feeds |
+| bridges.rss.existingFeedsConfigMap | string | `""` | optionally provide an existing Kubernetes ConfigMap with a key of feeds.yml. If set, bridges.rss.feeds will be ignored. |
+| bridges.rss.existingSecret.config | string | `""` | use an existing Kubernetes secret for your entire config.yml file. Must have a secret key called config.yml. If provided, ignores bridges.rss.config |
+| bridges.rss.existingSecret.feeds | string | `""` | use an existing Kubernetes secret for your entire feeds.yml file. Must have a secret key called feeds.yml. If provided, ignores bridges.rss.feeds |
 | bridges.rss.existingSecret.registration | string | `""` | use an existing Kubernetes secret for your entire appservice registration file. must have a secret key called registration.yaml. If provided, ignores bridges.rss.registration |
 | bridges.rss.feeds | list | `[]` | optionally provide a list of RSS feeds to add to the rss bot on startup |
 | bridges.rss.image.pullPolicy | string | `"Always"` | rss bridge docker image pull policy. If tag is "main", set pullPolicy to "Always" |
 | bridges.rss.image.repository | string | `"jessebot/matrix-rss-bot"` | rss bridge docker image |
 | bridges.rss.image.tag | string | `"main"` | rss bridge docker image tag |
-| bridges.rss.registration.as_token | string | `""` |  |
+| bridges.rss.registration.as_token | string | `""` | A secret token that the application service will use to authenticate requests to the homeserver. |
 | bridges.rss.registration.existingSecret | string | `""` | Use an existing Kubernetes Secret to store your own generated appservice and homeserver tokens. If this is not set, we'll generate them for you. Setting this won't override the ENTIRE registration.yaml we generate for the synapse pod to authenticate mautrix/discord. It will only replaces the tokens. To replaces the ENTIRE registration.yaml, use bridges.rss.existingSecret.registration |
 | bridges.rss.registration.existingSecretKeys.as_token | string | `"as_token"` | key in existingSecret for as_token (application service token). If provided and existingSecret is set, ignores bridges.rss.registration.as_token |
-| bridges.rss.registration.existingSecretKeys.hs_token | string | `""` | key in existingSecret for hs_token (home server token) |
+| bridges.rss.registration.existingSecretKeys.hs_token | string | `"hs_token"` | key in existingSecret for hs_token (home server token) |
+| bridges.rss.registration.hs_token | string | `""` | A secret token that the homeserver will use authenticate requests to the application service. |
 | bridges.rss.registration.id | string | `"rss"` | name of the application service |
 | bridges.rss.registration.rate_limited | bool | `false` | should this bot be rate limited? |
 | bridges.rss.registration.sender_localpart | string | `"rss"` | localpart of the user associated with the application service. Events will be sent to the AS if this user is the target of the event, or is a joined member of the room where the event occurred. |
