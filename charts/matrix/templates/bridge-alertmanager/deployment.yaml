@@ -150,25 +150,25 @@ spec:
             {{- end }}
 
             - name: COLOR_CRITICAL
-              value: {{ .Values.bridges.alertmanager.config.colors.critical }}
+              value: {{ .Values.bridges.alertmanager.config.colors.critical | quote }}
 
             - name: COLOR_ERROR
-              value: {{ .Values.bridges.alertmanager.config.colors.error }}
+              value: {{ .Values.bridges.alertmanager.config.colors.error | quote }}
 
             - name: COLOR_WARNING
-              value: {{ .Values.bridges.alertmanager.config.colors.warning }}
+              value: {{ .Values.bridges.alertmanager.config.colors.warning | quote }}
 
             - name: COLOR_INFO
-              value: {{ .Values.bridges.alertmanager.config.colors.info }}
+              value: {{ .Values.bridges.alertmanager.config.colors.info | quote }}
 
             - name: COLOR_RECOVERED
-              value: {{ .Values.bridges.alertmanager.config.colors.recovered }}
+              value: {{ .Values.bridges.alertmanager.config.colors.recovered | quote }}
 
             - name: COLOR_DEFAULT
-              value: {{ .Values.bridges.alertmanager.config.colors.default }}
+              value: {{ .Values.bridges.alertmanager.config.colors.default | quote }}
           ports:
             - name: appservice
-              containerPort: {{ .Values.bridges.alertmanager.config.app_port }}
+              containerPort: {{ .Values.bridges.alertmanager.config.app_port | quote }}
               protocol: TCP
            {{- with .Values.bridges.alertmanager.extraVolumeMounts }}
              {{- toYaml . | nindent 12 }}
