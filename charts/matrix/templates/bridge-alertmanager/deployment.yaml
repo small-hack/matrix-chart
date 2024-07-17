@@ -168,7 +168,7 @@ spec:
               value: {{ .Values.bridges.alertmanager.config.colors.default | quote }}
           ports:
             - name: appservice
-              containerPort: {{ .Values.bridges.alertmanager.config.app_port | quote }}
+              containerPort: {{ .Values.bridges.alertmanager.config.app_port }}
               protocol: TCP
            {{- with .Values.bridges.alertmanager.extraVolumeMounts }}
              {{- toYaml . | nindent 12 }}
