@@ -148,6 +148,24 @@ spec:
             - name: ALERTMANAGER_URL
               value: {{ .Values.bridges.alertmanager.config.alertmanager_url }}
             {{- end }}
+
+            - name: COLOR_CRITICAL
+              value: {{ .Values.bridges.alertmanager.config.colors.critical | quote }}
+
+            - name: COLOR_ERROR
+              value: {{ .Values.bridges.alertmanager.config.colors.error | quote }}
+
+            - name: COLOR_WARNING
+              value: {{ .Values.bridges.alertmanager.config.colors.warning | quote }}
+
+            - name: COLOR_INFO
+              value: {{ .Values.bridges.alertmanager.config.colors.info | quote }}
+
+            - name: COLOR_RECOVERED
+              value: {{ .Values.bridges.alertmanager.config.colors.recovered | quote }}
+
+            - name: COLOR_DEFAULT
+              value: {{ .Values.bridges.alertmanager.config.colors.default | quote }}
           ports:
             - name: appservice
               containerPort: {{ .Values.bridges.alertmanager.config.app_port }}
