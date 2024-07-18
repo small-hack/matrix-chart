@@ -17,5 +17,4 @@ bot:
 
 log:
   level: {{ .Values.bridges.rss.config.log.level | quote }}
-
 {{- end }}{{/* end define template rss_config.yml */}}
