@@ -7,7 +7,7 @@ app_service:
   hs_token: {{ include "matrix.rss.hs_token" . }}
 
 bot:
-  user: {{ .Values.bridges.rss.config.bot.user }}
+  user: "@{{ .Values.bridges.rss.config.bot.user }}:{{ .Values.matrix.serverName }}"
   {{- with .Values.bridges.rss.config.bot.display_name }}
   display_name: {{ . }}
   {{- end }}
