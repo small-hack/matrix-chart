@@ -63,6 +63,7 @@ spec:
             - |
               cp /load/registration.yaml /data/registration.yaml && \
               cp /load/config.yml /data/config.yml && \
+              cp /load/feeds.yml /data/feeds.yml && \
               {{- if .Values.bridges.rss.registration.existingSecret }}
               echo "Starting yq of registration.yaml" && \
               yq eval -i '.as_token = env(AS_TOKEN)' /data/registration.yaml && \
