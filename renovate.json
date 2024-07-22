@@ -49,6 +49,11 @@
           "fileFilters": ["**/Chart.yaml"],
           "executionMode": "branch"
         }
+      },
+      { 
+        "matchManagers": ["github-actions"],
+        "matchUpdateTypes": ["patch"],
+        "automerge": true
       }
     ]
 }
