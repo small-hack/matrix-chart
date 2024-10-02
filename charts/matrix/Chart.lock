@@ -1,7 +1,7 @@
 dependencies:
 - name: postgresql
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 15.1.4
+  version: 16.0.0
 - name: coturn
   repository: https://small-hack.github.io/coturn-chart
   version: 6.2.1
@@ -11,5 +11,5 @@ dependencies:
 - name: matrix-authentication-service
   repository: https://small-hack.github.io/matrix-authentication-service-chart
   version: 0.8.1
-digest: sha256:ab8a7df4afe186649c37733292156bfc3020a5783ec1bf8550dfc4e27394c1a5
-generated: "2024-06-26T08:49:53.541633396+02:00"
+digest: sha256:04060d9f3eeef9019af0e337f2aabffe6487c8fbe3eb4838a68c027f2eca106e
+generated: "2024-10-02T14:10:25.323723714Z"
