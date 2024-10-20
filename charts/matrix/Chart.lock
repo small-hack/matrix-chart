@@ -7,9 +7,9 @@ dependencies:
   version: 6.2.1
 - name: matrix-sliding-sync
   repository: https://small-hack.github.io/matrix-sliding-sync-chart
-  version: 0.5.1
+  version: 1.0.1
 - name: matrix-authentication-service
   repository: https://small-hack.github.io/matrix-authentication-service-chart
   version: 0.8.1
-digest: sha256:ab8a7df4afe186649c37733292156bfc3020a5783ec1bf8550dfc4e27394c1a5
-generated: "2024-06-26T08:49:53.541633396+02:00"
+digest: sha256:a17f6937c19588a231cef0116785230cf8c5ec7992daec7b4943e58c737a157f
+generated: "2024-10-20T14:03:17.637846352Z"
