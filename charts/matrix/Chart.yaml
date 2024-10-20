@@ -8,7 +8,7 @@ sources:
 
 type: application
 
-version: 14.0.0
+version: 15.0.0
 
 # renovate: image=matrixdotorg/synapse
 appVersion: v1.115.0
@@ -29,13 +29,13 @@ dependencies:
     condition: coturn.enabled
 
   - name: matrix-sliding-sync
-    version: 0.5.1
+    version: 1.0.1
     repository: https://small-hack.github.io/matrix-sliding-sync-chart
     alias: syncv3
     condition: syncv3.enabled
 
   - name: matrix-authentication-service
     alias: mas
-    version: 0.8.2
+    version: 1.0.1
     repository: https://small-hack.github.io/matrix-authentication-service-chart
     condition: mas.enabled
