@@ -2971,9 +2971,14 @@ bridges:
       tag: "latest"
       pullPolicy: Always
 
+    # -- pod replicas for the discord bridge pod
     replicaCount: 1
+
+    # -- resources for the discord bridge pod
     resources: {}
+
     service:
+      # -- service type for the discord bridge
       type: ClusterIP
       port: 9005
 
@@ -2982,6 +2987,7 @@ bridges:
   # and bridges, or if your cloud provider does not allow the ReadWriteMany
   # access mode (see below)
   affinity: false
+
   volume:
     # -- Capacity of the shared volume for storing bridge/appservice
     # registration files. Note: 1Mi should be enough but some cloud providers

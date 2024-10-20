@@ -8,10 +8,10 @@ sources:
 
 type: application
 
-version: 13.2.1
+version: 13.3.2
 
 # renovate: image=matrixdotorg/synapse
-appVersion: v1.109.0
+appVersion: v1.115.0
 
 maintainers:
   - name: "jessebot"

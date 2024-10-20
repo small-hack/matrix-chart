@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 13.2.1](https://img.shields.io/badge/Version-13.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.109.0](https://img.shields.io/badge/AppVersion-v1.109.0-informational?style=flat-square)
+![Version: 13.3.2](https://img.shields.io/badge/Version-13.3.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.115.0](https://img.shields.io/badge/AppVersion-v1.115.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -71,11 +71,11 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord.joinLeaveEvents | bool | `true` | Discord notifications when a user joins/leaves the Matrix channel |
 | bridges.discord.presence | bool | `true` | Set to false to disable online/offline presence for Discord users |
 | bridges.discord.readReceipt | bool | `true` | Discord bot read receipt, which advances whenever the bot bridges a msg |
-| bridges.discord.replicaCount | int | `1` |  |
-| bridges.discord.resources | object | `{}` |  |
+| bridges.discord.replicaCount | int | `1` | pod replicas for the discord bridge pod |
+| bridges.discord.resources | object | `{}` | resources for the discord bridge pod |
 | bridges.discord.selfService | bool | `false` | Set to true to allow users to bridge rooms themselves using !discord cmds More info: https://t2bot.io/discord |
 | bridges.discord.service.port | int | `9005` |  |
-| bridges.discord.service.type | string | `"ClusterIP"` |  |
+| bridges.discord.service.type | string | `"ClusterIP"` | service type for the discord bridge |
 | bridges.discord.typingNotifications | bool | `true` | Set to false to disable typing notifications (only for Discord to Matrix) |
 | bridges.discord.users.nickname | string | `":nick"` | Nickname of bridged Discord users Available vars:   :nick     - user's Discord nickname   :username - user's Discord username   :tag      - user's 4 digit Discord tag   :id       - user's Discord developer ID (long) |
 | bridges.discord.users.username | string | `":username#:tag"` | Username of bridged Discord users Available vars:   :username - user's Discord username   :tag      - user's 4 digit Discord tag   :id       - user's Discord developer ID (long) |
