@@ -10,6 +10,6 @@ dependencies:
   version: 0.5.1
 - name: matrix-authentication-service
   repository: https://small-hack.github.io/matrix-authentication-service-chart
-  version: 0.8.2
-digest: sha256:ca648539e121b225b5a55b589521f89baa723fe702285cd316bf11a86f8cfa8a
-generated: "2024-10-20T16:14:43.069954+02:00"
+  version: 1.0.1
+digest: sha256:d7f313d9292e0143e79a7a42948baecc3e0fb4c10351a6ccb85cb23de03b6410
+generated: "2024-10-20T14:03:04.418075125Z"
