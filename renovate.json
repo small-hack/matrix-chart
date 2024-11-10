@@ -52,7 +52,7 @@
       },
       { 
         "matchManagers": ["github-actions"],
-        "matchUpdateTypes": ["patch", "minor"],
+        "matchPackageNames": ["renovatebot/github-action"],
         "automerge": true
       }
     ]
