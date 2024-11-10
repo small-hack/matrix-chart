@@ -4,7 +4,7 @@ dependencies:
   version: 16.0.3
 - name: coturn
   repository: https://small-hack.github.io/coturn-chart
-  version: 7.0.2
+  version: 7.0.3
 - name: matrix-sliding-sync
   repository: https://small-hack.github.io/matrix-sliding-sync-chart
   version: 1.0.1

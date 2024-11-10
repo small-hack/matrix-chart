@@ -20,7 +20,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://small-hack.github.io/coturn-chart | coturn | 7.0.2 |
+| https://small-hack.github.io/coturn-chart | coturn | 7.0.3 |
 | https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 1.0.2 |
 | https://small-hack.github.io/matrix-sliding-sync-chart | syncv3(matrix-sliding-sync) | 1.0.1 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql | 16.0.3 |
