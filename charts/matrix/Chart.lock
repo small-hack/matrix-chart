@@ -4,12 +4,12 @@ dependencies:
   version: 16.0.3
 - name: coturn
   repository: https://small-hack.github.io/coturn-chart
-  version: 7.0.3
+  version: 7.0.4
 - name: matrix-sliding-sync
   repository: https://small-hack.github.io/matrix-sliding-sync-chart
   version: 1.0.1
 - name: matrix-authentication-service
   repository: https://small-hack.github.io/matrix-authentication-service-chart
   version: 1.0.2
-digest: sha256:0d9c6f0b1fd79c110e05ef84c82269d1a138b3068de24ca9a53e67dad2936226
-generated: "2024-10-21T13:20:56.119926427Z"
+digest: sha256:b2ea4409ebd9512fd0ee0ba842755e88e2de9f4a442ed8466a8fbd6983246910
+generated: "2024-11-17T10:10:53.389796539Z"
