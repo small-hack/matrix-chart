@@ -25,35 +25,34 @@ helm show values matrix/matrix > values.yaml
 helm install my-release-name matrix/matrix --values values.yaml
 ```
 
-**NOTE: The most important helm parameter is `matrix.hostname`. Without it, this chart may not work!**
+> [!IMPORTANT]
+> The most important helm parameter is `matrix.hostname`. Without it, this chart may not work!**
+
+> [!WARNING]
+> This chart used to support the Sliding Sync Proxy, but as it is deprecated, we no longer support it. See this [matrix blog post](https://matrix.org/blog/2024/11/14/moving-to-native-sliding-sync/) for more info.
 
 
 ## Current Features ✨
 
 - Latest version of [Synapse](https://github.com/element-hq/synapse) (the official matrix homeserver)
-- Ingress definitions for federated Synapse (Matrix homeserver) and Element (client for matrix)
+- Ingress definitions for federated Synapse (aka Matrix homeserver) and Element (default client for matrix)
 
 ### Optional Features
 
-- Use (existing) Kubernetes Secrets for confidential data, such as passwords
-- Use OIDC configs for SSO either directly via synapse (see [docs](https://github.com/element-hq/synapse/blob/develop/docs/openid.md) for more info) or via MAS
+- Use existing Persistent Volume Claims
+- Use existing Kubernetes Secrets for confidential data, such as passwords
+- Use OIDC configs for SSO either directly via Synapse (see [docs](https://github.com/element-hq/synapse/blob/develop/docs/openid.md) for more info) or via MAS
   - Use MAS ([matrix-org/matrix-authentication-service](https://github.com/matrix-org/matrix-authentication-service)) via [matrix-authentication-service-chart](https://github.com/small-hack/matrix-authentication-service-chart) as a sub chart for using [element-x] which recommends  for OIDC auth
 - Latest version of the [Element web app](https://element.io/) to provide a web interface for chat (you can disable this and still use element apps)
-- [Coturn TURN server subchart](https://github.com/small-hack/coturn-chart) for VoIP calls
 - Use s3 to store media using [element-hq/synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider/tree/main)
-- Use existing Kubernetes Secrets and existing Persistent Volume Claims
-- [mautrix/discord](https://github.com/mautrix/discord) - Discord bridge for syncing between matrix and Discord
 - [small-hack/matrix-alertmanager](https://github.com/small-hack/matrix-alertmanager) - Prometheus Alertmanager bridge for syncing between matrix and Alertmanager
-
-
-#### Features that may not be needed anymore
-
-- Use [matrix-sliding-sync-chart](https://github.com/small-hack/matrix-sliding-sync-chart) as a sub chart for using [element-x] which requires [matrix-org/sliding-sync](https://github.com/matrix-org/sliding-sync) (Note: as of Synapse [v1.114.0](https://github.com/element-hq/synapse/releases/tag/v1.114.0) you can now use simplified sliding sync, which doesn't require the separate proxy chart [more info here](https://matrix.org/blog/2024/10/29/matrix-2.0-is-here/#1-simplified-sliding-sync))
 
 #### ⚠️ Untested Features
 
-These features still need to be tested, but are technically baked into the chart from the fork:
+These features still need to be tested, but are technically baked into the chart from the fork or from previous versions of this chart:
 
+- [mautrix/discord](https://github.com/mautrix/discord) - Discord bridge for syncing between matrix and Discord (we no longer test this directly but we're open to PRs to improve support!)
+- [Coturn TURN server subchart](https://github.com/small-hack/coturn-chart) for VoIP calls (may not be needed in Matrix 2.0 API)
 - Use of lightweight Exim relay
 - [matrix-org/matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) IRC bridge
 - [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge
@@ -65,7 +64,6 @@ These features still need to be tested, but are technically baked into the chart
 * [Federation](#federation)
     * [Federation not Working](#federation-not-working)
     * [Addiing Trusted Key Servers from an existing Secret](#addiing-trusted-key-servers-from-an-existing-secret)
-* [Notes on using Matrix Sliding Sync](#notes-on-using-matrix-sliding-sync)
 * [Notes on using MAS (Matrix Authentication Service)](#notes-on-using-mas-matrix-authentication-service)
 * [Bridges](#bridges)
     * [Alertmanager](#alertmanager)
@@ -198,50 +196,6 @@ stringData:
       - server_name: friend.com
         verify_keys:
           ed25519:auto: abcdefghijklmnopqrstuvwxyz1234567890
-```
-
-## Notes on using Matrix Sliding Sync
-
-To use [sliding sync](https://github.com/matrix-org/sliding-sync), which is required for [element-x], you'll need to ensure that requests to `.well-known/matrix/client` return the [correct json](https://github.com/matrix-org/sliding-sync/blob/main/README.md). To do that, you'll want update your `matrix.extra_well_known_client_content` values and set `syncv3.enabled` to `true`. Example below:
-
-```yaml
-matrix:
-  hostname: my-synapse-hostname.com
-  extra_well_known_client_content:
-     "org.matrix.msc3575.proxy":
-       "url": "https://your-sliding-sync-hostname.com"
-
-
-syncv3:
-  # this enables this subchart: https://github.com/small-hack/matrix-sliding-sync-chart
-  # which deploys this: https://github.com/matrix-org/sliding-sync
-  enabled: true
-  server: "https://my-synapse-hostname.com"
-  secret: "this.is.a.test.secret"
-  bindaddr: "127.0.0.1:8008"
-  # note: you'll still have to actually fill out parameters
-  # under slidingSync.postgresql, but it is truncated here for brevity
-  # check out values.yaml for all possible slidingSync.postgresql values
-  postgresql:
-    enabled: true
-```
-
-After synapse is up, you should be able to verify it's returning correctly by doing:
-
-```console
-$ curl https://matrix.example.com/.well-known/matrix/client | jq
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100   136  100   136    0     0   1818      0 --:--:-- --:--:-- --:--:--  1837
-{
-  "m.homeserver": {
-    "base_url": "https://matrix.example.com"
-  },
-  "org.matrix.msc3575.proxy": {
-    "url": "https://matrix.example.com"
-  }
-}
-
 ```
 
 ## Notes on using MAS (Matrix Authentication Service)
@@ -561,4 +515,3 @@ Our goal is to provide regular updates using renovatebot and provide some level 
 
 <!-- links -->
 [element-x]: https://element.io/labs/element-x "element x link"
-[sliding sync]: https://github.com/matrix-org/sliding-sync "matrix sliding sync"
