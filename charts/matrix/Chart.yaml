@@ -8,7 +8,7 @@ sources:
 
 type: application
 
-version: 17.2.1
+version: 17.3.0
 
 # renovate: image=matrixdotorg/synapse
 appVersion: v1.117.0
@@ -19,7 +19,7 @@ maintainers:
 
 dependencies:
   - name: postgresql
-    version: 16.0.3
+    version: 16.3.1
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
 
