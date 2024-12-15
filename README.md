@@ -55,7 +55,7 @@ These features still need to be tested, but are technically baked into the chart
 - [Coturn TURN server subchart](https://github.com/small-hack/coturn-chart) for VoIP calls (may not be needed in Matrix 2.0 API)
 - Use of lightweight Exim relay
 - [matrix-org/matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) IRC bridge
-- [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge
+- [tulir/mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) WhatsApp bridge (we may deprecate this feature in the future, as to not support Big Tech)
 
 # Notes
 
