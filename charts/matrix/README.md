@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 17.4.0](https://img.shields.io/badge/Version-17.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.117.0](https://img.shields.io/badge/AppVersion-v1.117.0-informational?style=flat-square)
+![Version: 18.0.0](https://img.shields.io/badge/Version-18.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.121.1](https://img.shields.io/badge/AppVersion-v1.121.1-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -22,7 +22,6 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 |------------|------|---------|
 | https://small-hack.github.io/coturn-chart | coturn | 7.0.4 |
 | https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 1.1.0 |
-| https://small-hack.github.io/matrix-sliding-sync-chart | syncv3(matrix-sliding-sync) | 1.2.0 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql | 16.3.1 |
 
 ## Values
@@ -824,58 +823,6 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.service.federation.type | string | `"ClusterIP"` |  |
 | synapse.service.port | int | `80` | service port for synapse |
 | synapse.service.type | string | `"ClusterIP"` | service type for synpase |
-| syncv3.enabled | bool | `false` | enable the sliding sync proxy (required for using element-x if using Synapse older than v1.114). You can see all possible values [here](https://github.com/small-hack/matrix-sliding-sync-chart). If enabled, you must also provide `matrix.extra_well_known_client_content`. After Synapse v1.114, this is no longer required. Learn more in the matrix [blog post](https://matrix.org/blog/2024/10/29/matrix-2.0-is-here/#1-simplified-sliding-sync) |
-| syncv3.existingEnvSecret | string | `""` | existing kubernetes secret for ALL syncv3 env vars listed below. if set, ignores all values under syncv3 including syncv3.db and syncv3.otlp. |
-| syncv3.externalDatabase.database | string | `"syncv3"` | name of the database to try and connect to |
-| syncv3.externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
-| syncv3.externalDatabase.hostname | string | `""` | hostname of db server. Can be left blank if using postgres subchart |
-| syncv3.externalDatabase.password | string | `"changeme"` | password of matrix-sliding-sync postgres user - ignored using exsitingSecret |
-| syncv3.externalDatabase.port | int | `5432` | which port to use to connect to your database server |
-| syncv3.externalDatabase.sslcert | string | `""` | optional: tls/ssl cert for postgresql connections |
-| syncv3.externalDatabase.sslkey | string | `""` | optional: tls/ssl key for postgresql connections |
-| syncv3.externalDatabase.sslmode | string | `""` | sslmode to use, example: verify-full |
-| syncv3.externalDatabase.sslrootcert | string | `""` | optional: tls/ssl root cert for postgresql connections |
-| syncv3.externalDatabase.username | string | `"syncv3"` | username of matrix-sliding-sync postgres user |
-| syncv3.ingress.annotations | object | `{}` |  |
-| syncv3.ingress.className | string | `""` |  |
-| syncv3.ingress.enabled | bool | `false` |  |
-| syncv3.ingress.hosts[0].host | string | `"chart-example.local"` |  |
-| syncv3.ingress.hosts[0].paths[0].path | string | `"/"` |  |
-| syncv3.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
-| syncv3.ingress.tls | list | `[]` |  |
-| syncv3.networkPolicies.enabled | bool | `true` | whether to enable kubernetes network policies or not |
-| syncv3.postgresql.enabled | bool | `false` | Whether to deploy the Bitnami Postgresql sub chart If postgresql.enabled is set to true, externalDatabase.enabled must be set to false else if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
-| syncv3.postgresql.global.postgresql.auth.database | string | `"syncv3"` | name of the database |
-| syncv3.postgresql.global.postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL credentials |
-| syncv3.postgresql.global.postgresql.auth.password | string | `"changeme"` | password of matrix-sliding-sync postgres user - ignored using exsitingSecret |
-| syncv3.postgresql.global.postgresql.auth.port | int | `5432` | which port to use to connect to your database server |
-| syncv3.postgresql.global.postgresql.auth.secretKeys.adminPasswordKey | string | `"postgresPassword"` | key in existingSecret with the admin postgresql password |
-| syncv3.postgresql.global.postgresql.auth.secretKeys.database | string | `"database"` | key in existingSecret with name of the database |
-| syncv3.postgresql.global.postgresql.auth.secretKeys.databaseHostname | string | `"hostname"` | key in existingSecret with hostname of the database |
-| syncv3.postgresql.global.postgresql.auth.secretKeys.databaseUsername | string | `"username"` | key in existingSecret with username for matrix to connect to db |
-| syncv3.postgresql.global.postgresql.auth.secretKeys.userPasswordKey | string | `"password"` | key in existingSecret with password for matrix to connect to db |
-| syncv3.postgresql.global.postgresql.auth.username | string | `"syncv3"` | username of matrix-sliding-sync postgres user |
-| syncv3.postgresql.persistence.enabled | bool | `false` |  |
-| syncv3.postgresql.volumePermissions.enabled | bool | `true` | Enable init container that changes the owner and group of the PVC |
-| syncv3.syncv3.bindaddr | string | `"0.0.0.0:8008"` | SYNCV3_BINDADDR - The interface and port to listen on. (Supports unix socket: /path/to/socket) |
-| syncv3.syncv3.db | string | `""` | SYNCV3_DB - db connection string: https://www.postgresql.org/docs/current/libpq-connect.html if db is empty, you must either provide postgresql or externalDatabase parameters, OR set syncv3.existingDbSecret and syncv3.dbSecretKey |
-| syncv3.syncv3.dbSecretKey | string | `"SYNCV3_DB"` | db key in existing Db Secret for |
-| syncv3.syncv3.existingDbSecret | string | `""` | use an existing kubernetes secret for the db connection connection string. if set, ignores syncv3.db |
-| syncv3.syncv3.existingSyncv3Secret | string | `""` | if set, we'll grab your SYNCV3_SECRET from an existing kubernetes secret and ignore syncv3.secret |
-| syncv3.syncv3.logLevel | string | `"info"` | SYNCV3_LOG_LEVEL - The level of verbosity for messages logged. Available values are trace, debug, info, warn, error and fatal |
-| syncv3.syncv3.maxDbConn | string | `""` | SYNCV3_MAX_DB_CONN - Default: unset. Max database connections to use when communicating with postgres. Unset or 0 means no limit. |
-| syncv3.syncv3.otlp.existingSecret | string | `""` |  |
-| syncv3.syncv3.otlp.password | string | `""` | SYNCV3_OTLP_PASSWORD - Default: unset. The OTLP password for Basic auth. If unset, does not send an Authorization header. |
-| syncv3.syncv3.otlp.url | string | `""` | SYNCV3_OTLP_URL - Default: unset. The OTLP HTTP URL to send spans to e.g https://localhost:4318 - if unset does not send OTLP traces. |
-| syncv3.syncv3.otlp.username | string | `""` | SYNCV3_OTLP_USERNAME - Default: unset. The OTLP username for Basic auth. If unset, does not send an Authorization header. |
-| syncv3.syncv3.pprof | string | `""` | SYNCV3_PPROF - Default: unset. The bind addr for pprof debugging e.g ':6060'. If not set, does not listen. |
-| syncv3.syncv3.prom | string | `""` | SYNCV3_PROM - Default: unset. The bind addr for Prometheus metrics, which will be accessible at /metrics at this address. |
-| syncv3.syncv3.secret | string | `""` | SYNCV3_SECRET - Required. A secret to use to encrypt access tokens. Must remain the same for the lifetime of the database. If both syncv3.secret and syncv3.existingSecret are not set, we will autogenerate this value |
-| syncv3.syncv3.sentryDsn | string | `""` | SYNCV3_SENTRY_DSN - Default: unset. The Sentry DSN to report events to e.g https://sliding-sync@sentry.example.com/123 - if unset does not send sentry events. |
-| syncv3.syncv3.server | string | `""` | SYNCV3_SERVER - Required. The destination homeserver to talk to (CS API HTTPS URL) e.g 'https://matrix-client.matrix.org' (Supports unix socket: /path/to/socket) |
-| syncv3.syncv3.syncv3SecretKey | string | `"SYNCV3_SECRET"` | secret key to get synvcv3 secret from in existing kubernetes secret. |
-| syncv3.syncv3.tlsCert | string | `""` | SYNCV3_TLS_CERT - Default: unset. Path to a certificate file to serve to HTTPS clients. Specifying this enables TLS on the bound address. |
-| syncv3.syncv3.tlsKey | string | `""` | SYNCV3_TLS_KEY - Default: unset. Path to a key file for the certificate. Must be provided along with the certificate file. |
 | volumes.extraPipPackages.capacity | string | `"100Mi"` | Capacity of the extra pip packages PVC. Note: 1Mi is more than enough, but some cloud providers set a min PVC size of 1Mi or 1Gi, adjust as necessary |
 | volumes.extraPipPackages.existingClaim | string | `""` | name of an existing persistent volume claim for the extra pip packages |
 | volumes.extraPipPackages.storageClass | string | `""` | Storage class (optional) |
@@ -890,4 +837,4 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | volumes.synapseConfig.storageClass | string | `""` | Storage class (optional) |
 
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)
+Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
