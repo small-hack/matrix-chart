@@ -8,6 +8,7 @@ metadata:
 {{ include "matrix.element.labels" . | indent 4}}
 spec:
   replicas: {{ .Values.element.replicaCount }}
+  revisionHistoryLimit: {{ .Values.element.revisionHistoryLimit }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "matrix.name" . }}-element
