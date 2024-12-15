@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 16.0.3](https://img.shields.io/badge/Version-16.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.117.0](https://img.shields.io/badge/AppVersion-v1.117.0-informational?style=flat-square)
+![Version: 17.0.1](https://img.shields.io/badge/Version-17.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.117.0](https://img.shields.io/badge/AppVersion-v1.117.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -285,7 +285,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.existingSecret.registration | string | `""` | optionally use existing kubernetes Secret for registration |
 | bridges.hookshot.image.pullPolicy | string | `"IfNotPresent"` | hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always" |
 | bridges.hookshot.image.repository | string | `"halfshot/matrix-hookshot"` | hookshot bridge docker image |
-| bridges.hookshot.image.tag | string | `"5.4.1"` | hookshot bridge docker image tag |
+| bridges.hookshot.image.tag | string | `"6.0.0"` | hookshot bridge docker image tag |
 | bridges.hookshot.passkey | string | `""` | If bridges.hookshot.passkey AND bridges.hookshot.existingSecret.passkey are BOTH empty strings, we will generate a passkey for you. To Generate yourself: openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 |
 | bridges.hookshot.podSecurityContext | object | `{}` | hookshot pod security context |
 | bridges.hookshot.registration.existingSecret | string | `""` |  |
