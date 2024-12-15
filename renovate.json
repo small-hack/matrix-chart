@@ -1,59 +1,57 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": [
-          "config:recommended", ":disableDependencyDashboard"
-    ],
+    "extends": ["config:recommended", ":disableDependencyDashboard"],
     "customManagers": [
         {
-          "customType": "regex",
-          "datasourceTemplate": "docker",
-          "fileMatch": [
-            "(^|/)Chart\\.yaml$"
-          ],
-          "matchStrings": [
-            "#\\s*renovate: image=(?<depName>.*?)\\s+appVersion:\\s*[\"']?(?<currentValue>[\\w+\\.\\-]*)"
-          ]
+            "customType": "regex",
+            "datasourceTemplate": "docker",
+            "fileMatch": ["(^|/)Chart\\.yaml$"],
+            "matchStrings": [
+                "#\\s*renovate: image=(?<depName>.*?)\\s+appVersion:\\s*[\"']?(?<currentValue>[\\w+\\.\\-]*)"
+            ]
         }
     ],
     "packageRules": [
-      {
-        "description": "Fix subchart archives for helm chart",
-        "matchManagers": ["helmv3"],
-        "postUpdateOptions": ["helmUpdateSubChartArchives"]
-      },
-      {
-        "description": "Fix version in Chart.yaml after helmv3 dep patch updates",
-        "matchManagers": ["helmv3"],
-        "matchUpdateTypes": ["patch"],
-        "bumpVersion": "patch"
-      },
-      {
-        "description": "Fix version in Chart.yaml after helmv3 dep minor updates",
-        "matchManagers": ["helmv3"],
-        "matchUpdateTypes": ["minor"],
-        "bumpVersion": "minor"
-      },
-      {
-        "description": "Fix version in Chart.yaml after helmv3 dep major updates",
-        "matchManagers": ["helmv3"],
-        "matchUpdateTypes": ["major"],
-        "bumpVersion": "major"
-      },
-      {
-        "description": "Bump helm chart versions by a patch when updating values files. This can be removed when https://github.com/renovatebot/renovate/issues/8231 is implemented and enabled.",
-        "matchManagers": ["helm-values", "regex"],
-        "postUpgradeTasks": {
-          "commands": [
-            "scripts/bump-chart-version.sh '{{{updateType}}}'"
-          ],
-          "fileFilters": ["**/Chart.yaml"],
-          "executionMode": "branch"
+        {
+            "description": "Fix subchart archives for helm chart",
+            "matchManagers": ["helmv3"],
+            "postUpdateOptions": ["helmUpdateSubChartArchives"]
+        },
+        {
+            "description": "Fix version in Chart.yaml after helmv3 dep patch updates",
+            "matchManagers": ["helmv3"],
+            "matchUpdateTypes": ["patch"],
+            "bumpVersion": "patch"
+        },
+        {
+            "description": "Fix version in Chart.yaml after helmv3 dep minor updates",
+            "matchManagers": ["helmv3"],
+            "matchUpdateTypes": ["minor"],
+            "bumpVersion": "minor"
+        },
+        {
+            "description": "Fix version in Chart.yaml after helmv3 dep major updates",
+            "matchManagers": ["helmv3"],
+            "matchUpdateTypes": ["major"],
+            "bumpVersion": "major"
+        },
+        {
+            "description": "Bump helm chart versions by a patch when updating values files. This can be removed when https://github.com/renovatebot/renovate/issues/8231 is implemented and enabled.",
+            "matchManagers": ["helm-values", "regex"],
+            "postUpgradeTasks": {
+                "commands": [
+                    "scripts/bump-chart-version.sh '{{{updateType}}}'"
+                ],
+                "fileFilters": ["**/Chart.yaml"],
+                "executionMode": "branch"
+            }
+        },
+        { 
+            "matchManagers": ["github-actions"],
+            "matchPackageNames": ["renovatebot/github-action"],
+            "matchUpdateTypes": ["patch", "minor"],
+            "automerge": true,
+            "ignoreTests": true
         }
-      },
-      { 
-        "matchManagers": ["github-actions"],
-        "matchPackageNames": ["renovatebot/github-action"],
-        "automerge": true
-      }
     ]
 }
