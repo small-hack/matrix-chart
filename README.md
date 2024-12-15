@@ -41,10 +41,14 @@ helm install my-release-name matrix/matrix --values values.yaml
 - Latest version of the [Element web app](https://element.io/) to provide a web interface for chat (you can disable this and still use element apps)
 - [Coturn TURN server subchart](https://github.com/small-hack/coturn-chart) for VoIP calls
 - Use s3 to store media using [element-hq/synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider/tree/main)
-- Use [matrix-sliding-sync-chart](https://github.com/small-hack/matrix-sliding-sync-chart) as a sub chart for using [element-x] which requires [matrix-org/sliding-sync](https://github.com/matrix-org/sliding-sync) (Note: as of Synapse [v1.114.0](https://github.com/element-hq/synapse/releases/tag/v1.114.0) you can now use simplified sliding sync, which doesn't require the separate proxy chart)
-- Use existing Kubernetes secrets and existing Persistent Volume Claims
+- Use existing Kubernetes Secrets and existing Persistent Volume Claims
 - [mautrix/discord](https://github.com/mautrix/discord) - Discord bridge for syncing between matrix and Discord
 - [small-hack/matrix-alertmanager](https://github.com/small-hack/matrix-alertmanager) - Prometheus Alertmanager bridge for syncing between matrix and Alertmanager
+
+
+#### Features that may not be needed anymore
+
+- Use [matrix-sliding-sync-chart](https://github.com/small-hack/matrix-sliding-sync-chart) as a sub chart for using [element-x] which requires [matrix-org/sliding-sync](https://github.com/matrix-org/sliding-sync) (Note: as of Synapse [v1.114.0](https://github.com/element-hq/synapse/releases/tag/v1.114.0) you can now use simplified sliding sync, which doesn't require the separate proxy chart [more info here](https://matrix.org/blog/2024/10/29/matrix-2.0-is-here/#1-simplified-sliding-sync))
 
 #### ⚠️ Untested Features
 

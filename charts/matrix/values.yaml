@@ -421,15 +421,15 @@ matrix:
   msc3861ExistingSecret: ""
 
   msc3861SecretKeys:
-    # -- secret key to use in existing secret for masc3861 issuer
+    # -- secret key to use in existing secret for msc3861 issuer
     issuer: ""
-    # -- secret key to use in existing secret for masc3861 client id
+    # -- secret key to use in existing secret for msc3861 client id
     client_id: ""
-    # -- secret key to use in existing secret for masc3861 client secret
+    # -- secret key to use in existing secret for msc3861 client secret
     client_secret: ""
-    # -- secret key to use in existing secret for masc3861 admin_token
+    # -- secret key to use in existing secret for msc3861 admin_token
     admin_token: ""
-    # -- secret key to use in existing secret for masc3861 account_management_url
+    # -- secret key to use in existing secret for msc3861 account_management_url
     account_management_url: ""
 
   experimental_features:
@@ -786,9 +786,12 @@ synapse:
 
 # values for https://github.com/small-hack/matrix-sliding-sync-chart
 syncv3:
-  # -- enable sliding sync (required for using element-x). You can see all possible
-  # values [here](https://github.com/small-hack/matrix-sliding-sync-chart). If enabled,
-  # you must also provide `matrix.extra_well_known_client_content`
+  # -- enable the sliding sync proxy (required for using element-x if using
+  # Synapse older than v1.114). You can see all possible values
+  # [here](https://github.com/small-hack/matrix-sliding-sync-chart). If enabled,
+  # you must also provide `matrix.extra_well_known_client_content`.
+  # After Synapse v1.114, this is no longer required. Learn more in the matrix
+  # [blog post](https://matrix.org/blog/2024/10/29/matrix-2.0-is-here/#1-simplified-sliding-sync)
   enabled: false
   postgresql:
     # -- Whether to deploy the Bitnami Postgresql sub chart
@@ -928,11 +931,10 @@ syncv3:
     #    hosts:
     #      - chart-example.local
 
-
 mas:
   # -- enable the MAS (Matrix Authentication Service) sub chart to use OIDC
   # This is the only way that's tested to use with element-x beta right now
-  # You must also fill out matrix.experimental_feature.masc3861 if you use this method
+  # You must also fill out matrix.experimental_feature.msc3861 if you use this method
   enabled: false
   replicaCount: 1
 

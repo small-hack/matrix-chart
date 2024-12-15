@@ -491,7 +491,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | mas.configVolume.existingClaim | string | `""` | name of an existing persistent volume claim to use for matrix-authentication-service config. If provided, ignores mas parameter map |
 | mas.configVolume.storage | string | `"500Mi"` | storage capacity for creating a persistent volume |
 | mas.configVolume.storageClassName | string | `"default"` | name of storage class for the persistent volume |
-| mas.enabled | bool | `false` | enable the MAS (Matrix Authentication Service) sub chart to use OIDC This is the only way that's tested to use with element-x beta right now You must also fill out matrix.experimental_feature.masc3861 if you use this method |
+| mas.enabled | bool | `false` | enable the MAS (Matrix Authentication Service) sub chart to use OIDC This is the only way that's tested to use with element-x beta right now You must also fill out matrix.experimental_feature.msc3861 if you use this method |
 | mas.existingMasConfigSecret | string | `""` | Existing Kubernetes Secret for entire matrix authentication service `config.yaml` file. If set, everything under the mas section of the values.yaml is ignored. |
 | mas.externalDatabase.database | string | `"mas"` | name of the database to try and connect to |
 | mas.externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
@@ -684,11 +684,11 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | matrix.logging.sqlLogLevel | string | `"WARNING"` | beware: increasing this to DEBUG will make synapse log sensitive information such as access tokens. |
 | matrix.logging.synapseLogLevel | string | `"WARNING"` | The log level for the synapse server |
 | matrix.msc3861ExistingSecret | string | `""` | use an existing secret for all msc3861 (matrix authentication service) related values if set, all other msc3861 values are ignored (issuer, client_id, client_auth_method, client_secret, admin_token, account_management_url) |
-| matrix.msc3861SecretKeys.account_management_url | string | `""` | secret key to use in existing secret for masc3861 account_management_url |
-| matrix.msc3861SecretKeys.admin_token | string | `""` | secret key to use in existing secret for masc3861 admin_token |
-| matrix.msc3861SecretKeys.client_id | string | `""` | secret key to use in existing secret for masc3861 client id |
-| matrix.msc3861SecretKeys.client_secret | string | `""` | secret key to use in existing secret for masc3861 client secret |
-| matrix.msc3861SecretKeys.issuer | string | `""` | secret key to use in existing secret for masc3861 issuer |
+| matrix.msc3861SecretKeys.account_management_url | string | `""` | secret key to use in existing secret for msc3861 account_management_url |
+| matrix.msc3861SecretKeys.admin_token | string | `""` | secret key to use in existing secret for msc3861 admin_token |
+| matrix.msc3861SecretKeys.client_id | string | `""` | secret key to use in existing secret for msc3861 client id |
+| matrix.msc3861SecretKeys.client_secret | string | `""` | secret key to use in existing secret for msc3861 client secret |
+| matrix.msc3861SecretKeys.issuer | string | `""` | secret key to use in existing secret for msc3861 issuer |
 | matrix.oidc.enabled | bool | `false` | set to true to enable authorization against an OpenID Connect server unless using OIDC on synapse AND you want to allow usage of Element-X (the beta of element), then you must set experimental_feature.msc3861.enabled to True to use the MAS (Matrix Authentication Service) and fill out the values there. |
 | matrix.oidc.existingSecret | string | `""` | existing secret to use for the OIDC config |
 | matrix.oidc.providers | list | `[{"authorization_endpoint":"https://accounts.example.com/oauth2/auth","backchannel_logout_enabled":true,"client_auth_method":"client_secret_post","client_id":"provided-by-your-issuer","client_secret":"provided-by-your-issuer","discover":true,"idp_brand":"","idp_id":"","idp_name":"","issuer":"https://accounts.example.com/","scopes":["openid","profile"],"skip_verification":false,"token_endpoint":"https://accounts.example.com/oauth2/token","user_mapping_provider":{"config":{"display_name_template":"","localpart_template":"","picture_template":"{{ user.data.profile_image_url }}","subject_claim":""}},"userinfo_endpoint":"https://accounts.example.com/userinfo"}]` | each of these will be templated under oidc_providers in homeserver.yaml ref: https://element-hq.github.io/synapse/latest/openid.html?search= |
@@ -824,7 +824,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.service.federation.type | string | `"ClusterIP"` |  |
 | synapse.service.port | int | `80` | service port for synapse |
 | synapse.service.type | string | `"ClusterIP"` | service type for synpase |
-| syncv3.enabled | bool | `false` | enable sliding sync (required for using element-x). You can see all possible values [here](https://github.com/small-hack/matrix-sliding-sync-chart). If enabled, you must also provide `matrix.extra_well_known_client_content` |
+| syncv3.enabled | bool | `false` | enable the sliding sync proxy (required for using element-x if using Synapse older than v1.114). You can see all possible values [here](https://github.com/small-hack/matrix-sliding-sync-chart). If enabled, you must also provide `matrix.extra_well_known_client_content`. After Synapse v1.114, this is no longer required. Learn more in the matrix [blog post](https://matrix.org/blog/2024/10/29/matrix-2.0-is-here/#1-simplified-sliding-sync) |
 | syncv3.existingEnvSecret | string | `""` | existing kubernetes secret for ALL syncv3 env vars listed below. if set, ignores all values under syncv3 including syncv3.db and syncv3.otlp. |
 | syncv3.externalDatabase.database | string | `"syncv3"` | name of the database to try and connect to |
 | syncv3.externalDatabase.enabled | bool | `false` | enable using an external database *instead of* the Bitnami PostgreSQL sub-chart if externalDatabase.enabled is set to true, postgresql.enabled must be set to false |
@@ -890,4 +890,4 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | volumes.synapseConfig.storageClass | string | `""` | Storage class (optional) |
 
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)
+Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
