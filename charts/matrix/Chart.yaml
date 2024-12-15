@@ -8,7 +8,7 @@ sources:
 
 type: application
 
-version: 17.0.0
+version: 17.0.1
 
 # renovate: image=matrixdotorg/synapse
 appVersion: v1.117.0
@@ -24,7 +24,7 @@ dependencies:
     condition: postgresql.enabled
 
   - name: coturn
-    version: 7.0.3
+    version: 7.0.4
     repository: https://small-hack.github.io/coturn-chart
     condition: coturn.enabled
 
