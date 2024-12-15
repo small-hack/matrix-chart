@@ -1492,6 +1492,12 @@ element:
   # Element Desktop, or any other Matrix clients
   enabled: true
 
+  # -- set the revisionHistoryLimit to decide how many replicaSets are
+  # kept when you change a deployment. Explicitly setting this field to 0,
+  # will result in cleaning up all the history of your Deployment thus that
+  # Deployment will not be able to roll back.
+  revisionHistoryLimit: 2
+
   ingress:
     # -- ingressClassName for the k8s ingress
     className: "nginx"
