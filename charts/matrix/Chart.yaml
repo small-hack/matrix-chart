@@ -8,7 +8,7 @@ sources:
 
 type: application
 
-version: 18.2.0
+version: 18.2.1
 
 # renovate: image=ghcr.io/element-hq/synapse
 appVersion: v1.121.1
@@ -19,7 +19,7 @@ maintainers:
 
 dependencies:
   - name: postgresql
-    version: 16.3.1
+    version: 16.3.2
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
 
