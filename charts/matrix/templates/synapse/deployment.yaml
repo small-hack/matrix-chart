@@ -64,7 +64,7 @@ spec:
                   name: {{ include "matrix.postgresql.secretName" . }}
                   key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.databaseUsername }}
             - name: DATABASE_HOSTNAME
-              {{- if not .Values.postgresql.global.postgresql.auth.existingSecret }}
+              {{- if or (not .Values.postgresql.global.postgresql.auth.existingSecret) .Values.postgresql.global.postgresql.generateHostname }}
               value: {{ template "postgresql.v1.primary.fullname" .Subcharts.postgresql }}
               {{ else }}
               valueFrom:
