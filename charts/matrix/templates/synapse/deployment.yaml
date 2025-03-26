@@ -64,14 +64,7 @@ spec:
                   name: {{ include "matrix.postgresql.secretName" . }}
                   key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.databaseUsername }}
             - name: DATABASE_HOSTNAME
-              {{- if not .Values.postgresql.global.postgresql.auth.existingSecret }}
               value: {{ template "postgresql.v1.primary.fullname" .Subcharts.postgresql }}
-              {{ else }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "matrix.postgresql.secretName" . }}
-                  key: {{ .Values.postgresql.global.postgresql.auth.secretKeys.databaseHostname }}
-              {{- end }}
             {{- if .Values.postgresql.sslmode }}
             - name: PGSSLMODE
               value: {{ .Values.postgresql.sslmode }}
