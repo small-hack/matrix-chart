@@ -1463,6 +1463,8 @@ element:
 coturn:
   # -- Set to false to disable the included deployment of Coturn
   enabled: false
+  # -- Set to true to use an external Coturn deployment
+  external: false
 
   certificate:
     # -- set to true to generate a TLS certificate for encrypted comms
