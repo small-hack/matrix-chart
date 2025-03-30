@@ -24,7 +24,7 @@ dependencies:
     condition: postgresql.enabled
 
   - name: coturn
-    version: 8.0.0
+    version: 8.1.1
     repository: https://small-hack.github.io/coturn-chart
     condition: coturn.enabled
 
