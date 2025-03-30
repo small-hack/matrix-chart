@@ -8,7 +8,7 @@ sources:
 
 type: application
 
-version: 19.1.0
+version: 19.3.0
 
 # renovate: image=ghcr.io/element-hq/synapse
 appVersion: v1.123.0
