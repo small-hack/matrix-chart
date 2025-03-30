@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   schedule:
     # This should be every hour
-    - cron: '0 * * * *'
+    - cron: '55 * * * *'
   push:
     branches:
       - main
