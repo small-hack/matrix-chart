@@ -4,9 +4,9 @@ dependencies:
   version: 16.6.0
 - name: coturn
   repository: https://small-hack.github.io/coturn-chart
-  version: 8.0.0
+  version: 8.1.1
 - name: matrix-authentication-service
   repository: https://small-hack.github.io/matrix-authentication-service-chart
   version: 1.3.1
-digest: sha256:d70fa1b6bf51c55473f07502807e5abf098d704b9fe8d2f96ce276cdc52afdc3
-generated: "2025-03-30T17:10:09.665450089Z"
+digest: sha256:d65b3ea444b99ca0885ea3c116a284dffc1c4a2e4c40f7144de201fe9493813e
+generated: "2025-03-30T22:30:56.838443+02:00"
