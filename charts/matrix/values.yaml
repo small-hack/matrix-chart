@@ -616,7 +616,7 @@ postgresql:
     # If using an external Postgres server, make sure to configure the database
     # ref: https://github.com/element-hq/synapse/blob/develop/docs/postgres.md
     initdb:
-      scriptsConfigMap: "{{ .Release.Name }}-postgresql-initdb"
+      scriptsConfigMap: "{{ .Release.Name }}-matrix-postgresql-initdb"
 
     podSecurityContext:
       enabled: true
