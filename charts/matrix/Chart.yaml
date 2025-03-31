@@ -8,10 +8,10 @@ sources:
 
 type: application
 
-version: 19.3.0
+version: 19.4.0
 
 # renovate: image=ghcr.io/element-hq/synapse
-appVersion: v1.123.0
+appVersion: v1.127.1
 
 maintainers:
   - name: "jessebot"
