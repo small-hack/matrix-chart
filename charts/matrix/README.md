@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 18.4.0](https://img.shields.io/badge/Version-18.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.122.0](https://img.shields.io/badge/AppVersion-v1.122.0-informational?style=flat-square)
+![Version: 19.4.0](https://img.shields.io/badge/Version-19.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.127.1](https://img.shields.io/badge/AppVersion-v1.127.1-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -20,9 +20,9 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://small-hack.github.io/coturn-chart | coturn | 7.1.0 |
-| https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 1.3.1 |
-| oci://registry-1.docker.io/bitnamicharts | postgresql | 16.3.1 |
+| https://small-hack.github.io/coturn-chart | coturn | 8.1.1 |
+| https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 1.4.2 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql | 16.6.0 |
 
 ## Values
 
@@ -365,6 +365,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | coturn.coturn.realm | string | `"turn.example.com"` | hostname for the coturn server realm |
 | coturn.enabled | bool | `false` | Set to false to disable the included deployment of Coturn |
 | coturn.existingSecret | string | `""` | Optional: name of an existingSecret with key for sharedSecret |
+| coturn.external | bool | `false` | Set to true to use an external Coturn deployment |
 | coturn.externalDatabase.database | string | `""` | database to create, ignored if existingSecret is passed in |
 | coturn.externalDatabase.enabled | bool | `false` | enables the use of postgresql instead of the default sqlite for coturn to use the bundled subchart, enable this, and postgresql.enable |
 | coturn.externalDatabase.existingSecret | string | `""` | name of existing Secret to use for postgresql credentials |
@@ -417,7 +418,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | element.enabled | bool | `true` | Set to false to disable a deployment of Element. Users will still be able to connect via any other instances of Element e.g. https://app.element.io, Element Desktop, or any other Matrix clients |
 | element.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy to use for element image, set to Always if using latest tag |
 | element.image.repository | string | `"vectorim/element-web"` | registry and repository to use for element docker image |
-| element.image.tag | string | `"v1.11.90"` | tag to use for element docker image |
+| element.image.tag | string | `"v1.11.96"` | tag to use for element docker image |
 | element.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | element.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` |  |
 | element.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
