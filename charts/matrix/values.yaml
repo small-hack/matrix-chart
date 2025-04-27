@@ -1489,7 +1489,7 @@ coturn:
   existingSecret: ""
   # -- key in existing secret with sharedSecret value. Required if
   # coturn.enabled=true and existingSecret not ""
-  secretKey: "REPLACE_ME"
+  secretKey: "coturnSharedSecret"
 
   # -- UDP port range for TURN connections
   ports:
