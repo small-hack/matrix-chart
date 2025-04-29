@@ -208,7 +208,7 @@ matrix:
   experimental_features:
     msc3861:
       # Likely needed if using OIDC on synapse and you want to allow usage of Element-X (the beta of element)
-      enabled: false
+      enabled: true
       # -- Synapse will call `{issuer}/.well-known/openid-configuration` to get the OIDC configuration
       issuer: http://my-mas-domain.com/
       # -- Matches the `mas.mas.client_id` in the auth service config
