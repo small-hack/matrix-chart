@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 19.4.0](https://img.shields.io/badge/Version-19.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.127.1](https://img.shields.io/badge/AppVersion-v1.127.1-informational?style=flat-square)
+![Version: 19.5.0](https://img.shields.io/badge/Version-19.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.127.1](https://img.shields.io/badge/AppVersion-v1.127.1-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -21,7 +21,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | Repository | Name | Version |
 |------------|------|---------|
 | https://small-hack.github.io/coturn-chart | coturn | 8.1.1 |
-| https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 1.4.2 |
+| https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 1.5.0 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql | 16.6.0 |
 
 ## Values
