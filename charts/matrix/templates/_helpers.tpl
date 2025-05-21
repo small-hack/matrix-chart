@@ -42,13 +42,12 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/name: "matrix"
 {{- end -}}
 
-# TODO: Include labels from values
 {{/*
 Synapse specific labels
 */}}
 {{- define "matrix.synapse.labels" -}}
-{{- range $key, $val := .Values.synapse.labels -}}
-{{ $key }}: {{ $val }}
+{{- with .Values.synapse.labels }}
+{{- toYaml . }}
 {{- end }}
 {{- end -}}
 
@@ -67,8 +66,8 @@ Create image name that is used in the deployment
 Element specific labels
 */}}
 {{- define "matrix.element.labels" -}}
-{{- range $key, $val := .Values.element.labels }}
-{{ $key }}: {{ $val }}
+{{- with .Values.element.labels }}
+{{- toYaml . }}
 {{- end }}
 {{- end -}}
 
@@ -76,8 +75,8 @@ Element specific labels
 Mail relay specific labels
 */}}
 {{- define "matrix.mail.labels" -}}
-{{- range $key, $val := .Values.mail.relay.labels -}}
-{{ $key }}: {{ $val }}
+{{- with .Values.mail.relay.labels }}
+{{- toYaml . }}
 {{- end }}
 {{- end -}}
 
