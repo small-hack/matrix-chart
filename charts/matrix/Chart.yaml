@@ -11,7 +11,7 @@ type: application
 version: 19.5.1
 
 # renovate: image=ghcr.io/element-hq/synapse
-appVersion: v1.127.1
+appVersion: v1.128.0
 
 maintainers:
   - name: "jessebot"
