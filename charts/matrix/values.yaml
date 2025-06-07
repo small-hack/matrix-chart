@@ -1816,7 +1816,7 @@ bridges:
       # -- hookshot bridge docker image
       repository: "halfshot/matrix-hookshot"
       # -- hookshot bridge docker image tag
-      tag: "6.0.1"
+      tag: "7.0.0"
       # -- hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always"
       pullPolicy: IfNotPresent
 
