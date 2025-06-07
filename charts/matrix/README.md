@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 18.4.0](https://img.shields.io/badge/Version-18.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.122.0](https://img.shields.io/badge/AppVersion-v1.122.0-informational?style=flat-square)
+![Version: 19.10.0](https://img.shields.io/badge/Version-19.10.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.131.0](https://img.shields.io/badge/AppVersion-v1.131.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -20,9 +20,9 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://small-hack.github.io/coturn-chart | coturn | 7.1.0 |
-| https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 1.3.1 |
-| oci://registry-1.docker.io/bitnamicharts | postgresql | 16.3.1 |
+| https://small-hack.github.io/coturn-chart | coturn | 8.1.1 |
+| https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 1.6.0 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql | 16.7.10 |
 
 ## Values
 
@@ -284,7 +284,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.existingSecret.registration | string | `""` | optionally use existing kubernetes Secret for registration |
 | bridges.hookshot.image.pullPolicy | string | `"IfNotPresent"` | hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always" |
 | bridges.hookshot.image.repository | string | `"halfshot/matrix-hookshot"` | hookshot bridge docker image |
-| bridges.hookshot.image.tag | string | `"6.0.1"` | hookshot bridge docker image tag |
+| bridges.hookshot.image.tag | string | `"7.0.0"` | hookshot bridge docker image tag |
 | bridges.hookshot.passkey | string | `""` | If bridges.hookshot.passkey AND bridges.hookshot.existingSecret.passkey are BOTH empty strings, we will generate a passkey for you. To Generate yourself: openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 |
 | bridges.hookshot.podSecurityContext | object | `{}` | hookshot pod security context |
 | bridges.hookshot.registration.existingSecret | string | `""` |  |
@@ -365,6 +365,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | coturn.coturn.realm | string | `"turn.example.com"` | hostname for the coturn server realm |
 | coturn.enabled | bool | `false` | Set to false to disable the included deployment of Coturn |
 | coturn.existingSecret | string | `""` | Optional: name of an existingSecret with key for sharedSecret |
+| coturn.external | bool | `false` | Set to true to use an external Coturn deployment |
 | coturn.externalDatabase.database | string | `""` | database to create, ignored if existingSecret is passed in |
 | coturn.externalDatabase.enabled | bool | `false` | enables the use of postgresql instead of the default sqlite for coturn to use the bundled subchart, enable this, and postgresql.enable |
 | coturn.externalDatabase.existingSecret | string | `""` | name of existing Secret to use for postgresql credentials |
@@ -417,7 +418,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | element.enabled | bool | `true` | Set to false to disable a deployment of Element. Users will still be able to connect via any other instances of Element e.g. https://app.element.io, Element Desktop, or any other Matrix clients |
 | element.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy to use for element image, set to Always if using latest tag |
 | element.image.repository | string | `"vectorim/element-web"` | registry and repository to use for element docker image |
-| element.image.tag | string | `"v1.11.90"` | tag to use for element docker image |
+| element.image.tag | string | `"v1.11.96"` | tag to use for element docker image |
 | element.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-staging"` | required for TLS certs issued by cert-manager |
 | element.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` |  |
 | element.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
