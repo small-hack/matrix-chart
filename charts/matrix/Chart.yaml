@@ -8,7 +8,7 @@ sources:
 
 type: application
 
-version: 19.8.0
+version: 19.9.0
 
 # renovate: image=ghcr.io/element-hq/synapse
 appVersion: v1.131.0
@@ -30,6 +30,6 @@ dependencies:
 
   - name: matrix-authentication-service
     alias: mas
-    version: 1.4.2
+    version: 1.5.0
     repository: https://small-hack.github.io/matrix-authentication-service-chart
     condition: mas.enabled
