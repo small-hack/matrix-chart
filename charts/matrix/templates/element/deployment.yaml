@@ -57,6 +57,8 @@ spec:
             - mountPath: /var/run/pid
               name: ephemeral
               subPath: pid
+            - mountPath: /tmp
+              name: ephemeral-tmp
           readinessProbe:
             httpGet:
               path: /
@@ -94,5 +96,8 @@ spec:
             name: {{ include "matrix.fullname" . }}-element-config
         # ephemeral cache, PID file, and any other temporary files nginx needs access to
         - name: ephemeral
+          emptyDir: {}
+        # ephemeral cache, for /tmp
+        - name: ephemeral-tmp
           emptyDir: {}
 {{- end }}
