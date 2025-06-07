@@ -22,7 +22,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 |------------|------|---------|
 | https://small-hack.github.io/coturn-chart | coturn | 8.1.1 |
 | https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 1.4.2 |
-| oci://registry-1.docker.io/bitnamicharts | postgresql | 16.6.0 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql | 16.7.10 |
 
 ## Values
 
