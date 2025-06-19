@@ -19,6 +19,9 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "matrix.name" . }}-synapse
         app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- with .Values.synapse.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- if and (not .Values.bridges.hookshot.existingSecret.registration) (not .Values.matrix.homeserverOverride) }}
       annotations:
         # re-roll deployment on config change
@@ -34,6 +37,14 @@ spec:
         {{- if not .Values.matrix.homeserverOverride }}
         checksum/synapse-config: {{ include (print $.Template.BasePath "/synapse/initial-config-map.yaml") . | sha256sum }}
         {{- end }}
+        {{- with .Values.synapse.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- else }}
+      {{- with .Values.synapse.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}

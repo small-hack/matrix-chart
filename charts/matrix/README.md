@@ -433,6 +433,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | element.labels | object | `{"component":"element"}` | Element specific labels |
 | element.labs | list | `["feature_new_spinner","feature_pinning","feature_custom_status","feature_custom_tags","feature_state_counters","feature_many_integration_managers","feature_mjolnir","feature_dm_verification","feature_bridge_state","feature_presence_in_room_list","feature_custom_themes"]` | Experimental features in Element, see: https://github.com/vector-im/element-web/blob/develop/docs/labs.md |
 | element.permalinkPrefix | string | `"https://matrix.to"` | Prefix before permalinks generated when users share links to rooms, users, or messages. If running an unfederated Synapse, set the below to the URL of your Element instance. |
+| element.podAnnotations | object | `{}` |  |
+| element.podLabels | object | `{}` |  |
 | element.probes.liveness | object | `{}` |  |
 | element.probes.readiness | object | `{}` |  |
 | element.probes.startup | object | `{}` |  |
@@ -798,6 +800,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.metrics.enabled | bool | `true` | Whether Synapse should capture metrics on an additional endpoint |
 | synapse.metrics.port | int | `9092` | Port to listen on for metrics scraping |
 | synapse.metrics.serviceMonitor.enabled | bool | `false` | enable a prometheus ServiceMonitor to send metrics to prometheus |
+| synapse.podAnnotations | object | `{}` |  |
+| synapse.podLabels | object | `{}` |  |
 | synapse.podSecurityContext | object | `{"env":false,"fsGroup":1000,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | securityContext for the entire synapse pod, including the all containers Does not work by default in all cloud providers, disable by default |
 | synapse.podSecurityContext.env | bool | `false` | Enable if your k8s environment allows containers to chuser/setuid https://github.com/matrix-org/synapse/blob/96cf81e312407f0caba1b45ba9899906b1dcc098/docker/start.py#L196 |
 | synapse.podSecurityContext.fsGroup | int | `1000` | A special supplemental group that applies to all containers in a pod. Some volume types allow the Kubelet to change the ownership of that volume to be owned by the pod: 1. The owning GID will be the FSGroup 2. The setgid bit is set (new files created in the volume will be owned by FSGroup) 3. The permission bits are OR'd with rw-rw---- If unset, the Kubelet will not modify the ownership and permissions of any volume. Note that this field cannot be set when spec.os.name is windows. |
