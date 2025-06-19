@@ -762,6 +762,8 @@ synapse:
   # -- Labels to be appended to all Synapse resources
   labels:
     component: synapse
+  podAnnotations: {}
+  podLabels: {}
 
   # Prometheus metrics for Synapse
   # https://github.com/element-hq/synapse/blob/develop/docs/metrics-howto.md
@@ -1458,6 +1460,8 @@ element:
   # -- Element specific labels
   labels:
     component: element
+  podAnnotations: {}
+  podLabels: {}
 
 # Settings for Coturn TURN relay, used for routing voice calls
 coturn:
