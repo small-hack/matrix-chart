@@ -18,9 +18,15 @@ spec:
       annotations:
         # re-roll deployment on config change
         checksum/element-config: {{ include (print $.Template.BasePath "/element/configmap.yaml") . | sha256sum }}
+        {{- with .Values.element.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "matrix.name" . }}-element
         app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- with .Values.element.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
