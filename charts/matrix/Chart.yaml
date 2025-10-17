@@ -19,17 +19,17 @@ maintainers:
 
 dependencies:
   - name: postgresql
-    version: 16.6.0
+    version: 16.7.10
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
 
   - name: coturn
-    version: 8.1.1
+    version: 9.1.0
     repository: https://small-hack.github.io/coturn-chart
     condition: coturn.enabled
 
   - name: matrix-authentication-service
     alias: mas
-    version: 1.4.2
+    version: 1.6.0
     repository: https://small-hack.github.io/matrix-authentication-service-chart
     condition: mas.enabled

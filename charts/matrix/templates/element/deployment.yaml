@@ -18,9 +18,15 @@ spec:
       annotations:
         # re-roll deployment on config change
         checksum/element-config: {{ include (print $.Template.BasePath "/element/configmap.yaml") . | sha256sum }}
+        {{- with .Values.element.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "matrix.name" . }}-element
         app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- with .Values.element.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -57,6 +63,8 @@ spec:
             - mountPath: /var/run/pid
               name: ephemeral
               subPath: pid
+            - mountPath: /tmp
+              name: ephemeral-tmp
           readinessProbe:
             httpGet:
               path: /
@@ -94,5 +102,8 @@ spec:
             name: {{ include "matrix.fullname" . }}-element-config
         # ephemeral cache, PID file, and any other temporary files nginx needs access to
         - name: ephemeral
+          emptyDir: {}
+        # ephemeral cache, for /tmp
+        - name: ephemeral-tmp
           emptyDir: {}
 {{- end }}

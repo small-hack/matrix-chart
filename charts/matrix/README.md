@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 19.4.0](https://img.shields.io/badge/Version-19.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.127.1](https://img.shields.io/badge/AppVersion-v1.127.1-informational?style=flat-square)
+![Version: 20.3.0](https://img.shields.io/badge/Version-20.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.140.0](https://img.shields.io/badge/AppVersion-v1.140.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -20,9 +20,9 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://small-hack.github.io/coturn-chart | coturn | 8.1.1 |
-| https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 1.4.2 |
-| oci://registry-1.docker.io/bitnamicharts | postgresql | 16.6.0 |
+| https://small-hack.github.io/coturn-chart | coturn | 9.1.0 |
+| https://small-hack.github.io/matrix-authentication-service-chart | mas(matrix-authentication-service) | 1.6.0 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql | 16.7.10 |
 
 ## Values
 
@@ -284,7 +284,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.hookshot.existingSecret.registration | string | `""` | optionally use existing kubernetes Secret for registration |
 | bridges.hookshot.image.pullPolicy | string | `"IfNotPresent"` | hookshot bridge docker image pull policy. If tag is "latest", set tag to "Always" |
 | bridges.hookshot.image.repository | string | `"halfshot/matrix-hookshot"` | hookshot bridge docker image |
-| bridges.hookshot.image.tag | string | `"6.0.1"` | hookshot bridge docker image tag |
+| bridges.hookshot.image.tag | string | `"7.2.0"` | hookshot bridge docker image tag |
 | bridges.hookshot.passkey | string | `""` | If bridges.hookshot.passkey AND bridges.hookshot.existingSecret.passkey are BOTH empty strings, we will generate a passkey for you. To Generate yourself: openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 |
 | bridges.hookshot.podSecurityContext | object | `{}` | hookshot pod security context |
 | bridges.hookshot.registration.existingSecret | string | `""` |  |
@@ -433,6 +433,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | element.labels | object | `{"component":"element"}` | Element specific labels |
 | element.labs | list | `["feature_new_spinner","feature_pinning","feature_custom_status","feature_custom_tags","feature_state_counters","feature_many_integration_managers","feature_mjolnir","feature_dm_verification","feature_bridge_state","feature_presence_in_room_list","feature_custom_themes"]` | Experimental features in Element, see: https://github.com/vector-im/element-web/blob/develop/docs/labs.md |
 | element.permalinkPrefix | string | `"https://matrix.to"` | Prefix before permalinks generated when users share links to rooms, users, or messages. If running an unfederated Synapse, set the below to the URL of your Element instance. |
+| element.podAnnotations | object | `{}` |  |
+| element.podLabels | object | `{}` |  |
 | element.probes.liveness | object | `{}` |  |
 | element.probes.readiness | object | `{}` |  |
 | element.probes.startup | object | `{}` |  |
@@ -798,6 +800,8 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.metrics.enabled | bool | `true` | Whether Synapse should capture metrics on an additional endpoint |
 | synapse.metrics.port | int | `9092` | Port to listen on for metrics scraping |
 | synapse.metrics.serviceMonitor.enabled | bool | `false` | enable a prometheus ServiceMonitor to send metrics to prometheus |
+| synapse.podAnnotations | object | `{}` |  |
+| synapse.podLabels | object | `{}` |  |
 | synapse.podSecurityContext | object | `{"env":false,"fsGroup":1000,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | securityContext for the entire synapse pod, including the all containers Does not work by default in all cloud providers, disable by default |
 | synapse.podSecurityContext.env | bool | `false` | Enable if your k8s environment allows containers to chuser/setuid https://github.com/matrix-org/synapse/blob/96cf81e312407f0caba1b45ba9899906b1dcc098/docker/start.py#L196 |
 | synapse.podSecurityContext.fsGroup | int | `1000` | A special supplemental group that applies to all containers in a pod. Some volume types allow the Kubelet to change the ownership of that volume to be owned by the pod: 1. The owning GID will be the FSGroup 2. The setgid bit is set (new files created in the volume will be owned by FSGroup) 3. The permission bits are OR'd with rw-rw---- If unset, the Kubelet will not modify the ownership and permissions of any volume. Note that this field cannot be set when spec.os.name is windows. |
