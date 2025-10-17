@@ -928,7 +928,7 @@ turn_uris:
 {{- if and (not .Values.coturn.existingSecret) (empty .Values.coturn.sharedSecret) -}}
 turn_shared_secret: "{{ randAlphaNum 24 }}"
 {{- else }}
-turn_shared_secret: "REPLACE_ME"
+turn_shared_secret: "{{ .Values.coturn.sharedSecret }}"
 {{- end }}
 
 # How long generated TURN credentials last
