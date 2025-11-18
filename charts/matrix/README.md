@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 21.2.0](https://img.shields.io/badge/Version-21.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.141.0](https://img.shields.io/badge/AppVersion-v1.141.0-informational?style=flat-square)
+![Version: 21.2.1](https://img.shields.io/badge/Version-21.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.141.0](https://img.shields.io/badge/AppVersion-v1.141.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -192,7 +192,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | bridges.discord_mautrix.extraVolumes | list | `[]` | extra volumes for the mautrix/discord deployment |
 | bridges.discord_mautrix.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bridges.discord_mautrix.image.repository | string | `"dock.mau.dev/mautrix/discord"` | docker image repo for mautrix/discord bridge |
-| bridges.discord_mautrix.image.tag | string | `"8d01c30014978e2360d5cb102e96542ecb2402b6-amd64"` | tag for mautrix/discord bridge docker image |
+| bridges.discord_mautrix.image.tag | string | `"8f9ca4bac47ba04eebc55c05976db7cd7c46e5e0-amd64"` | tag for mautrix/discord bridge docker image |
 | bridges.discord_mautrix.podSecurityContext | object | `{}` | security context for the entire mautrix/discord pod |
 | bridges.discord_mautrix.registration.existingSecret | string | `""` | Use an existing Kubernetes Secret to store your own generated appservice and homeserver tokens. If this is not set, we'll generate them for you. Setting this won't override the ENTIRE registration.yaml we generate for the synapse pod to authenticate mautrix/discord. It will only replaces the tokens. To replaces the ENTIRE registration.yaml, use bridges.discord_mautrix.existingSecret.registration |
 | bridges.discord_mautrix.registration.existingSecretKeys.as_token | string | `"as_token"` | key in existingSecret for as_token (appservice token) |
