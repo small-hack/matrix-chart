@@ -627,7 +627,7 @@ postgresql:
 synapse:
   image:
     # -- image registry and repository to use for synapse
-    repository: "matrixdotorg/synapse"
+    repository: "ghcr.io/element-hq/synapse"
     # -- tag of synapse docker image to use. change this to latest to grab the
     #    cutting-edge release of synapse
     tag: ""
