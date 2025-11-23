@@ -363,7 +363,8 @@ spec:
             - /bin/sh
             - -ec
             - |
-              pip install --user synapse-s3-storage-provider
+              /opt/venvs/matrix-synapse/bin/pip3 install synapse-s3-storage-provider
+              # pip install --user synapse-s3-storage-provider
           volumeMounts:
             - name: synapse-config
               mountPath: /data
