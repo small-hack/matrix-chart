@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 21.2.0](https://img.shields.io/badge/Version-21.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.141.0](https://img.shields.io/badge/AppVersion-v1.141.0-informational?style=flat-square)
+![Version: 21.3.0](https://img.shields.io/badge/Version-21.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.142.1](https://img.shields.io/badge/AppVersion-v1.142.1-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
@@ -786,7 +786,7 @@ A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 | synapse.extraVolumeMounts | list | `[]` | optional: extra volume mounts for the matrix synapse deployment |
 | synapse.extraVolumes | list | `[]` | optional: extra volumes for the matrix synapse deployment |
 | synapse.image.pullPolicy | string | `"IfNotPresent"` | pullPolicy for synapse image, Use Always if using image.tag: latest |
-| synapse.image.repository | string | `"matrixdotorg/synapse"` | image registry and repository to use for synapse |
+| synapse.image.repository | string | `"ghcr.io/element-hq/synapse"` | image registry and repository to use for synapse |
 | synapse.image.tag | string | `""` | tag of synapse docker image to use. change this to latest to grab the    cutting-edge release of synapse |
 | synapse.ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"proxy_intercept_errors off;\n"` | This annotation is required for the Nginx ingress provider. You can remove it if you use a different ingress provider |
 | synapse.ingress.className | string | `"nginx"` | ingressClassName for the k8s ingress |
