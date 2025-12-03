@@ -28,14 +28,14 @@ matrix:
   # the service is reachable. In fact, you may want to omit any subdomains from
   # this value as the server name set here will be the name of your homeserver
   # in the fediverse, & will be the domain name at the end of every username
-  serverName: "example.com"
+  serverName: "umchat.pluginip.com"
 
   # -- Enable anonymous telemetry to matrix.org
   telemetry: false
 
   # This is *optional* if an Ingress is configured below.
   # -- Hostname where Synapse can be reached, e.g. matrix.mydomain.com
-  hostname: ""
+  hostname: "umchat.pluginip.com"
 
   # -- Set to false to disable presence (online/offline indicators)
   presence: true
@@ -52,7 +52,7 @@ matrix:
   encryptByDefault: invite
 
   # -- Email address of the administrator
-  adminEmail: "admin@example.com"
+  adminEmail: "pluginip@protonmail.com"
 
   # -- Settings related to image and multimedia uploads
   uploads:
@@ -70,12 +70,12 @@ matrix:
   #    "url": "https://wherever-your-sliding-sync-proxy-is.com"
 
   # -- By default, other servers will try to reach our server on port 8448, which can be inconvenient in some environments. Provided https://<server_name>/ on port 443 is routed to Synapse, this option configures Synapse to serve a file at https://<server_name>/.well-known/matrix/server. This will tell other servers to send traffic to port 443 instead
-  serve_server_wellknown: false
+  serve_server_wellknown: true
 
   # Settings related to federation
   federation:
     # -- Set to true to enable federation
-    enabled: false
+    enabled: true
 
     # -- timeout for the federation requests
     client_timeout: 60s
@@ -103,7 +103,7 @@ matrix:
 
     ingress:
       # -- enable ingress for federation
-      enabled: false
+      enabled: true
       tls:
         # -- enable a TLS cert
         enabled: true
@@ -113,8 +113,8 @@ matrix:
       annotations:
         # -- required for the Nginx ingress provider. You can remove it if you
         # use a different ingress provider
-        nginx.ingress.kubernetes.io/configuration-snippet: |
-          proxy_intercept_errors off;
+        # nginx.ingress.kubernetes.io/configuration-snippet: |
+        #  proxy_intercept_errors off;
         # -- required for TLS certs issued by cert-manager
         cert-manager.io/cluster-issuer: letsencrypt-staging
 
