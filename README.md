@@ -1,3 +1,13 @@
+# Notice of migration
+
+This helm chart has migrated to:
+https://git.smallhack.org/small-hack/matrix-chart
+
+and it is mirrored to: 
+https://codeberg.org/small-hack/matrix-chart
+
+You can open future Issues and PRs on codeberg.
+
 # Matrix Chart
 <a href="https://github.com/small-hack/matrix-chart/releases"><img src="https://img.shields.io/github/v/release/small-hack/matrix-chart?style=plastic&labelColor=blue&color=green&logo=GitHub&logoColor=white"></a>
 
