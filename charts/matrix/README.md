@@ -1,6 +1,6 @@
 # matrix
 
-![Version: 21.6.0](https://img.shields.io/badge/Version-21.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.145.0](https://img.shields.io/badge/AppVersion-v1.145.0-informational?style=flat-square)
+![Version: 21.7.0](https://img.shields.io/badge/Version-21.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.151.0](https://img.shields.io/badge/AppVersion-v1.151.0-informational?style=flat-square)
 
 A Helm chart to deploy a Matrix homeserver stack on Kubernetes
 
